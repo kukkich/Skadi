@@ -32,12 +32,8 @@ public abstract class MatrixBase
     {
         var values = new double[Rows, Columns];
         for (int i = 0; i < Rows; i++)
-        {
             for (int j = 0; j < Columns; j++)
-            {
                 values[i, j] = this[i, j];
-            }
-        }
 
         return new Matrix(values);
     }

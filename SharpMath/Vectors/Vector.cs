@@ -1,6 +1,9 @@
-﻿namespace SharpMath;
+﻿using System.Collections;
+using SharpMath.Storages;
 
-public class Vector
+namespace SharpMath.Vectors;
+
+public class Vector : IVector<double>
 {
     public static Vector Create(int length, double defaultValue = 0)
     {
@@ -39,7 +42,7 @@ public class Vector
         _values = values;
     }
 
-    public static double ScalarProduct(Vector v, Vector u)
+    public static double ScalarProduct(IReadonlyVector<double> v, IReadonlyVector<double> u)
     {
         if (v.Length != u.Length)
             throw new ArgumentOutOfRangeException($"{nameof(v)} and {nameof(u)} must have the same length");
@@ -52,8 +55,19 @@ public class Vector
         return sum;
     }
 
-    public double ScalarProduct(Vector v)
+    public double ScalarProduct(IReadonlyVector<double> v)
     {
         return ScalarProduct(this, v);
+    }
+
+    public IEnumerator<IndexValue<double>> GetEnumerator()
+    {
+        for (int i = 0; i < Length; i++)
+            yield return new IndexValue<double>(this[i], i);
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }

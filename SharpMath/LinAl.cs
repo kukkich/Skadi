@@ -1,4 +1,5 @@
 ﻿using SharpMath.Matrices;
+using SharpMath.Vectors;
 
 namespace SharpMath;
 
@@ -47,6 +48,10 @@ public static class LinAl
         return resultMemory;
     }
     public static ImmutableMatrix Multiply(double coefficient, ImmutableMatrix a)
+    {
+        return new ImmutableMatrix(a, a.Coefficient * coefficient);
+    }
+    public static ImmutableMatrix Multiply(ImmutableMatrix a, double coefficient)
     {
         return new ImmutableMatrix(a, a.Coefficient * coefficient);
     }

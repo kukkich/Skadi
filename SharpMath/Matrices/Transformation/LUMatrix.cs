@@ -1,4 +1,6 @@
-﻿namespace SharpMath.Matrices.Transformation;
+﻿using SharpMath.Vectors;
+
+namespace SharpMath.Matrices.Transformation;
 
 // ReSharper disable once InconsistentNaming
 public class LUMatrix

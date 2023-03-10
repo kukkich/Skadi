@@ -1,6 +1,6 @@
 ﻿using SharpMath.Storages;
 
-namespace SharpMath;
+namespace SharpMath.Matrices;
 
 public class SymmetricSparseMatrix
 {
