@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using SharpMath.Storages;
+using SharpMath.Matrices.Sparse.Storages;
 
 namespace SharpMath.Vectors;
 

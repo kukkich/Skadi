@@ -1,4 +1,5 @@
 ﻿using SharpMath.Matrices;
+using SharpMath.Matrices.Sparse;
 
 namespace SharpMath.EquationsSystem.Preconditions.Diagonal;
 

@@ -1,6 +1,6 @@
-﻿using SharpMath.Storages;
+﻿using SharpMath.Matrices.Sparse.Storages;
 
-namespace SharpMath.Matrices;
+namespace SharpMath.Matrices.Sparse;
 
 public class SymmetricSparseMatrix
 {
@@ -74,8 +74,6 @@ public class SymmetricSparseMatrix
         Values = values.ToArray();
         Diagonal = diagonal.ToArray();
 
-
-        //Todo extract validation in LinAL method 
         if (Values.Length != _columnIndexes.Length) throw new ArgumentException(
             nameof(columnIndexes) + " and " + nameof(values) + "must have the same length"
         );

@@ -1,4 +1,5 @@
 ﻿using SharpMath.Matrices;
+using SharpMath.Matrices.Sparse;
 using SharpMath.Vectors;
 
 namespace SharpMath;
@@ -68,6 +69,32 @@ public static class LinAl
 
         return new Vector(result);
     }
+    public static Span<double> Multiply(StackMatrix a, ReadOnlySpan<double> v, Span<double> resultMemory)
+    {
+        if (a.Size != v.Length || v.Length != resultMemory.Length)
+        {
+            throw new ArgumentException();
+        }
+        
+        for (var i = 0; i < v.Length; i++)
+        for (var j = 0; j < v.Length; j++)
+            resultMemory[i] += a[i, j] * v[j];
+
+        return resultMemory;
+    }
+    public static Span<double> Multiply(MatrixBase a, ReadOnlySpan<double> v, Span<double> resultMemory)
+    {
+        if (a.Columns != v.Length || a.Rows != v.Length || v.Length != resultMemory.Length)
+        {
+            throw new ArgumentException();
+        }
+
+        for (var i = 0; i < v.Length; i++)
+        for (var j = 0; j < v.Length; j++)
+            resultMemory[i] += a[i, j] * v[j];
+
+        return resultMemory;
+    }
 
     //Todo refactor (?)
     public static Vector Multiply(SymmetricSparseMatrix matrix, Vector x, Vector? resultMemory = null)
@@ -128,6 +155,16 @@ public static class LinAl
         for (var i = 0; i < a.Rows; i++)
             for (var j = 0; j < a.Rows; j++)
                 resultMemory[i, j] = a[i, j] + b[i, j];
+
+        return resultMemory;
+    }
+    public static StackMatrix Sum(MatrixBase a, MatrixBase b, StackMatrix resultMemory)
+    {
+        AssertCanBeMultiplied(a, b);
+
+        for (var i = 0; i < a.Rows; i++)
+        for (var j = 0; j < a.Rows; j++)
+            resultMemory[i, j] = a[i, j] + b[i, j];
 
         return resultMemory;
     }

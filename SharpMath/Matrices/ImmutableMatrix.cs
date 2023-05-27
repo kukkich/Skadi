@@ -8,11 +8,13 @@ public class ImmutableMatrix : MatrixBase
     public ImmutableMatrix(double[,] values)
         : this(values, 1d)
         { }
+
     public ImmutableMatrix(double[,] values, double coefficient)
         : base(values)
     {
         Coefficient = coefficient;
     }
+
     public ImmutableMatrix(ImmutableMatrix a, double coefficient)
         : base(a.Values)
     {
@@ -23,6 +25,7 @@ public class ImmutableMatrix : MatrixBase
     {
         return this;
     }
+    
     public override Matrix AsMutable()
     {
         return Clone();

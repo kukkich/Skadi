@@ -1,6 +1,6 @@
 ﻿namespace SharpMath.Matrices;
 
-public readonly ref struct StackAllocMatrix
+public readonly ref struct StackMatrix
 {
     private readonly Span<double> _values;
     public int Size { get; }
@@ -12,7 +12,7 @@ public readonly ref struct StackAllocMatrix
         set => _values[GetSpanIndex(row, column)] = value;
     }
 
-    public StackAllocMatrix(Span<double> values, int size)
+    public StackMatrix(Span<double> values, int size)
     {
         if (values.Length != size * size)
             throw new ArgumentException();

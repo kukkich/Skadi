@@ -1,4 +1,4 @@
-﻿namespace SharpMath.Storages;
+﻿namespace SharpMath.Matrices.Sparse.Storages;
 
 public readonly ref struct RefIndexValue
 {

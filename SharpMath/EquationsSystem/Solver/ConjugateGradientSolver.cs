@@ -1,5 +1,6 @@
 ﻿using SharpMath.EquationsSystem.Preconditions;
 using SharpMath.Matrices;
+using SharpMath.Matrices.Sparse;
 using SharpMath.Vectors;
 
 namespace SharpMath.EquationsSystem.Solver;
