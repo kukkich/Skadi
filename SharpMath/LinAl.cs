@@ -56,6 +56,36 @@ public static class LinAl
     {
         return new ImmutableMatrix(a, a.Coefficient * coefficient);
     }
+    public static Vector Multiply(SparseMatrix a, Vector v, Vector? resultMemory = null)
+    {
+        if (resultMemory is null)
+        {
+            resultMemory = Vector.Create(a.RowsCount);
+        } 
+        else if (resultMemory.Length != a.RowsCount)
+        {
+            throw new ArgumentException();
+        }
+
+        var rowsIndexes = a.RowsIndexes;
+        var columnsIndexes = a.ColumnsIndexes;
+        var di = a.Diagonal;
+        var lowerValues = a.LowerValues;
+        var upperValues = a.UpperValues;
+
+        for (var i = 0; i < a.RowsCount; i++)
+        {
+            resultMemory[i] += di[i] * v[i];
+
+            for (var j = rowsIndexes[i]; j < rowsIndexes[i + 1]; j++)
+            {
+                resultMemory[i] += lowerValues[j] * v[columnsIndexes[j]];
+                resultMemory[columnsIndexes[j]] += upperValues[j] * v[i];
+            }
+        }
+
+        return resultMemory;
+    }
 
     public static Vector Multiply(MatrixBase a, Vector v, Vector? resultMemory = null)
     {

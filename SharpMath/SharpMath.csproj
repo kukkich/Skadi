@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="EquationsSystem\Solver\" />
     <Folder Include="FiniteElement\2D\Assembling\" />
     <Folder Include="FiniteElement\Core\Assembling\Boundary\" />
     <Folder Include="Matrices\Sparse\Storages\" />

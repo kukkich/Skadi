@@ -37,6 +37,17 @@ public class Vector : IVector<double>
         return new Vector(values);
     }
 
+    public Vector Copy(double[] memory)
+    {
+        if (memory == null || memory.Length != Length)
+            throw new ArgumentException();
+
+        for (int i = 0; i < Length; i++)
+            memory[i] = this[i];
+
+        return new Vector(memory);
+    }
+
     public Vector(params double[] values)
     {
         _values = values;

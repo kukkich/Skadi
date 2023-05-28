@@ -1,11 +1,10 @@
 ﻿using SharpMath.EquationsSystem.Preconditions;
-using SharpMath.Matrices;
 using SharpMath.Matrices.Sparse;
 using SharpMath.Vectors;
 
 namespace SharpMath.EquationsSystem.Solver;
 
-public class ConjugateGradientSolver
+public class ConjugateGradientSolver : ISLAESolver<SymmetricSparseMatrix>
 {
     private readonly IPreconditionerFactory _preconditionerFactory;
     private readonly double _precision;
@@ -40,7 +39,6 @@ public class ConjugateGradientSolver
 
         for (var i = 1; i < _maxIteration && (_r.Norm / fNorm) >= _precision; i++)
         {
-            //Console.WriteLine($"{i}: {_r.Norm / fNorm}, expected {_precision}");
             var preconditionedRScalarProduct = Vector.ScalarProduct(
                 _preconditioner.MultiplyOn(_r, _aByZProduct), // could pass any memory
                 _r
@@ -78,8 +76,6 @@ public class ConjugateGradientSolver
 
             _r = _rNext;
         }
-        //Console.WriteLine($"Ended with discrepancy {_r.Norm / fNorm}, expected {_precision}");
-        //Console.WriteLine();
     }
 
     private void InitializeStartValues(Equation<SymmetricSparseMatrix> equation)
