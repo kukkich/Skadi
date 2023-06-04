@@ -1,7 +1,12 @@
-﻿using SharpMath.FiniteElement.Core.Assembling;
+﻿using System.Numerics;
+using SharpMath.FiniteElement.Core.Assembling;
+using SharpMath.FiniteElement.Core.Assembling.Boundary.First;
 using SharpMath.Geometry._2D;
 using SharpMath.Matrices;
 using SharpMath.Matrices.Sparse;
+using SharpMath.Matrices.Transformation;
+using System.Xml.Linq;
+using SharpMath.FiniteElement.Core.Assembling.Boundary.Second;
 
 namespace SharpMath.FiniteElement._2D;
 
@@ -12,19 +17,25 @@ public class EquationAssembler
     private readonly Context<Point, Element, SparseMatrix> _context;
     private readonly IStackLocalAssembler<Element> _localAssembler;
     private readonly IStackInserter<SparseMatrix> _inserter;
-    
+    private readonly IFirstBoundaryApplier<SparseMatrix> _firstBoundaryApplier;
+    private readonly ISecondBoundaryApplier<SparseMatrix> _secondBoundaryApplier;
+
     public EquationAssembler(
         Context<Point, Element, SparseMatrix> context,
         IStackLocalAssembler<Element> localAssembler,
-        IStackInserter<SparseMatrix> inserter
-        )
+        IStackInserter<SparseMatrix> inserter,
+        IFirstBoundaryApplier<SparseMatrix> firstBoundaryApplier,
+        ISecondBoundaryApplier<SparseMatrix> secondBoundaryApplier
+    )
     {
         _context = context;
         _localAssembler = localAssembler;
         _inserter = inserter;
+        _firstBoundaryApplier = firstBoundaryApplier;
+        _secondBoundaryApplier = secondBoundaryApplier;
     }
 
-    public Equation<SparseMatrix> BuildEquation(Context<Point, Element, SparseMatrix> context)
+    public EquationAssembler BuildEquation(Context<Point, Element, SparseMatrix> context)
     {
         var equation = context.Equation;
 
@@ -37,12 +48,35 @@ public class EquationAssembler
             _localAssembler.AssembleMatrix(element, matrix, indexes);
             var localMatrix = new StackLocalMatrix(matrix, indexes);
             _inserter.InsertMatrix(equation.Matrix, localMatrix);
-
-             _localAssembler.AssembleRightSide(element, vector, indexes);
+            
+            _localAssembler.AssembleRightSide(element, vector, indexes);
              var localRightSide = new StackLocalVector(vector, indexes);
-             _inserter.InsertVector(equation.RightSide, localRightSide);
+            _inserter.InsertVector(equation.RightSide, localRightSide);
+        }
+        return this;
+    }
+
+    public EquationAssembler ApplyFirstBoundary(Context<Point, Element, SparseMatrix> context)
+    {
+        var equation = context.Equation;
+
+        foreach (var condition in _context.FirstConditions)
+        {
+            _firstBoundaryApplier.Apply(equation, condition);
         }
 
-        return equation;
+        return this;
+    }
+
+    public EquationAssembler ApplySecondConditions(Context<Point, Element, SparseMatrix> context)
+    {
+
+        foreach (var condition in context.SecondConditions)
+        {
+            _secondBoundaryApplier.Apply(context.Equation, condition);
+            
+        }
+
+        return this;
     }
 }

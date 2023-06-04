@@ -23,7 +23,7 @@ public class ConjugateGradientSolver : ISLAESolver<SymmetricSparseMatrix>
         _precision = precision;
         _maxIteration = maxIteration;
     }
-
+     
     public Vector Solve(Equation<SymmetricSparseMatrix> equation)
     {
         InitializeStartValues(equation);

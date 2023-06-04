@@ -7,9 +7,9 @@ namespace SharpMath.FiniteElement._2D.Assembling;
 
 public class LocalAssembler : IStackLocalAssembler<Element>
 {
-    private static readonly ImmutableMatrix MassTemplate;
-    private static readonly ImmutableMatrix StiffnessTemplate1;
-    private static readonly ImmutableMatrix StiffnessTemplate2;
+    public static readonly ImmutableMatrix MassTemplate;
+    public static readonly ImmutableMatrix StiffnessTemplate1;
+    public static readonly ImmutableMatrix StiffnessTemplate2;
 
     static LocalAssembler()
     {
@@ -80,7 +80,8 @@ public class LocalAssembler : IStackLocalAssembler<Element>
     {
         Span<double> fS = stackalloc double[element.NodeIndexes.Length];
         Span<double> fC = stackalloc double[element.NodeIndexes.Length];
-        Span<double> fTmp = stackalloc double[element.NodeIndexes.Length];
+        Span<double> fSTmp = stackalloc double[element.NodeIndexes.Length];
+        Span<double> fCTmp = stackalloc double[element.NodeIndexes.Length];
 
         var defaultMass = LinAl.Multiply(
             element.Width * element.Length / 36d,
@@ -94,13 +95,13 @@ public class LocalAssembler : IStackLocalAssembler<Element>
             fC[i] = f.Imaginary;
         }
 
-        var bS = LinAl.Multiply(defaultMass, fS, fTmp);
+        var bS = LinAl.Multiply(defaultMass, fS, fSTmp);
         for (int i = 0; i < element.NodeIndexes.Length; i++)
         {
             vector[i * 2] = bS[i];
         }
 
-        var bC = LinAl.Multiply(defaultMass, fS, fTmp);
+        var bC = LinAl.Multiply(defaultMass, fC, fCTmp);
         for (int i = 0; i < element.NodeIndexes.Length; i++)
         {
             vector[i * 2 + 1] = bC[i];

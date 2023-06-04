@@ -48,6 +48,19 @@ public static class LinAl
 
         return resultMemory;
     }
+    public static StackMatrix Multiply(double coefficient, StackMatrix a, StackMatrix resultMemory)
+    {
+        if (a.Size != resultMemory.Size)
+        {
+            throw new ArgumentException();
+        }
+
+        for (var i = 0; i < a.Size; i++)
+        for (var j = 0; j < a.Size; j++)
+            resultMemory[i, j] = a[i, j] * coefficient;
+
+        return resultMemory;
+    }
     public static ImmutableMatrix Multiply(double coefficient, ImmutableMatrix a)
     {
         return new ImmutableMatrix(a, a.Coefficient * coefficient);
@@ -56,6 +69,7 @@ public static class LinAl
     {
         return new ImmutableMatrix(a, a.Coefficient * coefficient);
     }
+
     public static Vector Multiply(SparseMatrix a, Vector v, Vector? resultMemory = null)
     {
         if (resultMemory is null)
@@ -86,7 +100,6 @@ public static class LinAl
 
         return resultMemory;
     }
-
     public static Vector Multiply(MatrixBase a, Vector v, Vector? resultMemory = null)
     {
         ValidateOrAllocateIfNull(v, ref resultMemory!);

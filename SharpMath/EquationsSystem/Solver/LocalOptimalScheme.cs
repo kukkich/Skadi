@@ -46,8 +46,8 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
     {
         var residual = Vector.ScalarProduct(_r, _r);
         var residualNext = residual;
-
-        for (var i = 1; i <= Config.MaxIterations && residualNext > Math.Pow(Config.Eps, 2); i++)
+        var i = 0;
+        for (i = 1; i <= Config.MaxIterations && residualNext > Math.Pow(Config.Eps, 2); i++)
         {
             var scalarPP = Vector.ScalarProduct(_p, _p);
 
@@ -82,7 +82,7 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
             //CourseHolder.GetInfo(i, residualNext);
         }
 
-        Console.WriteLine();
+        Console.WriteLine($"{i} {residualNext:E6}");
     }
 }
 

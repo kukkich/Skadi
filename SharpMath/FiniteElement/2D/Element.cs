@@ -36,4 +36,30 @@ public record struct Element(int[] NodeIndexes, double Length, double Width, int
             },
             _ => throw new ArgumentOutOfRangeException()
         };
+
+    public Span<int> GetBoundNodeIndexes(Bound bound, Span<int> resultMemory)
+    {
+        switch(bound)
+        {
+            case Bound.Left: 
+                resultMemory[0] = NodeIndexes[0];
+                resultMemory[1] = NodeIndexes[2];
+            break;
+
+            case Bound.Right: 
+                resultMemory[0] = NodeIndexes[1];
+                resultMemory[1] = NodeIndexes[3];
+            break;
+            case Bound.Bottom:
+                resultMemory[0] = NodeIndexes[0];
+                resultMemory[1] = NodeIndexes[1];
+                break;
+            case Bound.Top:
+                resultMemory[0] = NodeIndexes[2];
+                resultMemory[1] = NodeIndexes[3];
+                break;
+        };
+        return resultMemory;
+    }
+        
 }

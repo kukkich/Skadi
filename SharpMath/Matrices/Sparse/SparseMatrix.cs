@@ -1,6 +1,4 @@
-﻿using SharpMath.FiniteElement.Core.Assembling;
-
-namespace SharpMath.Matrices.Sparse;
+﻿namespace SharpMath.Matrices.Sparse;
 
 public class SparseMatrix
 {
