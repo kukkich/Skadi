@@ -2,6 +2,7 @@
 
 public readonly struct Interval
 {
+    public const double MaxAccuracy = 1e-12;
     public double Begin { get; }
     public double End { get; }
 
@@ -15,6 +16,6 @@ public readonly struct Interval
 
     public bool Has(double value)
     {
-        return value >= Begin && value <= End;
+        return value >= Begin && value <= End + MaxAccuracy;
     }
 }

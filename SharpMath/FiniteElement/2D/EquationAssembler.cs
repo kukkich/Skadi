@@ -53,6 +53,7 @@ public class EquationAssembler
              var localRightSide = new StackLocalVector(vector, indexes);
             _inserter.InsertVector(equation.RightSide, localRightSide);
         }
+
         return this;
     }
 
@@ -70,11 +71,9 @@ public class EquationAssembler
 
     public EquationAssembler ApplySecondConditions(Context<Point, Element, SparseMatrix> context)
     {
-
         foreach (var condition in context.SecondConditions)
         {
             _secondBoundaryApplier.Apply(context.Equation, condition);
-            
         }
 
         return this;

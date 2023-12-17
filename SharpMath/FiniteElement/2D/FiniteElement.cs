@@ -1,15 +1,29 @@
 ﻿using System.Diagnostics;
+using SharpMath.FiniteElement.Materials;
 using SharpMath.Geometry._2D;
 
 namespace SharpMath.FiniteElement._2D;
 
 // Кубический лагранжевый базис
 [DebuggerDisplay("Indexes = [{NodeIndexes[0]}, {NodeIndexes[1]}, {NodeIndexes[2]}, {NodeIndexes[3]}], MaterialId = {MaterialId}")]
-public record struct Element(int[] NodeIndexes, double Length, double Width, int MaterialId = 0)
+public class Element : IFiniteElement
 {
+    public Element(int[] NodeIndexes, double Length, double Width, int MaterialId = 0)
+    {
+        this.NodeIndexes = NodeIndexes;
+        this.Length = Length;
+        this.Width = Width;
+        this.MaterialId = MaterialId;
+    }
+
     public const int StepsInsideElement = 1;
     public const int NodesOnBound = StepsInsideElement + 1;
     public const int NodesInElement = NodesOnBound * NodesOnBound;
+    public int[] NodeIndexes { get; set; }
+    public double Length { get; set; }
+    public double Width { get; set; }
+    public int MaterialId { get; set; }
+
 
     public int[] GetBoundNodeIndexes(Bound bound) =>
         bound switch
@@ -61,5 +75,12 @@ public record struct Element(int[] NodeIndexes, double Length, double Width, int
         };
         return resultMemory;
     }
-        
+
+    public void Deconstruct(out int[] NodeIndexes, out double Length, out double Width, out int MaterialId)
+    {
+        NodeIndexes = this.NodeIndexes;
+        Length = this.Length;
+        Width = this.Width;
+        MaterialId = this.MaterialId;
+    }
 }

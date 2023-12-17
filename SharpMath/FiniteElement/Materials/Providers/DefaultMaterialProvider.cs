@@ -1,6 +1,7 @@
 ﻿using SharpMath.FiniteElement.Core.Assembling.Params;
+using SharpMath.FiniteElement.Materials.HarmonicWithoutChi;
 
-namespace SharpMath.FiniteElement.Materials.HarmonicWithoutChi;
+namespace SharpMath.FiniteElement.Materials.Providers;
 
 public class DefaultMaterialProvider : IMaterialProvider<Material>
 {

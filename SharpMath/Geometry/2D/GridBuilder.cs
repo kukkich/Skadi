@@ -1,4 +1,6 @@
 ﻿using SharpMath.FiniteElement._2D;
+using SharpMath.FiniteElement.Materials;
+using SharpMath.FiniteElement.Materials.MaterialSetter;
 using SharpMath.Geometry.Splitting;
 
 namespace SharpMath.Geometry._2D;
@@ -7,13 +9,12 @@ public class GridBuilder
 {
     private AxisSplitParameter? _xAxisSplitParameter;
     private AxisSplitParameter? _yAxisSplitParameter;
-    private int[]? _materialsId;
+    private IMaterialSetterFactory _materialSetterFactory = new NullMaterialSetterFactory();
     private int _totalXElements;
     private int _totalYElements;
 
     private int ComputedTotalXElements => _xAxisSplitParameter!.Splitters.Sum(x => x.Steps);
     private int ComputedTotalYElements => _yAxisSplitParameter!.Splitters.Sum(y => y.Steps);
-
 
     public GridBuilder SetXAxis(AxisSplitParameter splitParameter)
     {
@@ -27,9 +28,9 @@ public class GridBuilder
         return this;
     }
 
-    public GridBuilder SetMaterials(int[] materialsId)
+    public GridBuilder SetMaterialSetterFactory(IMaterialSetterFactory materialSetterFactory)
     {
-        _materialsId = materialsId;
+        _materialSetterFactory = materialSetterFactory;
         return this;
     }
 
@@ -38,6 +39,8 @@ public class GridBuilder
         if (_xAxisSplitParameter == null || _yAxisSplitParameter == null)
             throw new ArgumentNullException();
 
+        
+
         _totalXElements = ComputedTotalXElements;
         _totalYElements = ComputedTotalYElements;
         var totalNodes = GetTotalNodes();
@@ -45,9 +48,10 @@ public class GridBuilder
 
         var nodes = new Point[totalNodes];
         var elements = new Element[totalElements];
-        _materialsId ??= new int[totalElements];
 
         Allocate(nodes, elements);
+
+        var materialSetter = _materialSetterFactory.Create(nodes, elements.Select(x => (IFiniteElement)x));
 
         var j = 0;
         foreach (var (ySection, ySplitter) in _yAxisSplitParameter.SectionWithParameter)
@@ -74,19 +78,19 @@ public class GridBuilder
                         if (j > 0 && k > 0)
                         {
                             var elementIndex = k - 1 + (j - 1) * _totalXElements;
+                            var element = elements[elementIndex];
+                            FillNodeIndexes(j - 1, k - 1, element.NodeIndexes);
 
-                            FillNodeIndexes(j - 1, k - 1, elements[elementIndex].NodeIndexes);
-
-                            var indexes = elements[elementIndex].NodeIndexes;
+                            var indexes = element.NodeIndexes;
 
                             var leftBottom = nodes[indexes[0]];
                             var leftTop = nodes[indexes[2]];
                             var rightBottom = nodes[indexes[1]];
                             
-                            elements[elementIndex].Length = rightBottom.X - leftBottom.X;
-                            elements[elementIndex].Width = leftTop.Y - leftBottom.Y;
+                            element.Length = rightBottom.X - leftBottom.X;
+                            element.Width = leftTop.Y - leftBottom.Y;
 
-                            elements[elementIndex].MaterialId = _materialsId[elementIndex];
+                            materialSetter.SetMaterial(element);
                         }
 
                         k++;

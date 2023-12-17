@@ -79,7 +79,7 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
             residualNext = Vector.ScalarProduct(_r, _r) / residual;
 
             // Logger.Log();
-            //CourseHolder.GetInfo(i, residualNext);
+            //Console.WriteLine($"\t {i} {residualNext:E6}");
         }
 
         Console.WriteLine($"{i} {residualNext:E6}");
