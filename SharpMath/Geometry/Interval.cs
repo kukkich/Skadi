@@ -2,7 +2,7 @@
 
 public readonly struct Interval
 {
-    public const double MaxAccuracy = 1e-12;
+    public const double MaxAccuracy = 1e-15;
     public double Begin { get; }
     public double End { get; }
 
