@@ -139,7 +139,6 @@ public static class LinAl
         return resultMemory;
     }
 
-    //Todo refactor (?)
     public static Vector Multiply(SymmetricSparseMatrix matrix, Vector x, Vector? resultMemory = null)
     {
         if (resultMemory == null)
@@ -213,8 +212,7 @@ public static class LinAl
     }
 
 
-    // TODO вынести функционал по валидации и выделению памяти в отдельный класс
-    public static MatrixBase ValidateOrAllocateIfNull(MatrixBase a, MatrixBase? b)
+    private static MatrixBase ValidateOrAllocateIfNull(MatrixBase a, MatrixBase? b)
     {
         if (b is null)
             b = new Matrix(new double[a.Rows, a.Columns]);
@@ -230,7 +228,7 @@ public static class LinAl
             throw new ArgumentOutOfRangeException($"{nameof(a)} and {nameof(b)}", "must have the same columns");
     }
 
-    public static MatrixBase ValidateOrAllocateIfNullForMultiplying(MatrixBase a, MatrixBase b, MatrixBase? c)
+    private static MatrixBase ValidateOrAllocateIfNullForMultiplying(MatrixBase a, MatrixBase b, MatrixBase? c)
     {
         AssertCanBeMultiplied(a, b);
         if (c is null)

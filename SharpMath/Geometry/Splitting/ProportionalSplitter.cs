@@ -1,20 +1,21 @@
 ﻿namespace SharpMath.Geometry.Splitting;
 
-public readonly record struct ProportionalSplitter : IIntervalSplitter
+public readonly struct ProportionalSplitter : IIntervalSplitter
 {
-    public int Steps { get; }
     public double DischargeRatio { get; }
 
+    private readonly int _steps;
     private readonly double _lengthCoefficient;
 
+    // Todo добавить возможность ограничивать минимальную длину элемента
     public ProportionalSplitter(int steps, double dischargeRatio)
     {
         if (Math.Abs(DischargeRatio - 1d) < 1e-15)
             throw new NotSupportedException();
 
-        Steps = steps;
+        _steps = steps;
         DischargeRatio = dischargeRatio;
-        _lengthCoefficient = (DischargeRatio - 1d) / (Math.Pow(DischargeRatio, Steps) - 1d);
+        _lengthCoefficient = (DischargeRatio - 1d) / (Math.Pow(DischargeRatio, _steps) - 1d);
     }
 
     public IEnumerable<double> EnumerateValues(Interval interval)

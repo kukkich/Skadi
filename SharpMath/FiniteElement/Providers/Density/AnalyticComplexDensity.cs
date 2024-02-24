@@ -19,7 +19,7 @@ public class AnalyticComplexDensity : INodeDefinedParameter<Complex>
 
     public Complex Get(int nodeIndex)
     {
-        var node = _context.Grid.Nodes[nodeIndex] = _context.Grid.Nodes[nodeIndex];
+        var node = _context.Grid.Nodes[nodeIndex];
         return _func(node);
     }
 }

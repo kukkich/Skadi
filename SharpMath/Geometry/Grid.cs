@@ -1,18 +1,16 @@
-﻿using System.Xml.Linq;
-
-namespace SharpMath.Geometry;
+﻿namespace SharpMath.Geometry;
 
 public class Grid<TPoint, TElement>
 {
-    public TPoint[] Nodes { get; }
+    public IPointsCollection<TPoint> Nodes { get; }
     public TElement[] Elements { get; }
 
     public Grid(
-        IEnumerable<TPoint> nodes,
+        IPointsCollection<TPoint> nodes,
         IEnumerable<TElement> elements
     )
     {
-        Nodes = nodes.ToArray();
+        Nodes = nodes;
         Elements = elements.ToArray();
     }
 }

@@ -1,5 +1,4 @@
 ﻿using SharpMath.FiniteElement._2D;
-using SharpMath.FiniteElement.Materials;
 using SharpMath.FiniteElement.Materials.MaterialSetter;
 using SharpMath.Geometry.Splitting;
 
@@ -10,11 +9,6 @@ public class GridBuilder
     private AxisSplitParameter? _xAxisSplitParameter;
     private AxisSplitParameter? _yAxisSplitParameter;
     private IMaterialSetterFactory _materialSetterFactory = new NullMaterialSetterFactory();
-    private int _totalXElements;
-    private int _totalYElements;
-
-    private int ComputedTotalXElements => _xAxisSplitParameter!.Splitters.Sum(x => x.Steps);
-    private int ComputedTotalYElements => _yAxisSplitParameter!.Splitters.Sum(y => y.Steps);
 
     public GridBuilder SetXAxis(AxisSplitParameter splitParameter)
     {
@@ -36,98 +30,72 @@ public class GridBuilder
 
     public Grid<Point, Element> Build()
     {
+        var points = CreatePoints();
+
+        var materialSetter = _materialSetterFactory.Create(points);
+        var elements = CreateElements(points, materialSetter);
+
+        return new Grid<Point, Element>(
+            points,
+            elements
+        );
+    }
+
+    private PointsCollection CreatePoints()
+    {
         if (_xAxisSplitParameter == null || _yAxisSplitParameter == null)
             throw new ArgumentNullException();
 
-        
+        var xNodes = _xAxisSplitParameter.CreateAxis().ToArray();
+        var yNodes = _yAxisSplitParameter.CreateAxis().ToArray();
 
-        _totalXElements = ComputedTotalXElements;
-        _totalYElements = ComputedTotalYElements;
-        var totalNodes = GetTotalNodes();
-        var totalElements = GetTotalElements();
+        return new PointsCollection(xNodes, yNodes);
+    }
 
-        var nodes = new Point[totalNodes];
+    private Element[] CreateElements(PointsCollection nodes, IMaterialSetter materialSetter)
+    {
+        var totalXElements = (nodes.XLength - 1);
+        var totalYElements = (nodes.YLength - 1);
+        var totalElements = totalXElements * totalYElements;
+
         var elements = new Element[totalElements];
+        Allocate(elements);
 
-        Allocate(nodes, elements);
-
-        var materialSetter = _materialSetterFactory.Create(nodes, elements.Select(x => (IFiniteElement)x));
-
-        var j = 0;
-        foreach (var (ySection, ySplitter) in _yAxisSplitParameter.SectionWithParameter)
+        for (var topRow = 1; topRow < nodes.YLength; topRow++)
         {
-            var yValues = ySplitter.EnumerateValues(ySection);
-            if (j > 0) yValues = yValues.Skip(1);
-
-            foreach (var y in yValues)
+            for (var rightColumn = 1; rightColumn < nodes.XLength; rightColumn++)
             {
-                var k = 0;
+                var elementIndex = rightColumn - 1 + (topRow - 1) * totalXElements;
+                var element = elements[elementIndex];
+                FillNodeIndexes(topRow - 1, rightColumn - 1, element.NodeIndexes, totalXElements);
 
-                foreach (var (xSection, xSplitter) in _xAxisSplitParameter.SectionWithParameter)
-                {
-                    var xValues = xSplitter.EnumerateValues(xSection);
-                    if (k > 0) xValues = xValues.Skip(1);
+                var indexes = element.NodeIndexes;
 
-                    foreach (var x in xValues)
-                    {
-                        var nodeIndex = k + j * (_totalXElements + 1);
+                var leftBottom = nodes[indexes[0]];
+                var leftTop = nodes[indexes[2]];
+                var rightBottom = nodes[indexes[1]];
 
-                        nodes[nodeIndex].X = x;
-                        nodes[nodeIndex].Y = y;
+                element.Length = rightBottom.X - leftBottom.X;
+                element.Width = leftTop.Y - leftBottom.Y;
 
-                        if (j > 0 && k > 0)
-                        {
-                            var elementIndex = k - 1 + (j - 1) * _totalXElements;
-                            var element = elements[elementIndex];
-                            FillNodeIndexes(j - 1, k - 1, element.NodeIndexes);
-
-                            var indexes = element.NodeIndexes;
-
-                            var leftBottom = nodes[indexes[0]];
-                            var leftTop = nodes[indexes[2]];
-                            var rightBottom = nodes[indexes[1]];
-                            
-                            element.Length = rightBottom.X - leftBottom.X;
-                            element.Width = leftTop.Y - leftBottom.Y;
-
-                            materialSetter.SetMaterial(element);
-                        }
-
-                        k++;
-                    }
-                }
-
-                j++;
+                materialSetter.SetMaterial(element);
             }
         }
 
-        return new Grid<Point, Element>(nodes, elements);
+        return elements;
     }
 
-    private int GetTotalNodes()
+    private void FillNodeIndexes(int bottomRow, int leftColumn, int[] indexes, int totalXElements)
     {
-        return (_totalXElements + 1) * (_totalYElements + 1);
+        indexes[0] = leftColumn + bottomRow * (totalXElements + 1);
+        indexes[1] = leftColumn + 1 + bottomRow * (totalXElements + 1);
+        indexes[2] = leftColumn + (bottomRow + 1) * (totalXElements + 1);
+        indexes[3] = leftColumn + 1 + (bottomRow + 1) * (totalXElements + 1);
     }
 
-    private int GetTotalElements()
+    private void Allocate(IList<Element> elements)
     {
-        return _totalXElements * _totalYElements;
-    }
-
-    private void FillNodeIndexes(int j, int k, int[] indexes)
-    {
-        indexes[0] = k + j * (_totalXElements + 1);
-        indexes[1] = k + 1 + j * (_totalXElements + 1);
-        indexes[2] = k + (j + 1) * (_totalXElements + 1);
-        indexes[3] = k + 1 + (j + 1) * (_totalXElements + 1);
-    }
-
-    private void Allocate(Point[] points, Element[] elements)
-    {
-        for (int i = 0; i < points.Length; i++)
-            points[i] = new Point();
-
-        for (int i = 0; i < elements.Length; i++)
+        for (var i = 0; i < elements.Count; i++)
             elements[i] = new Element(new int[4], 0, 0);
     }
 }

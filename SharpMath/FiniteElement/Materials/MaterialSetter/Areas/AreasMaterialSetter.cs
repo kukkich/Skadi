@@ -1,14 +1,15 @@
-﻿using SharpMath.Geometry._2D;
+﻿using SharpMath.Geometry;
+using SharpMath.Geometry._2D;
 
 namespace SharpMath.FiniteElement.Materials.MaterialSetter.Areas;
 
 public class AreasMaterialSetter : IMaterialSetter
 {
-    private readonly Point[] _points;
+    private readonly IPointsCollection<Point> _points;
     private readonly IMaterialArea<Point>[] _sections;
     private readonly int _defaultMaterialId;
 
-    public AreasMaterialSetter(Point[] points, IMaterialArea<Point>[] sections, int defaultMaterialIdId = 0)
+    public AreasMaterialSetter(IPointsCollection<Point> points, IMaterialArea<Point>[] sections, int defaultMaterialIdId = 0)
     {
         _points = points;
         _sections = sections;

@@ -1,10 +1,17 @@
 ﻿namespace SharpMath.Geometry.Splitting;
 
-public readonly record struct UniformSplitter(int Steps) : IIntervalSplitter
+public readonly struct UniformSplitter : IIntervalSplitter
 {
+    private readonly int _steps;
+
+    public UniformSplitter(int steps)
+    {
+        _steps = steps;
+    }
+
     public IEnumerable<double> EnumerateValues(Interval interval)
     {
-        var step = interval.Length / Steps;
+        var step = interval.Length / _steps;
 
         var stepNumber = 0;
         var value = interval.Begin + stepNumber * step;
