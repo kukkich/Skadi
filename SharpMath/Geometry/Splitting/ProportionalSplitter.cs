@@ -27,8 +27,14 @@ public readonly record struct ProportionalSplitter : IIntervalSplitter
         while (interval.Has(value))
         {
             yield return value;
+            var nextValue = interval.Begin + step * (Math.Pow(DischargeRatio, stepNumber + 1) - 1d) / (DischargeRatio - 1d);
 
-            value = interval.Begin + step * (Math.Pow(DischargeRatio, stepNumber + 1) - 1d) / (DischargeRatio - 1d);
+            if (value == nextValue)
+            {
+                throw new NotImplementedException($"Следующий шаг разбиения привел к тому же значению {value}");
+            }
+            
+            value = nextValue;
             stepNumber++;
         }
     }
