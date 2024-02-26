@@ -12,21 +12,23 @@ namespace SharpMath.FiniteElement.Core.Harmonic.Solution;
 public class FiniteElementSolution2DHarmonic
 {
     private readonly Grid<Point, Element> _grid;
-    private readonly IMaterialProvider<Material> _materials;
     private readonly Vector _weights;
-    private static Func<Point, double> LocalFunctions = _ => 1;
+    private readonly double _frequency;
 
-    public FiniteElementSolution2DHarmonic(Grid<Point, Element> grid, IMaterialProvider<Material> materials, Vector weights)
+    public FiniteElementSolution2DHarmonic(
+        Grid<Point, Element> grid, 
+        Vector weights,
+        double frequency
+    )
     {
         _grid = grid;
-        _materials = materials;
         _weights = weights;
+        _frequency = frequency;
     }
 
     public double Calculate(Point point, double time)
     {
         var element = _grid.Elements.First(x => ElementHas(x, point));
-        var material = _materials.GetById(element.MaterialId);
 
         var leftBottom = _grid.Nodes[element.NodeIndexes[0]];
         var rightTop = _grid.Nodes[element.NodeIndexes[^1]];
@@ -58,8 +60,8 @@ public class FiniteElementSolution2DHarmonic
             uc += _weights[nodeIndex * 2 + 1] * basicValues[i];
         }
 
-        return us * Math.Sin(material.Omega * time)
-             + uc * Math.Cos(material.Omega * time);
+        return us * Math.Sin(_frequency * time)
+             + uc * Math.Cos(_frequency * time);
 
     }
 

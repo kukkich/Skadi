@@ -1,4 +1,5 @@
-﻿using SharpMath.EquationsSystem.Preconditions;
+﻿using Microsoft.Extensions.Logging;
+using SharpMath.EquationsSystem.Preconditions;
 using SharpMath.Matrices.Sparse;
 using SharpMath.Vectors;
 
@@ -14,8 +15,12 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
     private Vector _z = null!;
     private Vector _p = null!;
 
-    public LocalOptimalScheme(LUPreconditioner luPreconditioner, LUSparse luSparse, LocalOptimalSchemeConfig config)
-        : base(config)
+    public LocalOptimalScheme(
+        LUPreconditioner luPreconditioner, 
+        LUSparse luSparse, 
+        LocalOptimalSchemeConfig config,
+        ILogger logger)
+        : base(config, logger)
     {
         _luPreconditioner = luPreconditioner;
         _luSparse = luSparse;

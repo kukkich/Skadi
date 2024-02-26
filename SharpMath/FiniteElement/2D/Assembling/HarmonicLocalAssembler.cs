@@ -1,17 +1,18 @@
 ﻿using SharpMath.FiniteElement.Core.Assembling;
+using SharpMath.FiniteElement.Core.Harmonic;
 using SharpMath.Geometry._2D;
 using SharpMath.Matrices;
 using SharpMath.Matrices.Sparse;
 
 namespace SharpMath.FiniteElement._2D.Assembling;
 
-public class LocalAssembler : IStackLocalAssembler<Element>
+public class HarmonicLocalAssembler : IStackLocalAssembler<Element>
 {
     public static readonly ImmutableMatrix MassTemplate;
     public static readonly ImmutableMatrix StiffnessTemplate1;
     public static readonly ImmutableMatrix StiffnessTemplate2;
 
-    static LocalAssembler()
+    static HarmonicLocalAssembler()
     {
         StiffnessTemplate1 = new ImmutableMatrix(new double[,]
         {
@@ -38,9 +39,9 @@ public class LocalAssembler : IStackLocalAssembler<Element>
         });
     }
 
-    private readonly Context<Point, Element, SparseMatrix> _context;
+    private readonly HarmonicContext<Point, Element, SparseMatrix> _context;
 
-    public LocalAssembler(Context<Point, Element, SparseMatrix> context)
+    public HarmonicLocalAssembler(HarmonicContext<Point, Element, SparseMatrix> context)
     {
         _context = context;
     }
@@ -68,7 +69,7 @@ public class LocalAssembler : IStackLocalAssembler<Element>
                 matrix[i, j] = G1[iBlock, jBlock] + G2[iBlock, jBlock];
                 matrix[i + 1, j + 1] = matrix[i, j];
 
-                matrix[i + 1, j] = material.Omega * M[iBlock, jBlock];
+                matrix[i + 1, j] = _context.Frequency * M[iBlock, jBlock];
                 matrix[i, j + 1] = -1d * matrix[i + 1, j];
             }
         }
@@ -88,7 +89,7 @@ public class LocalAssembler : IStackLocalAssembler<Element>
             MassTemplate
         );
 
-        for (int i = 0; i < element.NodeIndexes.Length; i++)
+        for (var i = 0; i < element.NodeIndexes.Length; i++)
         {
             var f = _context.DensityFunctionProvider.Get(element.NodeIndexes[i]);
             fS[i] = f.Real;
@@ -96,13 +97,13 @@ public class LocalAssembler : IStackLocalAssembler<Element>
         }
 
         var bS = LinAl.Multiply(defaultMass, fS, fSTmp);
-        for (int i = 0; i < element.NodeIndexes.Length; i++)
+        for (var i = 0; i < element.NodeIndexes.Length; i++)
         {
             vector[i * 2] = bS[i];
         }
 
         var bC = LinAl.Multiply(defaultMass, fC, fCTmp);
-        for (int i = 0; i < element.NodeIndexes.Length; i++)
+        for (var i = 0; i < element.NodeIndexes.Length; i++)
         {
             vector[i * 2 + 1] = bC[i];
         }
@@ -112,7 +113,7 @@ public class LocalAssembler : IStackLocalAssembler<Element>
 
     private void FillIndexes(Element element, StackIndexPermutation indexes)
     {
-        for (int i = 0; i < element.NodeIndexes.Length; i++)
+        for (var i = 0; i < element.NodeIndexes.Length; i++)
         {
             indexes.Permutation[i * 2] = element.NodeIndexes[i] * 2;
             indexes.Permutation[i * 2 + 1] = element.NodeIndexes[i] * 2 + 1;
