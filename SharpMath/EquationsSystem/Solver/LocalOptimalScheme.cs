@@ -26,6 +26,13 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
         _luSparse = luSparse;
     }
 
+    public Vector Solve(Equation<SparseMatrix> equation)
+    {
+        PrepareProcess(equation);
+        IterationProcess(equation);
+        return equation.Solution;
+    }
+
     private void PrepareProcess(Equation<SparseMatrix> equation)
     {
         _preconditionMatrix = _luPreconditioner.Decompose(equation.Matrix);
@@ -37,14 +44,7 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
             )
         );
         _z = _luSparse.CalcX(_preconditionMatrix, _r);
-        _p = _luSparse.CalcY(_preconditionMatrix, LinAl.Multiply(equation.Matrix,_z));
-    }
-
-    public Vector Solve(Equation<SparseMatrix> equation)
-    {
-        PrepareProcess(equation);
-        IterationProcess(equation);
-        return equation.Solution;
+        _p = _luSparse.CalcY(_preconditionMatrix, LinAl.Multiply(equation.Matrix, _z));
     }
 
     private void IterationProcess(Equation<SparseMatrix> equation)

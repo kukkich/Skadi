@@ -1,5 +1,4 @@
-﻿using SharpMath.FiniteElement.Core.Assembling;
-using SharpMath.Matrices.Sparse;
+﻿using SharpMath.Matrices.Sparse;
 using SharpMath.Vectors;
 
 namespace SharpMath.EquationsSystem.Solver;
