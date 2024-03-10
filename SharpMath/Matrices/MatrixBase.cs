@@ -7,7 +7,7 @@ namespace SharpMath.Matrices;
 
 public abstract class MatrixBase
 {
-    public virtual double this[int x, int y] => Values[x, y];
+    public virtual double this[int row, int column] => Values[row, column];
     public int Rows => Values.GetLength(0);
     public int Columns => Values.GetLength(1);
 

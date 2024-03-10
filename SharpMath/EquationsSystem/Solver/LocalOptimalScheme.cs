@@ -93,6 +93,6 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
 
 public class LocalOptimalSchemeConfig
 {
-    public required double Eps = 1e-15;
-    public required int MaxIterations = 1000;
+    public double Eps { get; set; } = 1e-15;
+    public int MaxIterations { get; set; } = 1000;
 }

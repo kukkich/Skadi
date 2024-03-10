@@ -2,7 +2,7 @@
 
 public class ImmutableMatrix : MatrixBase
 {
-    public override double this[int x, int y] => Values[x, y] * Coefficient;
+    public override double this[int row, int column] => Values[row, column] * Coefficient;
     public double Coefficient { get; }
 
     public ImmutableMatrix(double[,] values)

@@ -2,10 +2,10 @@
 
 public class Matrix : MatrixBase
 {
-    public new double this[int x, int y]
+    public new double this[int row, int column]
     {
-        set => Values[x, y] = value; 
-        get => base[x, y];
+        set => Values[row, column] = value; 
+        get => base[row, column];
     }
 
     public override ImmutableMatrix AsImmutable()
