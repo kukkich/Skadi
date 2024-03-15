@@ -6,6 +6,7 @@ namespace SharpMath;
 
 public static class LinAl
 {
+    // TODO replace Vector with IVector and IReadonlyVector where possible
     public static Vector Sum(Vector v, Vector u, Vector? resultMemory = null)
     {
         return LinearCombination(v, u, 1.0, 1.0, resultMemory);

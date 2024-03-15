@@ -7,9 +7,9 @@ public class LUMatrix
 {
     private readonly double[,] _values;
 
-    public LUMatrix(double[,] values)
+    public LUMatrix(double[,] l, double[,] u)
     {
-        _values = values;
+        throw new NotImplementedException();
     }
 
     public Vector SolveEqualTo(Vector rightSide, Vector? resultMemory = null)

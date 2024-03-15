@@ -1,6 +1,6 @@
 ﻿namespace SharpMath.Matrices;
 
-public class Matrix : MatrixBase
+public class Matrix : ArrayMatrix
 {
     public new double this[int row, int column]
     {

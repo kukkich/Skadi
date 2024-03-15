@@ -1,6 +1,6 @@
 ﻿namespace SharpMath.Matrices;
 
-public class ImmutableMatrix : MatrixBase
+public class ImmutableMatrix : ArrayMatrix
 {
     public override double this[int row, int column] => Values[row, column] * Coefficient;
     public double Coefficient { get; }
