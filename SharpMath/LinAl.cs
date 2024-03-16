@@ -11,12 +11,12 @@ public static class LinAl
     {
         return LinearCombination(v, u, 1.0, 1.0, resultMemory);
     }
-    public static Vector Subtract(Vector v, Vector u, Vector? resultMemory = null)
+    public static Vector Subtract(IReadonlyVector<double> v, IReadonlyVector<double> u, Vector? resultMemory = null)
     {
         return LinearCombination(v, u, 1.0, -1.0, resultMemory);
     }
     public static Vector LinearCombination(
-        Vector v, Vector u,
+        IReadonlyVector<double> v, IReadonlyVector<double> u,
         double vCoefficient, double uCoefficient,
         Vector? resultMemory = null
     )
@@ -101,7 +101,7 @@ public static class LinAl
 
         return resultMemory;
     }
-    public static Vector Multiply(MatrixBase a, Vector v, Vector? resultMemory = null)
+    public static Vector Multiply(MatrixBase a, IReadonlyVector<double> v, Vector? resultMemory = null)
     {
         ValidateOrAllocateIfNull(v, ref resultMemory!);
 
@@ -245,13 +245,13 @@ public static class LinAl
             throw new ArgumentOutOfRangeException($"{nameof(a)} and {nameof(b)}", "can't be multiplied");
     }
     
-    public static void ValidateOrAllocateIfNull(Vector v, ref Vector? u)
+    public static void ValidateOrAllocateIfNull(IReadonlyVector<double> v, ref Vector? u)
     {
         if (u is null)
             u = Vector.Create(v.Length);
         else AssertSameSize(v, u);
     }
-    private static void AssertSameSize(Vector v, Vector u)
+    private static void AssertSameSize<T>(IReadonlyVector<T> v, IReadonlyVector<T> u)
     {
         if (v.Length != u.Length)
             throw new ArgumentOutOfRangeException($"{nameof(v)} and {nameof(u)}", "must have the same length");
