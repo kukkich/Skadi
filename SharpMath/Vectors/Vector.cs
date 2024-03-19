@@ -31,18 +31,26 @@ public class Vector : IVector<double>
     public Vector Copy()
     {
         var values = new double[Length];
-        for (int i = 0; i < Length; i++)
-            values[i] = this[i];
-
-        return new Vector(values);
+        return CopyTo(values);
     }
 
-    public Vector Copy(double[] memory)
+    public TVector CopyTo<TVector>(TVector memory) where TVector : IVector<double>
     {
         if (memory == null || memory.Length != Length)
             throw new ArgumentException();
 
-        for (int i = 0; i < Length; i++)
+        for (var i = 0; i < Length; i++)
+            memory[i] = this[i];
+
+        return memory;
+    }
+
+    public Vector CopyTo(double[] memory)
+    {
+        if (memory == null || memory.Length != Length)
+            throw new ArgumentException();
+
+        for (var i = 0; i < Length; i++)
             memory[i] = this[i];
 
         return new Vector(memory);

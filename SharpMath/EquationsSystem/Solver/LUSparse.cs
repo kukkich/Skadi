@@ -39,7 +39,7 @@ public class LUSparse : ISLAESolver<SparseMatrix>
 
     public Vector CalcX(SparseMatrix sparseMatrix, Vector y)
     {
-        var x = y.Copy(new double[sparseMatrix.RowsCount]);
+        var x = y.CopyTo(new double[sparseMatrix.RowsCount]);
 
         for (var i = sparseMatrix.RowsCount - 1; i >= 0; i--)
         {
