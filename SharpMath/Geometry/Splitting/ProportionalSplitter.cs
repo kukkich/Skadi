@@ -22,6 +22,7 @@ public readonly struct ProportionalSplitter : IIntervalSplitter
     {
         var step = interval.Length * _lengthCoefficient;
 
+        var prevValue = 0d;
         var stepNumber = 0;
         var value = interval.Begin;
 
@@ -34,9 +35,21 @@ public readonly struct ProportionalSplitter : IIntervalSplitter
             {
                 throw new NotImplementedException($"Следующий шаг разбиения привел к тому же значению {value}");
             }
-            
+
+            prevValue = value;
             value = nextValue;
             stepNumber++;
+        }
+
+        if (Math.Abs(interval.End) < 1e-15 && Math.Abs(value) < 1e-15)
+        {
+        }
+
+        var relativeError = Math.Abs(value - interval.End) / Math.Max(Math.Abs(interval.End), Math.Abs(value));
+        
+        if ((Math.Abs(relativeError - 1) < 1e-5 || relativeError < 1e-5) && stepNumber <= _steps)
+        {
+            yield return interval.End;
         }
     }
 }

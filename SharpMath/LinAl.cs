@@ -105,13 +105,13 @@ public static class LinAl
     {
         ValidateOrAllocateIfNull(v, ref resultMemory!);
 
-        var result = new double[v.Length];
+        //var result = new double[v.Length];
 
         for (var i = 0; i < v.Length; i++)
             for (var j = 0; j < v.Length; j++)
-                result[i] += a[i, j] * v[j];
+                resultMemory[i] += a[i, j] * v[j];
 
-        return new Vector(result);
+        return resultMemory;
     }
     public static Span<double> Multiply(StackMatrix a, ReadOnlySpan<double> v, Span<double> resultMemory)
     {

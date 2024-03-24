@@ -16,6 +16,11 @@ public readonly struct Interval
 
     public bool Has(double value)
     {
-        return value >= Begin && value <= End + MaxAccuracy;
+        var righter = value >= Begin;
+        var lefter = value <= End;
+        return righter && lefter;
     }
-}
+}   
+
+
+
