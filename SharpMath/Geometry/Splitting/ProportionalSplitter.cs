@@ -10,7 +10,7 @@ public readonly struct ProportionalSplitter : IIntervalSplitter
     // Todo добавить возможность ограничивать минимальную длину элемента
     public ProportionalSplitter(int steps, double dischargeRatio)
     {
-        if (Math.Abs(DischargeRatio - 1d) < 1e-15)
+        if (Math.Abs(dischargeRatio - 1d) < 1e-15)
             throw new NotSupportedException();
 
         _steps = steps;
