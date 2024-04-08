@@ -6,6 +6,7 @@ public class RectSection : IMaterialArea<Point>
 {
     private readonly Rectangle _area;
 
+    public Rectangle Area => _area;
     public int MaterialId { get; }
 
     public RectSection(Rectangle area, int materialId)
