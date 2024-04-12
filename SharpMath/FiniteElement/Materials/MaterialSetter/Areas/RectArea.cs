@@ -2,14 +2,14 @@
 
 namespace SharpMath.FiniteElement.Materials.MaterialSetter.Areas;
 
-public class RectSection : IMaterialArea<Point>
+public class RectArea : IMaterialArea<Point>
 {
     private readonly Rectangle _area;
 
     public Rectangle Area => _area;
     public int MaterialId { get; }
 
-    public RectSection(Rectangle area, int materialId)
+    public RectArea(Rectangle area, int materialId)
     {
         _area = area;
         MaterialId = materialId;
