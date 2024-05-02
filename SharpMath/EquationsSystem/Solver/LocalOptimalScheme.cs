@@ -52,7 +52,8 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
         var residual = Vector.ScalarProduct(_r, _r);
         var residualNext = residual;
         var i = 0;
-        for (i = 1; i <= Config.MaxIterations && residualNext > Math.Pow(Config.Eps, 2); i++)
+        var minResidual = Math.Pow(Config.Eps, 2);
+        for (i = 1; i <= Config.MaxIterations && residualNext > minResidual; i++)
         {
             var scalarPP = Vector.ScalarProduct(_p, _p);
 
@@ -87,7 +88,17 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
             //Console.WriteLine($"\t {i} {residualNext:E6}");
         }
 
-        Console.WriteLine($"{i} {residualNext:E6}");
+        if (residualNext > minResidual)
+        {
+            Logger.LogWarning(
+                "LOS run out of iterations. residual: {residual}, expected: {min}. Max iterations: {iterations}",
+                Math.Sqrt(residualNext), Config.Eps, Config.MaxIterations
+            );
+        }
+        Logger.LogDebug(
+            "LOS ended: iterations: [{iterations}/{maxIterations}], residual {residual:E5}/{eps}", 
+            i, Config.MaxIterations, Math.Sqrt(residualNext), Config.Eps
+        );
     }
 }
 
