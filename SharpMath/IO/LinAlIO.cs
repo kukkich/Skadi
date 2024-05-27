@@ -1,6 +1,7 @@
 ﻿// ReSharper disable InconsistentNaming
 
 using SharpMath.Matrices;
+using SharpMath.Vectors;
 
 namespace SharpMath.IO;
 
@@ -30,10 +31,43 @@ public static class LinAlIO
         catch (Exception ex)
         {
             Console.WriteLine($"Произошла ошибка при записи матрицы в файл: {ex.Message}");
+            throw;
         }
     }
 
-    public static Matrix Read(string path, Matrix? resultMemory=null)
+    public static void Write(IReadonlyVector<double> v, string path)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            throw new ArgumentException("Путь к файлу не может быть пустым.", nameof(path));
+        }
+
+        try
+        {
+            using var writer = new StreamWriter(path);
+            writer.WriteLine(v.Length);
+
+            for (var i = 0; i < v.Length; i++)
+            {
+                writer.WriteLine(v[i]);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Произошла ошибка при записи вектора в файл: {ex.Message}");
+            throw;
+        }
+    }
+
+    public static Vector ReadVector(string path)
+    {
+        using var stream = new StreamReader(File.OpenRead(path));
+        var size = int.Parse(stream.ReadLine()!);
+        var result = Vector.Create(size, _ => double.Parse(stream.ReadLine()!));
+
+        return result;
+    }
+    public static Matrix Read(string path, Matrix? resultMemory = null)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -54,7 +88,7 @@ public static class LinAlIO
             {
                 throw new ArgumentException(
                     $"Invalid result memory size. Expected rows={rows} & columns={columns}" +
-                    $", but was rows={resultMemory.Rows}, columns={resultMemory.Columns}", 
+                    $", but was rows={resultMemory.Rows}, columns={resultMemory.Columns}",
                     nameof(resultMemory)
                 );
             }

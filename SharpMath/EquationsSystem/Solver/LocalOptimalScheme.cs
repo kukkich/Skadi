@@ -9,7 +9,7 @@ namespace SharpMath.EquationsSystem.Solver;
 public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<SparseMatrix>
 {
     private readonly IPreconditioner<SparseMatrix> _luPreconditioner;
-    private readonly LUSparse _luSparse;
+    private readonly SparsePartialLUResolver _sparseLUResolver;
     private SparseMatrix _preconditionMatrix = null!;
     private Vector _r = null!;
     private Vector _z = null!;
@@ -17,13 +17,13 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
 
     public LocalOptimalScheme(
         LUPreconditioner luPreconditioner, 
-        LUSparse luSparse, 
+        SparsePartialLUResolver sparseLUResolver, 
         LocalOptimalSchemeConfig config,
         ILogger logger)
         : base(config, logger)
     {
         _luPreconditioner = luPreconditioner;
-        _luSparse = luSparse;
+        _sparseLUResolver = sparseLUResolver;
     }
 
     public Vector Solve(Equation<SparseMatrix> equation)
@@ -36,15 +36,15 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
     private void PrepareProcess(Equation<SparseMatrix> equation)
     {
         _preconditionMatrix = _luPreconditioner.Decompose(equation.Matrix);
-        _r = _luSparse.CalcY(
+        _r = _sparseLUResolver.CalcY(
             _preconditionMatrix,
             LinAl.Subtract(
                 equation.RightSide,
                 LinAl.Multiply(equation.Matrix, equation.Solution)
             )
         );
-        _z = _luSparse.CalcX(_preconditionMatrix, _r);
-        _p = _luSparse.CalcY(_preconditionMatrix, LinAl.Multiply(equation.Matrix, _z));
+        _z = _sparseLUResolver.CalcX(_preconditionMatrix, _r);
+        _p = _sparseLUResolver.CalcY(_preconditionMatrix, LinAl.Multiply(equation.Matrix, _z));
     }
 
     private void IterationProcess(Equation<SparseMatrix> equation)
@@ -52,7 +52,8 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
         var residual = Vector.ScalarProduct(_r, _r);
         var residualNext = residual;
         var i = 0;
-        for (i = 1; i <= Config.MaxIterations && residualNext > Math.Pow(Config.Eps, 2); i++)
+        var minResidual = Math.Pow(Config.Eps, 2);
+        for (i = 1; i <= Config.MaxIterations && residualNext > minResidual; i++)
         {
             var scalarPP = Vector.ScalarProduct(_p, _p);
 
@@ -66,14 +67,14 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
             var alphaMultiplyP = LinAl.Multiply(alpha, _p);
             var rNext = LinAl.Subtract(_r, alphaMultiplyP);
 
-            var LAUr = _luSparse.CalcY(
+            var LAUr = _sparseLUResolver.CalcY(
                 _preconditionMatrix,
-                LinAl.Multiply(equation.Matrix, _luSparse.CalcX(_preconditionMatrix, rNext))
+                LinAl.Multiply(equation.Matrix, _sparseLUResolver.CalcX(_preconditionMatrix, rNext))
             );
 
             var beta = -1d * (Vector.ScalarProduct(_p, LAUr) / scalarPP);
 
-            var zNext = LinAl.Sum(_luSparse.CalcX(_preconditionMatrix, rNext), LinAl.Multiply(beta, _z, _z));
+            var zNext = LinAl.Sum(_sparseLUResolver.CalcX(_preconditionMatrix, rNext), LinAl.Multiply(beta, _z, _z));
 
             var pNext = LinAl.Sum(LAUr, LinAl.Multiply(beta, _p, _p), LAUr);
 
@@ -87,7 +88,17 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
             //Console.WriteLine($"\t {i} {residualNext:E6}");
         }
 
-        Console.WriteLine($"{i} {residualNext:E6}");
+        if (residualNext > minResidual)
+        {
+            Logger.LogWarning(
+                "LOS run out of iterations. residual: {residual}, expected: {min}. Max iterations: {iterations}",
+                Math.Sqrt(residualNext), Config.Eps, Config.MaxIterations
+            );
+        }
+        Logger.LogDebug(
+            "LOS ended: iterations: [{iterations}/{maxIterations}], residual {residual:E5}/{eps}", 
+            i, Config.MaxIterations, Math.Sqrt(residualNext), Config.Eps
+        );
     }
 }
 
