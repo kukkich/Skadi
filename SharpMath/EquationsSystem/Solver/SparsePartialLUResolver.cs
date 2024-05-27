@@ -1,26 +1,11 @@
-﻿using SharpMath.EquationsSystem.Preconditions;
-using SharpMath.Matrices.Sparse;
+﻿using SharpMath.Matrices.Sparse;
 using SharpMath.Vectors;
 
 namespace SharpMath.EquationsSystem.Solver;
 
-public class LUSparse : ISLAESolver<SparseMatrix>
+//Todo придумать название для методов более ясное
+public class SparsePartialLUResolver
 {
-    private readonly LUPreconditioner _luPreconditioner;
-
-    public LUSparse(LUPreconditioner luPreconditioner)
-    {
-        _luPreconditioner = luPreconditioner;
-    }
-
-    public Vector Solve(Equation<SparseMatrix> equation)
-    {
-        var matrix = _luPreconditioner.Decompose(equation.Matrix);
-        var y = CalcY(matrix, equation.RightSide);
-        var x = CalcX(matrix, y);
-        return x;
-    }
-
     public Vector CalcY(SparseMatrix sparseMatrix, Vector b)
     {
         var y = b;
@@ -52,6 +37,7 @@ public class LUSparse : ISLAESolver<SparseMatrix>
         return x;
     }
 
+    //Todo доработать если возможно и заменить метод CalcX на этот
     public void CalcXWithoutMemory(SparseMatrix sparseMatrix, Vector y)
     {
         var x = y;
