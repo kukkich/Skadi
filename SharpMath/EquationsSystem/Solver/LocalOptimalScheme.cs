@@ -19,8 +19,8 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
         LUPreconditioner luPreconditioner, 
         SparsePartialLUResolver sparseLUResolver, 
         LocalOptimalSchemeConfig config,
-        ILogger logger)
-        : base(config, logger)
+        ILogger<LocalOptimalScheme> logger
+    ) : base(config, logger)
     {
         _luPreconditioner = luPreconditioner;
         _sparseLUResolver = sparseLUResolver;
@@ -91,12 +91,12 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
         if (residualNext > minResidual)
         {
             Logger.LogWarning(
-                "LOS run out of iterations. residual: {residual}, expected: {min}. Max iterations: {iterations}",
+                "LOS run out of iterations. residual: {residual:E}, expected: {min:E}. Max iterations: {iterations}",
                 Math.Sqrt(residualNext), Config.Eps, Config.MaxIterations
             );
         }
         Logger.LogDebug(
-            "LOS ended: iterations: [{iterations}/{maxIterations}], residual {residual:E5}/{eps}", 
+            "LOS ended: iterations: [{iterations}/{maxIterations}], residual [{residual:E5}/{eps:E5}]", 
             i, Config.MaxIterations, Math.Sqrt(residualNext), Config.Eps
         );
     }
