@@ -2,7 +2,6 @@
 
 public readonly struct Interval
 {
-    public const double MaxAccuracy = 1e-15;
     public double Begin { get; }
     public double End { get; }
 
@@ -20,7 +19,4 @@ public readonly struct Interval
         var lefter = value <= End;
         return righter && lefter;
     }
-}   
-
-
-
+}

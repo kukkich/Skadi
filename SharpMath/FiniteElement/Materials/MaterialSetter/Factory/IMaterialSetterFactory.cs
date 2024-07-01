@@ -1,7 +1,7 @@
 ﻿using SharpMath.Geometry;
 using SharpMath.Geometry._2D;
 
-namespace SharpMath.FiniteElement.Materials.MaterialSetter;
+namespace SharpMath.FiniteElement.Materials.MaterialSetter.Factory;
 
 public interface IMaterialSetterFactory
 {

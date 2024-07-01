@@ -105,7 +105,7 @@ public static class LinAl
     {
         ValidateOrAllocateIfNull(v, ref resultMemory!);
 
-        //var result = new double[v.Length];
+        //var result = new double[v.TotalPoints];
 
         for (var i = 0; i < v.Length; i++)
             for (var j = 0; j < v.Length; j++)

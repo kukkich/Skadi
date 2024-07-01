@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="FiniteElement\Core\Assembling\Boundary\Second\" />
     <Folder Include="FiniteElement\Core\Harmonic\Assembling\" />
-    <Folder Include="FiniteElement\Materials\MaterialSetter\Factory\" />
     <Folder Include="Matrices\Sparse\Storages\" />
   </ItemGroup>
 

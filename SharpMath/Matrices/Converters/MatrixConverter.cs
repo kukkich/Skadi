@@ -19,8 +19,8 @@ public class MatrixConverter
 
             for (; j < sparseMatrix.RowsIndexes[i]; j++)
             {
-                if (Math.Abs(sparseMatrix.LowerValues[j]) < 1e-30
-                    && Math.Abs(sparseMatrix.UpperValues[j]) < 1e-30) continue;
+                if (Math.Abs(sparseMatrix.LowerValues[j]) == 0
+                    && Math.Abs(sparseMatrix.UpperValues[j]) == 0) continue;
                 rowBegin = sparseMatrix.ColumnsIndexes[j];
                 break;
             }

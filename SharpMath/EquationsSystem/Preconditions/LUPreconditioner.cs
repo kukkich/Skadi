@@ -4,9 +4,9 @@ namespace SharpMath.EquationsSystem.Preconditions;
 
 public class LUPreconditioner : IPreconditioner<SparseMatrix>
 {
-    public SparseMatrix Decompose(SparseMatrix globalMatrix)
+    public SparseMatrix Decompose(SparseMatrix matrix)
     {
-        var preconditionMatrix = globalMatrix.Clone();
+        var preconditionMatrix = matrix.Clone();
 
         for (var i = 0; i < preconditionMatrix.RowsCount; i++)
         {

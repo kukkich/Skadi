@@ -24,7 +24,6 @@ public class Element : IFiniteElement
     public double Width { get; set; }
     public int MaterialId { get; set; }
 
-
     public int[] GetBoundNodeIndexes(Bound bound) =>
         bound switch
         {

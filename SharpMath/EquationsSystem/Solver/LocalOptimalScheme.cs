@@ -51,8 +51,9 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
     {
         var residual = Vector.ScalarProduct(_r, _r);
         var residualNext = residual;
-        var i = 0;
         var minResidual = Math.Pow(Config.Eps, 2);
+
+        int i;
         for (i = 1; i <= Config.MaxIterations && residualNext > minResidual; i++)
         {
             var scalarPP = Vector.ScalarProduct(_p, _p);
@@ -83,9 +84,6 @@ public class LocalOptimalScheme : Method<LocalOptimalSchemeConfig>, ISLAESolver<
             _p = pNext;
 
             residualNext = Vector.ScalarProduct(_r, _r) / residual;
-
-            // Logger.Log();
-            //Console.WriteLine($"\t {i} {residualNext:E6}");
         }
 
         if (residualNext > minResidual)

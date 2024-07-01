@@ -22,7 +22,6 @@ public readonly struct ProportionalSplitter : IIntervalSplitter
     {
         var step = interval.Length * _lengthCoefficient;
 
-        var prevValue = 0d;
         var stepNumber = 0;
         var value = interval.Begin;
 
@@ -36,7 +35,6 @@ public readonly struct ProportionalSplitter : IIntervalSplitter
                 throw new NotImplementedException($"Следующий шаг разбиения привел к тому же значению {value}");
             }
 
-            prevValue = value;
             value = nextValue;
             stepNumber++;
         }
