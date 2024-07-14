@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SharpMath.Primitives\SharpMath.Primitives.csproj" />
+    <Folder Include="Core\Areas\" />
+    <Folder Include="Geometry\2D\" />
   </ItemGroup>
 
 </Project>
