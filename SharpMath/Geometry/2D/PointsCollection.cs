@@ -2,9 +2,11 @@
 
 public class PointsCollection : IPointsCollection<Point>
 {
-    public int Length => _xAxis.Length * _yAxis.Length;
+    public int TotalPoints => _xAxis.Length * _yAxis.Length;
     public int XLength => _xAxis.Length;
     public int YLength => _yAxis.Length;
+    public int ZLength => 0;
+
     public Point this[int index]
     {
         get

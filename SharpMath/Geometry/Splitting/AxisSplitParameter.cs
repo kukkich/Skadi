@@ -8,6 +8,15 @@ public class AxisSplitParameter
     public IEnumerable<(Interval section, IIntervalSplitter parameter)> SectionWithParameter =>
         Sections.Select((section, index) => new ValueTuple<Interval, IIntervalSplitter>(section, Splitters[index]));
 
+    public AxisSplitParameter(double[] points, params IIntervalSplitter[] splitters)
+    {
+        if (points.Length - 1 != splitters.Length)
+            throw new ArgumentException();
+
+        Sections = GenerateSections(points).ToArray();
+        Splitters = splitters;
+    }
+
     public IEnumerable<double> CreateAxis()
     {
         foreach (var value in Splitters[0].EnumerateValues(Sections[0]))
@@ -22,15 +31,6 @@ public class AxisSplitParameter
                 yield return value;
             }
         }
-    }
-
-    public AxisSplitParameter(double[] points, params IIntervalSplitter[] splitters)
-    {
-        if (points.Length - 1 != splitters.Length)
-            throw new ArgumentException();
-
-        Sections = GenerateSections(points).ToArray();
-        Splitters = splitters;
     }
 
     private IEnumerable<Interval> GenerateSections(IEnumerable<double> points)

@@ -1,7 +1,6 @@
-﻿namespace SharpMath.FiniteElement.Core.Assembling.Params
+﻿namespace SharpMath.FiniteElement.Core.Assembling.Params;
+
+public interface INodeDefinedParameter<out T>
 {
-    public interface INodeDefinedParameter<out T>
-    {
-        public T Get(int nodeIndex);
-    }
+    public T Get(int nodeIndex);
 }

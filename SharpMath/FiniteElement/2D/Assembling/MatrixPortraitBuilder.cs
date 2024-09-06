@@ -1,6 +1,4 @@
 ﻿using SharpMath.FiniteElement.Core.Assembling;
-using SharpMath.Geometry;
-using SharpMath.Geometry._2D;
 using SharpMath.Matrices.Sparse;
 
 namespace SharpMath.FiniteElement._2D.Assembling;

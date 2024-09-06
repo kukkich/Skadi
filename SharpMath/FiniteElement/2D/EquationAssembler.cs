@@ -1,11 +1,8 @@
-﻿using System.Numerics;
-using SharpMath.FiniteElement.Core.Assembling;
+﻿using SharpMath.FiniteElement.Core.Assembling;
 using SharpMath.FiniteElement.Core.Assembling.Boundary.First;
 using SharpMath.Geometry._2D;
 using SharpMath.Matrices;
 using SharpMath.Matrices.Sparse;
-using SharpMath.Matrices.Transformation;
-using System.Xml.Linq;
 using SharpMath.FiniteElement.Core.Assembling.Boundary.Second;
 
 namespace SharpMath.FiniteElement._2D;

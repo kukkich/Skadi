@@ -81,7 +81,7 @@ public class Vector : IVector<double>
 
     public IEnumerator<IndexValue<double>> GetEnumerator()
     {
-        for (int i = 0; i < Length; i++)
+        for (var i = 0; i < Length; i++)
             yield return new IndexValue<double>(this[i], i);
     }
 

@@ -1,4 +1,5 @@
-﻿using SharpMath.Geometry;
+﻿using SharpMath.FiniteElement.Materials.MaterialSetter.Factory;
+using SharpMath.Geometry;
 using SharpMath.Geometry._2D;
 namespace SharpMath.FiniteElement.Materials.MaterialSetter.Areas;
 

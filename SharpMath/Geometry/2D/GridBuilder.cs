@@ -1,5 +1,6 @@
 ﻿using SharpMath.FiniteElement._2D;
 using SharpMath.FiniteElement.Materials.MaterialSetter;
+using SharpMath.FiniteElement.Materials.MaterialSetter.Factory;
 using SharpMath.Geometry.Splitting;
 
 namespace SharpMath.Geometry._2D;
