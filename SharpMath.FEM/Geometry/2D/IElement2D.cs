@@ -1,4 +1,6 @@
-﻿namespace SharpMath.FEM.Core._2D;
+﻿using SharpMath.FEM.Core;
+
+namespace SharpMath.FEM.Geometry._2D;
 
 public interface IElement2D : IElement
 {
