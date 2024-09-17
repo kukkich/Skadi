@@ -42,15 +42,16 @@ public class SplineEquationAssembler
 
         for (var i = 0; i < context.FunctionValues.Length; i++)
         {
-            var currentPoint = context.FunctionValues[i].Point;
-            var element = context.Grid.Elements.First(e => ElementHas(e, currentPoint));
+            var currentFunctionValue = context.FunctionValues[i];
+            var currentWeight = context.Weights[i];
+            var element = context.Grid.Elements.First(e => ElementHas(e, currentFunctionValue.Point));
 
             _splineLocalAssembler.AssembleBasisFunctions(element);
-            _splineLocalAssembler.AssembleMatrix(element, currentPoint, context.Weights[i], matrix, indexes);
+            _splineLocalAssembler.AssembleMatrix(element, currentFunctionValue.Point, context.Weights[i], matrix, indexes);
             var localMatrix = new StackLocalMatrix(matrix, indexes);
             _inserter.InsertMatrix(equation.Matrix, localMatrix);
 
-            _localAssembler.AssembleRightSide(element, vector, indexes);
+            _splineLocalAssembler.AssembleRightSide(element, currentFunctionValue, currentWeight,  vector, indexes);
             var localRightSide = new StackLocalVector(vector, indexes);
             _inserter.InsertVector(equation.RightSide, localRightSide);
         }
