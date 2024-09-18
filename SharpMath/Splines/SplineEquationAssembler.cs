@@ -12,18 +12,18 @@ namespace SharpMath.Splines;
 
 public class SplineEquationAssembler
 {
-    public Equation<SymmetricSparseMatrix> FinalEquation => _context.Equation;
+    public Equation<Matrix> FinalEquation => _context.Equation;
 
-    private readonly SplineContext<Point, BicubicFiniteElement, SymmetricSparseMatrix> _context;
+    private readonly SplineContext<Point, BicubicFiniteElement, Matrix> _context;
     private readonly ISplineStackLocalAssembler<BicubicFiniteElement, Point> _splineLocalAssembler;
     private readonly IStackLocalAssembler<BicubicFiniteElement> _localAssembler;
-    private readonly IStackInserter<SymmetricSparseMatrix> _inserter;
+    private readonly IStackInserter<Matrix> _inserter;
 
     public SplineEquationAssembler(
-        SplineContext<Point, BicubicFiniteElement, SymmetricSparseMatrix> context,
+        SplineContext<Point, BicubicFiniteElement, Matrix> context,
         ISplineStackLocalAssembler<BicubicFiniteElement, Point> splineLocalAssembler,
         IStackLocalAssembler<BicubicFiniteElement> localAssembler,
-        IStackInserter<SymmetricSparseMatrix> inserter
+        IStackInserter<Matrix> inserter
     )
     {
         _context = context;
@@ -32,7 +32,7 @@ public class SplineEquationAssembler
         _inserter = inserter;
     }
 
-    public SplineEquationAssembler BuildEquation(SplineContext<Point, BicubicFiniteElement, SymmetricSparseMatrix> context)
+    public SplineEquationAssembler BuildEquation(SplineContext<Point, BicubicFiniteElement, Matrix> context)
     {
         var equation = context.Equation;
 
