@@ -37,7 +37,7 @@ public class SplineEquationAssembler
         var equation = context.Equation;
 
         var matrix = new StackMatrix(stackalloc double[16 * 16], 16);
-        Span<double> vector = stackalloc double[8];
+        Span<double> vector = stackalloc double[16];
         var indexes = new StackIndexPermutation(stackalloc int[16]);
 
         for (var i = 0; i < context.FunctionValues.Length; i++)
@@ -47,7 +47,7 @@ public class SplineEquationAssembler
             var element = context.Grid.Elements.First(e => ElementHas(e, currentFunctionValue.Point));
 
             _splineLocalAssembler.AssembleBasisFunctions(element);
-            _splineLocalAssembler.AssembleMatrix(element, currentFunctionValue.Point, context.Weights[i], matrix, indexes);
+            _splineLocalAssembler.AssembleMatrix(element, currentFunctionValue.Point, currentWeight, matrix, indexes);
             var localMatrix = new StackLocalMatrix(matrix, indexes);
             _inserter.InsertMatrix(equation.Matrix, localMatrix);
 
