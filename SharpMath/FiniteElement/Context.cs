@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using SharpMath.FiniteElement.Core.Assembling.Boundary.First;
 using SharpMath.FiniteElement.Core.Assembling.Boundary.Second;
+using SharpMath.FiniteElement.Core.Assembling.Boundary.Third;
 using SharpMath.FiniteElement.Core.Assembling.Params;
 using SharpMath.FiniteElement.Materials.HarmonicWithoutChi;
 using SharpMath.Geometry;
@@ -15,4 +16,5 @@ public class Context<TPoint, TElement, TMatrix>
     public required IMaterialProvider<Material> Materials { get; set; }
     public required FirstCondition[] FirstConditions { get; set; }
     public required SecondCondition[] SecondConditions { get; set; }
+    public required ThirdCondition[] ThirdConditions { get; set; }
 }
