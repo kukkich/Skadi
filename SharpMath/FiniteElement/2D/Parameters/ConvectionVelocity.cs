@@ -7,31 +7,43 @@ namespace SharpMath.FiniteElement._2D.Parameters;
 
 public class ConvectionVelocity : IUniversalParameter<Point, Point>
 {
-    private readonly IPointsCollection<Point> _points;
     private readonly double _maxVelocity;
-    private readonly Point _center;
-    private readonly double _halfHeight;
-    private readonly double _halfRadius;
+    private readonly double _height;
+    private readonly double _radius;
     
     public ConvectionVelocity(IPointsCollection<Point> points, double maxVelocity)
     {
-        _points = points;
         var lb = points[0];
         var rt = points[points.XLength * points.YLength - 1];
-        _halfHeight = (rt.Z() - lb.Z()) / 2;
-        _halfRadius = (rt.R() - lb.R()) / 2;
-        _center = new Point(_halfRadius, _halfHeight);
+        _height = rt.Z() - lb.Z();
+        _radius = rt.R() - lb.R();
+        
         _maxVelocity = maxVelocity;
     }
     
     public Point Get(Point point)
     {
-        var d = point - _center;
+        var lowerThanFirst = point.Z() <= _height * point.R() / _radius;
+        var lowerThanSecond = point.Z() <= _height * (1 - point.R() / _radius);
+        var heightQuarter = _height / 4;
+        var radiusQuarter = _radius / 4;
+        var factor = (lowerThanFirst, lowerThanSecond) switch
+        {
+            (true, true) => 1 - Math.Abs(point.Z() - heightQuarter) / heightQuarter,
+            (true, false) => 1 - Math.Abs(point.R() - 3 * radiusQuarter) / radiusQuarter,
+            (false, false) => 1 - Math.Abs(point.Z() - 3 * heightQuarter) / heightQuarter,
+            (false, true) => 1 - Math.Abs(point.R() - radiusQuarter) / radiusQuarter,
+        };
+        Point direction = (lowerThanFirst, lowerThanSecond) switch
+        {
+            (true, true) => new (1, 0),
+            (true, false) => new (0, 1),
+            (false, false) => new (-1, 0),
+            (false, true) => new (0, -1),
+        };
         
-        var direction = new Point(-d.Y, d.X).Normalize();
+        var velocity = direction * factor * _maxVelocity;
 
-        var scale = d.Norm / new Point(_halfRadius, _halfHeight).Norm;
-
-        return direction * _maxVelocity * scale;
+        return velocity;
     }
 }
