@@ -14,15 +14,15 @@ public class SplineEquationAssembler
 {
     public Equation<Matrix> FinalEquation => _context.Equation;
 
-    private readonly SplineContext<Point, BicubicFiniteElement, Matrix> _context;
-    private readonly ISplineStackLocalAssembler<BicubicFiniteElement, Point> _splineLocalAssembler;
-    private readonly IStackLocalAssembler<BicubicFiniteElement> _localAssembler;
+    private readonly SplineContext<Point, Element, Matrix> _context;
+    private readonly ISplineStackLocalAssembler<Element, Point> _splineLocalAssembler;
+    private readonly IStackLocalAssembler<Element> _localAssembler;
     private readonly IStackInserter<Matrix> _inserter;
 
     public SplineEquationAssembler(
-        SplineContext<Point, BicubicFiniteElement, Matrix> context,
-        ISplineStackLocalAssembler<BicubicFiniteElement, Point> splineLocalAssembler,
-        IStackLocalAssembler<BicubicFiniteElement> localAssembler,
+        SplineContext<Point, Element, Matrix> context,
+        ISplineStackLocalAssembler<Element, Point> splineLocalAssembler,
+        IStackLocalAssembler<Element> localAssembler,
         IStackInserter<Matrix> inserter
     )
     {
@@ -32,7 +32,7 @@ public class SplineEquationAssembler
         _inserter = inserter;
     }
 
-    public SplineEquationAssembler BuildEquation(SplineContext<Point, BicubicFiniteElement, Matrix> context)
+    public SplineEquationAssembler BuildEquation(SplineContext<Point, Element, Matrix> context)
     {
         var equation = context.Equation;
 
@@ -66,7 +66,7 @@ public class SplineEquationAssembler
         return this;
     }
 
-    private bool ElementHas(BicubicFiniteElement element, Point node)
+    private bool ElementHas(Element element, Point node)
     {
         var leftBottom = _context.Grid.Nodes[element.NodeIndexes[0]];
         var rightTop = _context.Grid.Nodes[element.NodeIndexes[^1]];

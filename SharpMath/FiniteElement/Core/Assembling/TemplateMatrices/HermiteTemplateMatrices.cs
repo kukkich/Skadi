@@ -16,7 +16,7 @@ public static class HermiteTemplateMatrices
                     {-36, -3 * elementBoundSize, 36, -3 * elementBoundSize},
                     {3 * elementBoundSize, -Math.Pow(elementBoundSize, 2), -3 * elementBoundSize, 4 * Math.Pow(elementBoundSize, 2)},
                 }, 
-                30 * elementBoundSize
+                 1 / (30 * elementBoundSize)
             );
     }
 

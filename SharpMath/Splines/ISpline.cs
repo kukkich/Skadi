@@ -2,5 +2,5 @@
 
 public interface ISpline<in TPoint>
 {
-    public double Calculate(TPoint t);
+    public double Calculate(TPoint point);
 }

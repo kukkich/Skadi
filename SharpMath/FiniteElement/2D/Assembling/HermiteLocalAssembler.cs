@@ -9,16 +9,16 @@ using SharpMath.Splines;
 
 namespace SharpMath.FiniteElement._2D.Assembling;
 
-public class HermiteLocalAssembler : IStackLocalAssembler<BicubicFiniteElement>
+public class HermiteLocalAssembler : IStackLocalAssembler<Element>
 {
-    private readonly SplineContext<Point, BicubicFiniteElement, SymmetricSparseMatrix> _context;
+    private readonly SplineContext<Point, Element, Matrix> _context;
 
-    public HermiteLocalAssembler(SplineContext<Point, BicubicFiniteElement, SymmetricSparseMatrix> context)
+    public HermiteLocalAssembler(SplineContext<Point, Element, Matrix> context)
     {
         _context = context;
     }
 
-    public void AssembleMatrix(BicubicFiniteElement element, StackMatrix matrix, StackIndexPermutation indexes)
+    public void AssembleMatrix(Element element, StackMatrix matrix, StackIndexPermutation indexes)
     {
         var stiffnessMatrixX = HermiteTemplateMatrices.HermiteStiffness1D(element.Width);
         var stiffnessMatrixY = HermiteTemplateMatrices.HermiteStiffness1D(element.Length);
@@ -26,7 +26,7 @@ public class HermiteLocalAssembler : IStackLocalAssembler<BicubicFiniteElement>
         var massMatrixX = HermiteTemplateMatrices.HermiteMass1D(element.Width);
         var massMatrixY = HermiteTemplateMatrices.HermiteMass1D(element.Length);
         
-        for (var i = 0; i < element.NodeIndexes.Length; i++)
+        for (var i = 0; i < element.NodeIndexes.Length * 4; i++)
         {
             for (var j = 0; j <= i; j++)
             {
@@ -40,16 +40,19 @@ public class HermiteLocalAssembler : IStackLocalAssembler<BicubicFiniteElement>
         FillIndexes(element, indexes);
     }
 
-    public void AssembleRightSide(BicubicFiniteElement element, Span<double> vector, StackIndexPermutation indexes)
+    public void AssembleRightSide(Element element, Span<double> vector, StackIndexPermutation indexes)
     {
         throw new NotImplementedException();
     }
 
-    private static void FillIndexes(BicubicFiniteElement element, StackIndexPermutation indexes)
+    private static void FillIndexes(Element element, StackIndexPermutation indexes)
     {
         for (var i = 0; i < element.NodeIndexes.Length; i++)
         {
-            indexes.Permutation[i] = element.NodeIndexes[i];
+            for (var j = 0; j < 4; j++)
+            {
+                indexes.Permutation[i * 4 + j] = element.NodeIndexes[i] * 4 + j;
+            }
         }
     }
 

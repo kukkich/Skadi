@@ -5,13 +5,14 @@ using SharpMath.Geometry._2D;
 using SharpMath.Matrices.Sparse;
 using SharpMath.Splines;
 using System.Reflection.Metadata.Ecma335;
+using SharpMath.Matrices;
 
 namespace SharpMath.FiniteElement._2D.BasisFunctions;
 
 //Наверн надо абстрактный класс ещё сделать, потому что контексты разные могут быть
-public class HermiteBasisFunctions2DProvider : IBasisFunctionsProvider<BicubicFiniteElement, Point>
+public class HermiteBasisFunctions2DProvider : IBasisFunctionsProvider<Element, Point>
 {
-    private readonly SplineContext<Point, BicubicFiniteElement, SymmetricSparseMatrix> _context;
+    private readonly SplineContext<Point, Element, Matrix> _context;
     private static readonly IBasisFunction<Point>[] BasisFunctions2D;
     private static readonly Func<double, double>[] XBasisFunctions1D;
     private static readonly Func<double, double>[] YBasisFunctions1D;
@@ -23,12 +24,12 @@ public class HermiteBasisFunctions2DProvider : IBasisFunctionsProvider<BicubicFi
         YBasisFunctions1D = new Func<double, double>[4];
     }
 
-    public HermiteBasisFunctions2DProvider(SplineContext<Point, BicubicFiniteElement, SymmetricSparseMatrix> context)
+    public HermiteBasisFunctions2DProvider(SplineContext<Point, Element, Matrix> context)
     {
         _context = context;
     }
 
-    public IBasisFunction<Point>[] GetFunctions(BicubicFiniteElement element)
+    public IBasisFunction<Point>[] GetFunctions(Element element)
     {
         var firstNodeOfElement = _context.Grid.Nodes[element.NodeIndexes[0]];
         var xBasisFunctions1D = BuildHermiteBasisFunctions1D(firstNodeOfElement.X, element.Width, XBasisFunctions1D);
@@ -61,11 +62,11 @@ public class HermiteBasisFunctions2DProvider : IBasisFunctionsProvider<BicubicFi
 
     private static int Mu(int i)
     {
-        return 2 * (i / 8 % 2) + i % 2 + 1;
+        return 2 * (i / 4 % 2) + i % 2;
     }
 
     private static int Nu(int i)
     {
-        return 2 * i / 8 + i / 2 % 2 + 1;
+        return 2 * (i / 8) + i / 2 % 2;
     }
 }
