@@ -5,33 +5,33 @@ namespace SharpMath.FiniteElement.Core.Assembling.TemplateMatrices;
 
 public static class HermiteTemplateMatrices
 {
-    public static ImmutableMatrix Stiffness1D(double elementEdgeSize)
+    public static ImmutableMatrix Stiffness1D(double elementBoundSize)
     {
         return new ImmutableMatrix
             (
                 new[,]
                 {
-                    { 36, 3 * elementEdgeSize, -36, 3 * elementEdgeSize },
-                    { 3 * elementEdgeSize, 4 * Math.Pow(elementEdgeSize, 2), -3 * elementEdgeSize, -Math.Pow(elementEdgeSize, 2) },
-                    { -36, -3 * elementEdgeSize, 36, -3 * elementEdgeSize },
-                    { 3 * elementEdgeSize, -Math.Pow(elementEdgeSize, 2), -3 * elementEdgeSize, 4 * Math.Pow(elementEdgeSize, 2) },
+                    {36, 3 * elementBoundSize, -36, 3 * elementBoundSize},
+                    {3 * elementBoundSize, 4 * Math.Pow(elementBoundSize, 2), -3 * elementBoundSize, -Math.Pow(elementBoundSize, 2)},
+                    {-36, -3 * elementBoundSize, 36, -3 * elementBoundSize},
+                    {3 * elementBoundSize, -Math.Pow(elementBoundSize, 2), -3 * elementBoundSize, 4 * Math.Pow(elementBoundSize, 2)},
                 }, 
-                30 * elementEdgeSize
+                 1 / (30 * elementBoundSize)
             );
     }
 
-    public static ImmutableMatrix Mass1D(double elementEdgeSize)
+    public static ImmutableMatrix Mass1D(double elementBoundSize)
     {
         return new ImmutableMatrix
             (
                 new[,]
                 {
-                    { 156, 22 * elementEdgeSize, 54, -13 * elementEdgeSize },
-                    { 22 * elementEdgeSize, 4 * Math.Pow(elementEdgeSize, 2), 13 * elementEdgeSize, -3 * Math.Pow(elementEdgeSize, 2) },
-                    { 54, 13 * elementEdgeSize, 156, -22 * elementEdgeSize },
-                    { -13 * elementEdgeSize, -3 * Math.Pow(elementEdgeSize, 2), -22 * elementEdgeSize, 4 * Math.Pow(elementEdgeSize, 2) },
+                    {156, 22 * elementBoundSize, 54, -13 * elementBoundSize},
+                    {22 * elementBoundSize, 4 * Math.Pow(elementBoundSize, 2), 13 * elementBoundSize, -3 * Math.Pow(elementBoundSize, 2)},
+                    {54, 13 * elementBoundSize, 156, -22 * elementBoundSize},
+                    {-13 * elementBoundSize, -3 * Math.Pow(elementBoundSize, 2), -22 * elementBoundSize, 4 * Math.Pow(elementBoundSize, 2)},
                 },
-                elementEdgeSize / 420
+                elementBoundSize / 420
             );
     }
 }
