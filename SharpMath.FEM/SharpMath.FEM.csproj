@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SharpMath.Geometry\SharpMath.Geometry.csproj" />
+    <ProjectReference Include="..\SharpMath\SharpMath.csproj" />
   </ItemGroup>
 
 </Project>

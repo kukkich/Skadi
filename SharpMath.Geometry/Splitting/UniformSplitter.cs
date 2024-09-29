@@ -5,16 +5,16 @@ namespace SharpMath.Geometry.Splitting;
 
 public class UniformSplitter : ICurveSplitter
 {
-    private readonly Positive<int> _steps;
+    public Positive<int> Steps { get; }
 
     public UniformSplitter(Positive<int> steps)
     {
-        _steps = steps;
+        Steps = steps;
     }
 
     public IEnumerable<TPoint> EnumerateValues<TPoint>(ICurve<TPoint> curve)
     {
-        var step = 1d / _steps;
+        var step = 1d / Steps;
 
         var stepNumber = 0;
         var t = 0d;
@@ -24,7 +24,7 @@ public class UniformSplitter : ICurveSplitter
             yield return curve.GetByParameter(t);
             t = stepNumber * step;
             stepNumber++;
-        } while (stepNumber < _steps);
+        } while (stepNumber < Steps);
 
         yield return curve.GetByParameter(1d);
     }

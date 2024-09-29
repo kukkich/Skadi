@@ -10,4 +10,8 @@
     <ProjectReference Include="..\SharpMath.Primitives\SharpMath.Primitives.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Core\" />
+  </ItemGroup>
+
 </Project>
