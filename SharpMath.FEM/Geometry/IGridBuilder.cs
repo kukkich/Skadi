@@ -1,5 +1,4 @@
 ﻿using SharpMath.FEM.Core;
-using SharpMath.Geometry;
 
 namespace SharpMath.FEM.Geometry;
 

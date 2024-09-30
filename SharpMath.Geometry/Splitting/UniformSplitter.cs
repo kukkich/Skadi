@@ -22,8 +22,8 @@ public class UniformSplitter : ICurveSplitter
         do
         {
             yield return curve.GetByParameter(t);
-            t = stepNumber * step;
             stepNumber++;
+            t = stepNumber * step;
         } while (stepNumber < Steps);
 
         yield return curve.GetByParameter(1d);

@@ -49,22 +49,33 @@ public class RegularGridBuilder : IGridBuilder<Point2D, RegularGridDefinition>
                         topCurve.Start, topCurve.End
                     ]);
                     
+                    
                     for (var i = 0; i < verticalSplitter.Steps; i++)
                     {
                         var indexPadding = subAreaIndexPadding + i * xNodesCount;
                         for (var j = 0; j < horizontalSplitter.Steps; j++)
                         {
-                            IEnumerable<int> indexes = [j, j + 1, xNodesCount + j, xNodesCount + j + 1];
-                            var masterPoint = masterPoints[i * horizontalSplitter.Steps + j];
-                            nodes[j + indexPadding] = pointsMapper.Map(masterPoint);
-                            indexPadding++;
-
+                            IEnumerable<int> indexes = [0, 1, xNodesCount, xNodesCount + 1];
                             var element = new Element(
                                 areaIndex, 
                                 indexes.Select(x => x + indexPadding).ToArray()
                             );
+                            indexPadding++;
+
                             elements[elementIndex] = element;
                             elementIndex++;
+                        }
+                    }
+                    
+                    for (var i = 0; i <= verticalSplitter.Steps; i++)
+                    {
+                        var indexPadding = subAreaIndexPadding + i * xNodesCount;
+                        for (var j = 0; j <= horizontalSplitter.Steps; j++)
+                        {
+                            var masterPoint = masterPoints[i * (horizontalSplitter.Steps + 1) + j];
+                            nodes[indexPadding] = pointsMapper.Map(masterPoint);
+
+                            indexPadding++;
                         }
                     }
                 }   
@@ -94,7 +105,7 @@ public class RegularGridBuilder : IGridBuilder<Point2D, RegularGridDefinition>
             for (var j = 0; j < xValues.Length; j++)
             {
                 var x = xValues[j];
-                points[i * 4 + j] = new Point2D(x, y);
+                points[i * xValues.Length + j] = new Point2D(x, y);
             }
         }
 
@@ -117,8 +128,8 @@ file static class GridDefinitionExtensions
 
         var (start, end) = orientation switch
         {
-            Orientation.Horizontal => (points[startIndex, layerIndex], points[endIndex, layerIndex]),
-            Orientation.Vertical => (points[layerIndex, startIndex], points[layerIndex, endIndex]),
+            Orientation.Horizontal => (points[layerIndex, startIndex], points[layerIndex, endIndex]),
+            Orientation.Vertical => (points[startIndex, layerIndex], points[endIndex, layerIndex]),
             _ => throw new ArgumentOutOfRangeException(nameof(orientation), orientation, null)
         };
 
