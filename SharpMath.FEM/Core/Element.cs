@@ -8,6 +8,6 @@ public class Element : IElement
     public Element(int areaId, IEnumerable<int> nodeIds)
     {
         AreaId = areaId;
-        NodeIds = nodeIds.ToList().AsReadOnly();
+        NodeIds = nodeIds.ToArray().AsReadOnly();
     }
 }

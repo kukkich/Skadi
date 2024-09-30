@@ -1,5 +1,4 @@
 ﻿using SharpMath.FEM.Core;
-using SharpMath.Geometry;
 using SharpMath.Geometry._1D;
 using SharpMath.Geometry._2D;
 using SharpMath.Geometry._2D.Shapes;
@@ -11,48 +10,68 @@ public class RegularGridBuilder : IGridBuilder<Point2D, RegularGridDefinition>
 {
     public Grid<Point2D, IElement> Build(RegularGridDefinition definition)
     {
-        var (controlPoints, xSplitters, ySplitters, areas, curveBounds) = definition;
+        var (_, xSplitters, ySplitters, areas, _) = definition;
         
         var (xNodesCount, yNodesCount) = GetSizes(xSplitters, ySplitters);
         var elementsCount = (xNodesCount - 1) * (yNodesCount - 1);
-        var nodes = new Point2D[xNodesCount,yNodesCount];
+        var nodes = new Point2D[xNodesCount * yNodesCount];
         var elements = new Element[elementsCount];
-
-        foreach (var area in areas)
+        var elementIndex = 0;
+        
+        for (var areaIndex = 0; areaIndex < areas.Length; areaIndex++)
         {
+            var area = areas[areaIndex];
             for (var yIndex = area.BottomBoundId; yIndex < area.TopBoundId; yIndex++)
             {
-                
                 for (var xIndex = area.LeftBoundId; xIndex < area.RightBoundId; xIndex++)
                 {
-                    var (horizontalCurve, horizontalSplitter) = definition.GetCurveWithSplitter(Orientation.Horizontal, yIndex, xIndex);
-                    var (verticalCurve, verticalSplitter) = definition.GetCurveWithSplitter(Orientation.Vertical, xIndex, yIndex);
-
-                    var masterPoints = SplitMasterArea(horizontalSplitter, verticalSplitter);
+                    var horizontalLinesSkipped = 0;
+                    for (var verticalIntervalId = 0; verticalIntervalId < yIndex; verticalIntervalId++)
+                    {
+                        horizontalLinesSkipped += ySplitters[verticalIntervalId].Steps;
+                    }
+                    var verticalLinesSkipped = 0;
+                    for (var horizontalIntervalId = 0; horizontalIntervalId < xIndex; horizontalIntervalId++)
+                    {
+                        verticalLinesSkipped += xSplitters[horizontalIntervalId].Steps;
+                    }
+                    var subAreaIndexPadding = horizontalLinesSkipped * xNodesCount + verticalLinesSkipped * yNodesCount;
                     
+                    // todo дженериковый код, нужно обобщить получение маппера для криволинейных
+                    var (bottomCurve, horizontalSplitter) = definition.GetCurveWithSplitter(Orientation.Horizontal, yIndex, xIndex);
+                    var (topCurve, _) =  definition.GetCurveWithSplitter(Orientation.Horizontal, yIndex + 1, xIndex);
+                    var (leftCurve, verticalSplitter) = definition.GetCurveWithSplitter(Orientation.Vertical, xIndex, yIndex);
+                    var (rightCurve, _) = definition.GetCurveWithSplitter(Orientation.Vertical, xIndex + 1, yIndex);
+                    
+                    var masterPoints = SplitMasterArea(horizontalSplitter, verticalSplitter);
+                    var pointsMapper = new LinearTemplatePointsMapper([
+                        bottomCurve.Start, bottomCurve.End,
+                        topCurve.Start, topCurve.End
+                    ]);
+                    
+                    for (var i = 0; i < verticalSplitter.Steps; i++)
+                    {
+                        var indexPadding = subAreaIndexPadding + i * xNodesCount;
+                        for (var j = 0; j < horizontalSplitter.Steps; j++)
+                        {
+                            IEnumerable<int> indexes = [j, j + 1, xNodesCount + j, xNodesCount + j + 1];
+                            var masterPoint = masterPoints[i * horizontalSplitter.Steps + j];
+                            nodes[j + indexPadding] = pointsMapper.Map(masterPoint);
+                            indexPadding++;
 
+                            var element = new Element(
+                                areaIndex, 
+                                indexes.Select(x => x + indexPadding).ToArray()
+                            );
+                            elements[elementIndex] = element;
+                            elementIndex++;
+                        }
+                    }
                 }   
             }
         }
         
-        for (var xIndex = 0; xIndex < controlPoints.GetLength(0) - 1; xIndex++)
-        {
-            var xSplitter = xSplitters[xIndex];
-            for (var yIndex = 0; yIndex < controlPoints.GetLength(1) - 1; yIndex++)
-            {
-                var ySplitter = ySplitters[yIndex];
-                var masterPoints = SplitMasterArea(xSplitter, ySplitter);
-                
-                
-                var lb = controlPoints[xIndex, yIndex];
-                var lt = controlPoints[xIndex, yIndex + 1];
-                var rb = controlPoints[xIndex + 1, yIndex];
-                var rt = controlPoints[xIndex + 1, yIndex + 1];
-                var 
-            }
-        }
-        
-        throw new NotImplementedException();
+        return new Grid<Point2D, IElement>(new IrregularPointsCollection(nodes), elements);
     }
 
     private static (int XNodesCount, int YNodesCount) GetSizes(
@@ -60,21 +79,22 @@ public class RegularGridBuilder : IGridBuilder<Point2D, RegularGridDefinition>
         IEnumerable<ICurveSplitter> ySplitters
         ) => (xSplitters.Sum(x => x.Steps) + 1, ySplitters.Sum(x => x.Steps) + 1);
 
-    public Point2D[,] SplitMasterArea(ICurveSplitter xSplitter, ICurveSplitter ySplitter)
+    private Point2D[] SplitMasterArea(ICurveSplitter xSplitter, ICurveSplitter ySplitter)
     {
         var line = new Line1D(0, 1);
         var (xNodesCount, yNodesCount) = GetSizes([xSplitter], [ySplitter]);
-        var points = new Point2D[xNodesCount, yNodesCount];
+        var points = new Point2D[xNodesCount * yNodesCount];
         var xValues = xSplitter.EnumerateValues(line).ToArray();
         var yValues = ySplitter.EnumerateValues(line).ToArray();
 
-        for (var i = 0; i < xValues.Length; i++)
+        for (var i = 0; i < yValues.Length; i++)
         {
-            var x = xValues[i];
-            for (var j = 0; j < yValues.Length; j++)
+            var y = yValues[i];
+
+            for (var j = 0; j < xValues.Length; j++)
             {
-                var y = yValues[j];
-                points[i, j] = new Point2D(x, y);
+                var x = xValues[j];
+                points[i * 4 + j] = new Point2D(x, y);
             }
         }
 
