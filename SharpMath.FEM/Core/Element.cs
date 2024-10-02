@@ -10,4 +10,9 @@ public class Element : IElement
         AreaId = areaId;
         NodeIds = nodeIds.ToArray().AsReadOnly();
     }
+
+    public override string ToString()
+    {
+        return $"[{string.Join(", ", NodeIds)}]";
+    }
 }

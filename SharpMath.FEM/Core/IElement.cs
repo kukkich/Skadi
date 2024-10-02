@@ -1,4 +1,6 @@
-﻿namespace SharpMath.FEM.Core;
+﻿using System.Diagnostics;
+
+namespace SharpMath.FEM.Core;
 
 public interface IElement
 {

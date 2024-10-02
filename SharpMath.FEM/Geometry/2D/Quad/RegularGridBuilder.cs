@@ -35,7 +35,7 @@ public class RegularGridBuilder : IGridBuilder<Point2D, RegularGridDefinition>
                     {
                         verticalLinesSkipped += xSplitters[horizontalIntervalId].Steps;
                     }
-                    var subAreaIndexPadding = horizontalLinesSkipped * xNodesCount + verticalLinesSkipped * yNodesCount;
+                    var subAreaIndexPadding = horizontalLinesSkipped * xNodesCount + verticalLinesSkipped;
                     
                     // todo дженериковый код, нужно обобщить получение маппера для криволинейных
                     var (bottomCurve, horizontalSplitter) = definition.GetCurveWithSplitter(Orientation.Horizontal, yIndex, xIndex);
