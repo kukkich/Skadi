@@ -16,10 +16,10 @@ public class BasisFunction2D : IBasisFunction<Point>
 
     public double Evaluate(Point point)
     {
-        return Calculate(point.X, point.Y);
+        return Evaluate(point.X, point.Y);
     }
 
-    public double Calculate(double x, double y)
+    public double Evaluate(double x, double y)
     {
         return _xFunction(x) * _yFunction(y);
     }

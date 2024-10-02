@@ -49,6 +49,19 @@ public static class LinAl
 
         return resultMemory;
     }
+    public static StackMatrix Multiply(double coefficient, MatrixBase a, StackMatrix resultMemory)
+    {
+        if (a.Rows != resultMemory.Size || a.Columns != resultMemory.Size)
+        {
+            throw new ArgumentException();
+        }
+
+        for (var i = 0; i < a.Rows; i++)
+        for (var j = 0; j < a.Columns; j++)
+            resultMemory[i, j] = a[i, j] * coefficient;
+
+        return resultMemory;
+    }
     public static StackMatrix Multiply(double coefficient, StackMatrix a, StackMatrix resultMemory)
     {
         if (a.Size != resultMemory.Size)

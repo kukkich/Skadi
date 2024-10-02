@@ -20,11 +20,11 @@ public class HermiteLocalAssembler : IStackLocalAssembler<Element>
 
     public void AssembleMatrix(Element element, StackMatrix matrix, StackIndexPermutation indexes)
     {
-        var stiffnessMatrixX = HermiteTemplateMatrices.HermiteStiffness1D(element.Width);
-        var stiffnessMatrixY = HermiteTemplateMatrices.HermiteStiffness1D(element.Length);
+        var stiffnessMatrixX = HermiteTemplateMatrices.Stiffness1D(element.Width);
+        var stiffnessMatrixY = HermiteTemplateMatrices.Stiffness1D(element.Length);
 
-        var massMatrixX = HermiteTemplateMatrices.HermiteMass1D(element.Width);
-        var massMatrixY = HermiteTemplateMatrices.HermiteMass1D(element.Length);
+        var massMatrixX = HermiteTemplateMatrices.Mass1D(element.Width);
+        var massMatrixY = HermiteTemplateMatrices.Mass1D(element.Length);
         
         for (var i = 0; i < element.NodeIndexes.Length * 4; i++)
         {

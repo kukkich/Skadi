@@ -4,7 +4,7 @@ namespace SharpMath.FiniteElement.Core.Assembling.TemplateMatrices;
 
 public class CylinderTemplateMatrices
 {
-    public static ImmutableMatrix StiffnessR1D(double r, double elementEdgeSize)
+    public static ImmutableMatrix StiffnessR1D(double r, double elementBoundSize)
     {
         return new ImmutableMatrix
         (
@@ -13,11 +13,11 @@ public class CylinderTemplateMatrices
                 { 1d, -1d },
                 { -1d, 1d },
             },
-            (2 * r + elementEdgeSize) / (2 * elementEdgeSize)
+            (2 * r + elementBoundSize) / (2 * elementBoundSize)
         );
     }
 
-    public static ImmutableMatrix StiffnessZ1D(double elementEdgeSize)
+    public static ImmutableMatrix StiffnessZ1D(double elementBoundSize)
     {
         return new ImmutableMatrix
         (
@@ -26,24 +26,24 @@ public class CylinderTemplateMatrices
                 { 1d, -1d },
                 { -1d, 1d },
             },
-            1 / elementEdgeSize
+            1 / elementBoundSize
         );
     }
 
-    public static ImmutableMatrix MassR1D(double r, double elementEdgeSize)
+    public static ImmutableMatrix MassR1D(double r, double elementBoundSize)
     {
         return new ImmutableMatrix
         (
             new[,]
             {
-                {r * 2d + elementEdgeSize / 2, r + elementEdgeSize / 2},
-                {r + elementEdgeSize / 2, r * 2d + elementEdgeSize / 2 * 3},
+                {r * 2d + elementBoundSize / 2, r + elementBoundSize / 2},
+                {r + elementBoundSize / 2, r * 2d + elementBoundSize / 2 * 3},
             },
-            elementEdgeSize / 6
+            elementBoundSize / 6
         );
     }
 
-    public static ImmutableMatrix MassZ1D(double elementEdgeSize)
+    public static ImmutableMatrix MassZ1D(double elementBoundSize)
     {
         return new ImmutableMatrix
         (
@@ -52,7 +52,7 @@ public class CylinderTemplateMatrices
                 { 2d, 1d },
                 { 1d, 2d },
             },
-            elementEdgeSize / 6
+            elementBoundSize / 6
         );
     }
 }
