@@ -28,7 +28,7 @@ public class CylinderThirdBoundaryApplier : IThirdBoundaryApplier<SparseMatrix>
             CylinderTemplateMatrices.MassR1D(_context.Grid.Nodes[element.NodeIndexes[0]].R(), element.Width) : 
             CylinderTemplateMatrices.MassZ1D(element.Length);
 
-        var conditionImpactMatrix = LinAl.Multiply(condition.Beta, massMatrix1D, new StackMatrix(stackalloc double[4], 2));
+        var conditionImpactMatrix = LinAl.Multiply(condition.Beta, massMatrix1D, new StackMatrix(stackalloc double[2 * 2], 2));
         var localMatrix = new StackLocalMatrix(conditionImpactMatrix, new StackIndexPermutation(indexes));
 
         var conditionImpactVector = LinAl.Multiply(conditionImpactMatrix, condition.UBeta, stackalloc double[2]);

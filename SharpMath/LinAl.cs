@@ -1,5 +1,6 @@
 ﻿using SharpMath.Matrices;
 using SharpMath.Matrices.Sparse;
+using SharpMath.Matrices.Transformation;
 using SharpMath.Vectors;
 
 namespace SharpMath;
@@ -203,6 +204,23 @@ public static class LinAl
 
         return resultMemory;
     }
+    public static SparseMatrix Multiply(double coefficient, SparseMatrix a, SparseMatrix? resultMemory = null)
+    {
+        resultMemory ??= new SparseMatrix(a.RowsIndexes, a.ColumnsIndexes);
+
+        for (var i = 0; i < a.RowsCount; i++)
+        {
+            resultMemory.Diagonal[i] = coefficient * a.Diagonal[i];
+
+            for (var j = resultMemory.RowsIndexes[i]; j < resultMemory.RowsIndexes[i + 1]; j++)
+            {
+                resultMemory.LowerValues[j] = coefficient * a.LowerValues[j];
+                resultMemory.UpperValues[j] = coefficient * a.UpperValues[j];
+            }
+        }
+
+        return resultMemory;
+    }
     public static MatrixBase Sum(MatrixBase a, MatrixBase b, Matrix? resultMemory = null)
     {
         AssertCanBeMultiplied(a, b);
@@ -221,6 +239,28 @@ public static class LinAl
         for (var i = 0; i < a.Rows; i++)
         for (var j = 0; j < a.Rows; j++)
             resultMemory[i, j] = a[i, j] + b[i, j];
+
+        return resultMemory;
+    }
+    public static SparseMatrix Sum(SparseMatrix a, SparseMatrix b, SparseMatrix? resultMemory = null)
+    {
+        if (a.RowsCount != b.RowsCount)
+        {
+            throw new ArgumentOutOfRangeException($"{nameof(a)} and {nameof(b)}", "must have the same size");
+        }
+
+        resultMemory ??= new SparseMatrix(a.RowsIndexes, a.ColumnsIndexes);
+
+        for (var i = 0; i < a.RowsCount; i++)
+        {
+            resultMemory.Diagonal[i] = a.Diagonal[i] + b.Diagonal[i];
+
+            for (var j = resultMemory.RowsIndexes[i]; j < resultMemory.RowsIndexes[i + 1]; j++)
+            {
+                resultMemory.LowerValues[j] = a.LowerValues[j] + b.LowerValues[j];
+                resultMemory.UpperValues[j] = a.UpperValues[j] + b.UpperValues[j];
+            }
+        }
 
         return resultMemory;
     }

@@ -29,7 +29,7 @@ public class BilinearBasisFunctionsProvider : IBasisFunctionsProvider<Element, P
 	    XBasisFunctions1D[1] = BuildSecondFunction(_context.Grid.Nodes[element.NodeIndexes[0]].X, element.Width);
 
 	    YBasisFunctions1D[0] = BuildFirstFunction(_context.Grid.Nodes[element.NodeIndexes[2]].Y, element.Length);
-	    YBasisFunctions1D[1] = BuildFirstFunction(_context.Grid.Nodes[element.NodeIndexes[0]].Y, element.Length);
+	    YBasisFunctions1D[1] = BuildSecondFunction(_context.Grid.Nodes[element.NodeIndexes[0]].Y, element.Length);
 
 	    for (var i = 0; i < YBasisFunctions1D.Length; i++)
 	    {
