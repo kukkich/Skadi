@@ -120,7 +120,7 @@ file static class GridDefinitionExtensions
         Orientation orientation, int lineId, int intervalId
         )
     {
-        var (points, xSplitters, ySplitters, _, curveBounds) = definition;
+        var (points, xSplitters, ySplitters, _, _) = definition;
 
         var startIndex = intervalId;
         var endIndex = intervalId + 1;
@@ -132,13 +132,9 @@ file static class GridDefinitionExtensions
             Orientation.Vertical => (points[startIndex, layerIndex], points[endIndex, layerIndex]),
             _ => throw new ArgumentOutOfRangeException(nameof(orientation), orientation, null)
         };
-
-        var curve = curveBounds
-            .FirstOrDefault(x => x.Orientation == orientation 
-                                 && x.LineId == lineId
-                                 && x.IntervalId == intervalId
-            )?.Curve 
-            ?? new Line2D(start, end);
+        
+        var curve = new Line2D(start, end);
+        
         var splitter = orientation switch
         {
             Orientation.Horizontal => xSplitters[intervalId],

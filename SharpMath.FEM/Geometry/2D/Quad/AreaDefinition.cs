@@ -4,5 +4,6 @@ public record AreaDefinition(
     int LeftBoundId, 
     int RightBoundId,
     int BottomBoundId,
-    int TopBoundId
+    int TopBoundId,
+    int MaterialId = 0
 );

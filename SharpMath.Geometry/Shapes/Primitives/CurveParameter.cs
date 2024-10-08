@@ -1,4 +1,6 @@
-﻿namespace SharpMath.Geometry.Shapes.Primitives;
+﻿using System.Globalization;
+
+namespace SharpMath.Geometry.Shapes.Primitives;
 
 public readonly struct CurveParameter
 {
@@ -22,4 +24,6 @@ public readonly struct CurveParameter
     {
         return new CurveParameter(value);
     }
+
+    public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
 }

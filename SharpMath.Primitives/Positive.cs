@@ -25,4 +25,6 @@ public readonly struct Positive<T> where T : INumber<T>
     {
         return new Positive<T>(value);
     }
+
+    public override string? ToString() => Value.ToString();
 }
