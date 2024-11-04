@@ -50,11 +50,11 @@ public class GridDefinitionReader(IConfiguration configuration) : IGridDefinitio
             var nx = int.Parse(values[0]);
             var cx = double.Parse(values[1], CultureInfo.InvariantCulture);
 
-            xSplitters[i] = cx switch
-            {
-                1d => new UniformSplitter(nx),
-                _ => new ProportionalSplitter(nx, cx)
-            };
+            cx = cx > 0 
+                ? cx 
+                : 1d / cx;
+            
+            xSplitters[i] = GetSplitter(nx, cx);
         }
 
         var yLine = splitReader.ReadLine();
@@ -80,15 +80,26 @@ public class GridDefinitionReader(IConfiguration configuration) : IGridDefinitio
 
             var ny = int.Parse(values[0]);
             var cy = double.Parse(values[1], CultureInfo.InvariantCulture);
-
-            ySplitters[i] = cy switch
-            {
-                1d => new UniformSplitter(ny),
-                _ => new ProportionalSplitter(ny, cy)
-            };;
+            
+            cy = cy > 0 
+                ? cy 
+                : 1d / cy;
+            
+            ySplitters[i] = GetSplitter(ny, cy);
         }
 
         return (xSplitters, ySplitters);
+    }
+
+    private static ICurveSplitter GetSplitter(int steps, double dischargeRatio)
+    {
+        return dischargeRatio switch
+        {
+            1d => new UniformSplitter(steps),
+            < 0 => new ProportionalSplitter(steps, 1 / Math.Abs(dischargeRatio)), 
+            > 0 => new ProportionalSplitter(steps, dischargeRatio),
+            _ => throw new ArgumentOutOfRangeException(nameof(dischargeRatio), dischargeRatio, null)
+        };
     }
 
     private static AreaDefinition[] ReadAreas(StreamReader reader)
