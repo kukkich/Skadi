@@ -6,7 +6,7 @@ using SharpMath.Geometry._2D;
 using SharpMath.Matrices;
 using SharpMath.Vectors;
 
-namespace SharpMath.Splines;
+namespace SharpMath.Splines._2D.Smooth;
 
 public class SmoothingSplineCreator : ISplineCreator<Point2D, IElement>
 {
@@ -33,7 +33,7 @@ public class SmoothingSplineCreator : ISplineCreator<Point2D, IElement>
         _allocated = true;
     }
 
-    public ISpline<Point2D> CreateSpline(FuncValue[] funcValues, double alpha)
+    public ISpline<Point2D> CreateSpline(FuncValue<Point2D>[] funcValues, double alpha)
     {
         _context.FunctionValues = funcValues;
         _context.Weights = CalculateWeights(funcValues);
@@ -81,7 +81,7 @@ public class SmoothingSplineCreator : ISplineCreator<Point2D, IElement>
         );
     }
 
-    private static double[] CalculateWeights(FuncValue[] funcValues)
+    private static double[] CalculateWeights(FuncValue<Point2D>[] funcValues)
     {
         var weights = new double[funcValues.Length];
 

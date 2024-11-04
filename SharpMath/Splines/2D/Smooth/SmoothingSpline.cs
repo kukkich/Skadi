@@ -1,9 +1,9 @@
-﻿using SharpMath.FiniteElement.Core.BasisFunctions;
+﻿using SharpMath.FEM.Core;
+using SharpMath.FiniteElement.Core.BasisFunctions;
 using SharpMath.Geometry._2D;
 using SharpMath.Vectors;
-using SharpMath.FEM.Core;
 
-namespace SharpMath.Splines;
+namespace SharpMath.Splines._2D.Smooth;
 
 public class SmoothingSpline : ISpline<Point2D>
 {

@@ -35,7 +35,7 @@ public class SplineLocalAssembler : ISplineStackLocalAssembler<IElement, Point2D
         FillIndexes(element, indexes);
     }
 
-    public void AssembleRightSide(IElement element, FuncValue functionValue, double weight, Span<double> vector, StackIndexPermutation indexes)
+    public void AssembleRightSide(IElement element, FuncValue<Point2D> functionValue, double weight, Span<double> vector, StackIndexPermutation indexes)
     {
         for (var i = 0; i < element.NodeIds.Count * 4; i++)
         {
