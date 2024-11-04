@@ -1,14 +1,15 @@
-﻿using SharpMath.FiniteElement.Core.Assembling;
+﻿using SharpMath.FEM.Core;
+using SharpMath.FiniteElement.Core.Assembling;
 using SharpMath.Matrices.Sparse;
 
 namespace SharpMath.FiniteElement._2D.Assembling;
 
 // Пишется для гармонической 2D с линейными элементами
-public class MatrixPortraitBuilder : IMatrixPortraitBuilder<SparseMatrix, Element>
+public class MatrixPortraitBuilder : IMatrixPortraitBuilder<SparseMatrix, IElement>
 {
     private List<SortedSet<int>> _adjacencyList = null!;
 
-    public SparseMatrix Build(IEnumerable<Element> elements, int nodesCount)
+    public SparseMatrix Build(IEnumerable<IElement> elements, int nodesCount)
     {
         BuildAdjacencyList(elements, nodesCount);
 
@@ -22,7 +23,7 @@ public class MatrixPortraitBuilder : IMatrixPortraitBuilder<SparseMatrix, Elemen
         return new SparseMatrix(rowsIndexes, columnsIndexes);
     }
 
-    private void BuildAdjacencyList(IEnumerable<Element> elements, int nodesCount)
+    private void BuildAdjacencyList(IEnumerable<IElement> elements, int nodesCount)
     {
         _adjacencyList = new List<SortedSet<int>>(nodesCount * 2);
 
@@ -33,7 +34,7 @@ public class MatrixPortraitBuilder : IMatrixPortraitBuilder<SparseMatrix, Elemen
 
         foreach (var element in elements)
         {
-            var nodesIndexes = element.NodeIndexes;
+            var nodesIndexes = element.NodeIds;
 
             foreach (var currentNode in nodesIndexes)
             {

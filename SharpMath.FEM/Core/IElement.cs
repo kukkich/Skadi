@@ -3,5 +3,5 @@
 public interface IElement
 {
     public int AreaId { get; }
-    public IReadOnlyCollection<int> NodeIds { get; }
+    public IReadOnlyList<int> NodeIds { get; }
 }

@@ -16,4 +16,9 @@ public record struct Point2D(double X, double Y)
     {
         return new Point2D(coefficient * p.X, coefficient * p.Y);
     }
+    
+    public static Point2D operator *(Point2D p, double coefficient)
+    {
+        return coefficient * p;
+    }
 }

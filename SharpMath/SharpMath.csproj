@@ -1,19 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="FiniteElement\Core\Assembling\Boundary\Second\" />
-    <Folder Include="FiniteElement\Core\Harmonic\Assembling\" />
     <Folder Include="Matrices\Sparse\Storages\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SharpMath.FEM\SharpMath.FEM.csproj" />
+    <ProjectReference Include="..\SharpMath.Geometry\SharpMath.Geometry.csproj" />
+    <ProjectReference Include="..\SharpMath.Primitives\SharpMath.Primitives.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,7 +3,7 @@
 public class Element : IElement
 {
     public int AreaId { get; }
-    public IReadOnlyCollection<int> NodeIds { get; }
+    public IReadOnlyList<int> NodeIds { get; }
 
     public Element(int areaId, IEnumerable<int> nodeIds)
     {

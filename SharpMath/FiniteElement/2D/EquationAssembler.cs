@@ -1,4 +1,5 @@
-﻿using SharpMath.FiniteElement.Core.Assembling;
+﻿using SharpMath.FEM.Core;
+using SharpMath.FiniteElement.Core.Assembling;
 using SharpMath.FiniteElement.Core.Assembling.Boundary.First;
 using SharpMath.Geometry._2D;
 using SharpMath.Matrices;
@@ -11,15 +12,15 @@ public class EquationAssembler
 {
     public Equation<SparseMatrix> FinalEquation => _context.Equation;
 
-    private readonly Context<Point, Element, SparseMatrix> _context;
-    private readonly IStackLocalAssembler<Element> _localAssembler;
+    private readonly Context<Point2D, IElement, SparseMatrix> _context;
+    private readonly IStackLocalAssembler<IElement> _localAssembler;
     private readonly IStackInserter<SparseMatrix> _inserter;
     private readonly IFirstBoundaryApplier<SparseMatrix> _firstBoundaryApplier;
     private readonly ISecondBoundaryApplier<SparseMatrix> _secondBoundaryApplier;
 
     public EquationAssembler(
-        Context<Point, Element, SparseMatrix> context,
-        IStackLocalAssembler<Element> localAssembler,
+        Context<Point2D, IElement, SparseMatrix> context,
+        IStackLocalAssembler<IElement> localAssembler,
         IStackInserter<SparseMatrix> inserter,
         IFirstBoundaryApplier<SparseMatrix> firstBoundaryApplier,
         ISecondBoundaryApplier<SparseMatrix> secondBoundaryApplier
@@ -32,7 +33,7 @@ public class EquationAssembler
         _secondBoundaryApplier = secondBoundaryApplier;
     }
 
-    public EquationAssembler BuildEquation(Context<Point, Element, SparseMatrix> context)
+    public EquationAssembler BuildEquation(Context<Point2D, IElement, SparseMatrix> context)
     {
         var equation = context.Equation;
 
@@ -54,7 +55,7 @@ public class EquationAssembler
         return this;
     }
 
-    public EquationAssembler ApplyFirstBoundary(Context<Point, Element, SparseMatrix> context)
+    public EquationAssembler ApplyFirstBoundary(Context<Point2D, IElement, SparseMatrix> context)
     {
         var equation = context.Equation;
 
@@ -66,7 +67,7 @@ public class EquationAssembler
         return this;
     }
 
-    public EquationAssembler ApplySecondConditions(Context<Point, Element, SparseMatrix> context)
+    public EquationAssembler ApplySecondConditions(Context<Point2D, IElement, SparseMatrix> context)
     {
         foreach (var condition in context.SecondConditions)
         {

@@ -1,13 +1,9 @@
-﻿using SharpMath.FiniteElement.Core.Assembling.Boundary.First;
-using SharpMath.FiniteElement.Core.Assembling.Boundary.Second;
-using SharpMath.FiniteElement.Core.Assembling.Params;
-using SharpMath.FiniteElement.Materials.HarmonicWithoutChi;
-using SharpMath.Geometry;
-using System.Numerics;
+﻿using SharpMath.FEM.Core;
 
 namespace SharpMath.Splines;
 
-public class SplineContext<TPoint, TElement, TMatrix>
+public class SplineContext<TPoint, TElement, TMatrix> 
+    where TElement : IElement
 {
     public required Grid<TPoint, TElement> Grid { get; set; }
     public required Equation<TMatrix> Equation { get; set; }

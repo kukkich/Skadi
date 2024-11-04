@@ -1,40 +1,39 @@
-﻿using SharpMath.FiniteElement.Core.Assembling.Params;
-using SharpMath.Geometry;
+﻿using SharpMath.FEM.Geometry;
+using SharpMath.FiniteElement.Core.Assembling.Params;
 using SharpMath.Geometry._2D;
-using SharpMath.Geometry._2D.Сylinder;
 
 namespace SharpMath.FiniteElement._2D.Parameters;
 
-public class ConvectionVelocity : IUniversalParameter<Point, Point>
+public class ConvectionVelocity : IUniversalParameter<Point2D, Point2D>
 {
     private readonly double _maxVelocity;
     private readonly double _height;
     private readonly double _radius;
     
-    public ConvectionVelocity(IPointsCollection<Point> points, double maxVelocity)
+    public ConvectionVelocity(IPointsCollection<Point2D> points, double maxVelocity)
     {
         var lb = points[0];
-        var rt = points[points.XLength * points.YLength - 1];
-        _height = rt.Z() - lb.Z();
-        _radius = rt.R() - lb.R();
+        var rt = points[points.TotalPoints - 1];
+        _height = rt.Y - lb.Y;
+        _radius = rt.X - lb.X;
         
         _maxVelocity = maxVelocity;
     }
     
-    public Point Get(Point point)
+    public Point2D Get(Point2D point)
     {
-        var lowerThanFirst = point.Z() <= _height * point.R() / _radius;
-        var lowerThanSecond = point.Z() <= _height * (1 - point.R() / _radius);
+        var lowerThanFirst = point.Y <= _height * point.X / _radius;
+        var lowerThanSecond = point.Y <= _height * (1 - point.X / _radius);
         var heightQuarter = _height / 4;
         var radiusQuarter = _radius / 4;
         var factor = 1 - (lowerThanFirst, lowerThanSecond) switch
         {
-            (true, true) => Math.Abs(point.Z() - heightQuarter) / heightQuarter,
-            (true, false) => Math.Abs(point.R() - 3 * radiusQuarter) / radiusQuarter,
-            (false, false) => Math.Abs(point.Z() - 3 * heightQuarter) / heightQuarter,
-            (false, true) => Math.Abs(point.R() - radiusQuarter) / radiusQuarter,
+            (true, true) => Math.Abs(point.Y - heightQuarter) / heightQuarter,
+            (true, false) => Math.Abs(point.X - 3 * radiusQuarter) / radiusQuarter,
+            (false, false) => Math.Abs(point.Y - 3 * heightQuarter) / heightQuarter,
+            (false, true) => Math.Abs(point.X - radiusQuarter) / radiusQuarter,
         };
-        Point direction = (lowerThanFirst, lowerThanSecond) switch
+        Point2D direction = (lowerThanFirst, lowerThanSecond) switch
         {
             (true, true) => new (1, 0),
             (true, false) => new (0, 1),

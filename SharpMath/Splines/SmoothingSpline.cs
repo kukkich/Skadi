@@ -1,22 +1,19 @@
-﻿using SharpMath.FiniteElement._2D;
-using SharpMath.FiniteElement._2D.Elements;
-using SharpMath.FiniteElement.Core.BasisFunctions;
-using SharpMath.Geometry;
+﻿using SharpMath.FiniteElement.Core.BasisFunctions;
 using SharpMath.Geometry._2D;
 using SharpMath.Vectors;
-using System;
+using SharpMath.FEM.Core;
 
 namespace SharpMath.Splines;
 
-public class SmoothingSpline : ISpline<Point>
+public class SmoothingSpline : ISpline<Point2D>
 {
-    private readonly IBasisFunctionsProvider<Element, Point> _basisFunctionsProvider;
-    private readonly Grid<Point, Element> _grid;
+    private readonly IBasisFunctionsProvider<IElement, Point2D> _basisFunctionsProvider;
+    private readonly Grid<Point2D, IElement> _grid;
     private readonly Vector _qValues;
 
     public SmoothingSpline(
-        IBasisFunctionsProvider<Element, Point> basisFunctionsProvider,
-        Grid<Point, Element> grid, 
+        IBasisFunctionsProvider<IElement, Point2D> basisFunctionsProvider,
+        Grid<Point2D, IElement> grid, 
         Vector qValues
     )
     {
@@ -25,7 +22,7 @@ public class SmoothingSpline : ISpline<Point>
         _qValues = qValues;
     }
 
-    public double Calculate(Point point)
+    public double Calculate(Point2D point)
     {
         var element = _grid.Elements.First(e => ElementHas(e, point));
 
@@ -33,21 +30,21 @@ public class SmoothingSpline : ISpline<Point>
 
         var sum = 0d;
 
-        for (var i = 0; i < element.NodeIndexes.Length; i++)
+        for (var i = 0; i < element.NodeIds.Count; i++)
         {
             for (var j = 0; j < 4; j++)
             {
-                sum += _qValues[element.NodeIndexes[i] * 4 + j] * basisFunctions[i * 4 + j].Evaluate(point);
+                sum += _qValues[element.NodeIds[i] * 4 + j] * basisFunctions[i * 4 + j].Evaluate(point);
             }
         }
 
         return sum;
     }
 
-    private bool ElementHas(Element element, Point node)
+    private bool ElementHas(IElement element, Point2D node)
     {
-        var leftBottom = _grid.Nodes[element.NodeIndexes[0]];
-        var rightTop = _grid.Nodes[element.NodeIndexes[^1]];
+        var leftBottom = _grid.Nodes[element.NodeIds[0]];
+        var rightTop = _grid.Nodes[element.NodeIds[^1]];
 
         return leftBottom.X <= node.X && node.X <= rightTop.X && 
                leftBottom.Y <= node.Y && node.Y <= rightTop.Y;

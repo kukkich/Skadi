@@ -1,11 +1,6 @@
-﻿using SharpMath.FiniteElement._2D;
-using SharpMath.FiniteElement.Core.Assembling.Boundary.First;
-using SharpMath.FiniteElement.Core.Assembling.Boundary.Second;
+﻿using SharpMath.FEM.Core;
 using SharpMath.FiniteElement.Core.Assembling;
-using SharpMath.FiniteElement;
-using SharpMath.FiniteElement._2D.Elements;
 using SharpMath.Geometry._2D;
-using SharpMath.Matrices.Sparse;
 using SharpMath.Matrices;
 
 namespace SharpMath.Splines;
@@ -14,15 +9,15 @@ public class SplineEquationAssembler
 {
     public Equation<Matrix> FinalEquation => _context.Equation;
 
-    private readonly SplineContext<Point, Element, Matrix> _context;
-    private readonly ISplineStackLocalAssembler<Element, Point> _splineLocalAssembler;
-    private readonly IStackLocalAssembler<Element> _localAssembler;
+    private readonly SplineContext<Point2D, IElement, Matrix> _context;
+    private readonly ISplineStackLocalAssembler<IElement, Point2D> _splineLocalAssembler;
+    private readonly IStackLocalAssembler<IElement> _localAssembler;
     private readonly IStackInserter<Matrix> _inserter;
 
     public SplineEquationAssembler(
-        SplineContext<Point, Element, Matrix> context,
-        ISplineStackLocalAssembler<Element, Point> splineLocalAssembler,
-        IStackLocalAssembler<Element> localAssembler,
+        SplineContext<Point2D, IElement, Matrix> context,
+        ISplineStackLocalAssembler<IElement, Point2D> splineLocalAssembler,
+        IStackLocalAssembler<IElement> localAssembler,
         IStackInserter<Matrix> inserter
     )
     {
@@ -32,7 +27,7 @@ public class SplineEquationAssembler
         _inserter = inserter;
     }
 
-    public SplineEquationAssembler BuildEquation(SplineContext<Point, Element, Matrix> context)
+    public SplineEquationAssembler BuildEquation(SplineContext<Point2D, IElement, Matrix> context)
     {
         var equation = context.Equation;
 
@@ -66,10 +61,10 @@ public class SplineEquationAssembler
         return this;
     }
 
-    private bool ElementHas(Element element, Point node)
+    private bool ElementHas(IElement element, Point2D node)
     {
-        var leftBottom = _context.Grid.Nodes[element.NodeIndexes[0]];
-        var rightTop = _context.Grid.Nodes[element.NodeIndexes[^1]];
+        var leftBottom = _context.Grid.Nodes[element.NodeIds[0]];
+        var rightTop = _context.Grid.Nodes[element.NodeIds[^1]];
 
         return leftBottom.X <= node.X && node.X <= rightTop.X && 
                leftBottom.Y <= node.Y && node.Y <= rightTop.Y;

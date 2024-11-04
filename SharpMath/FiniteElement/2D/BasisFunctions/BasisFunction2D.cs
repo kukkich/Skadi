@@ -3,7 +3,7 @@ using SharpMath.Geometry._2D;
 
 namespace SharpMath.FiniteElement._2D.BasisFunctions;
 
-public class BasisFunction2D : IBasisFunction<Point>
+public class BasisFunction2D : IBasisFunction<Point2D>
 {
     private readonly Func<double, double> _xFunction;
     private readonly Func<double, double> _yFunction;
@@ -14,7 +14,7 @@ public class BasisFunction2D : IBasisFunction<Point>
         _yFunction = yFunction;
     }
 
-    public double Evaluate(Point point)
+    public double Evaluate(Point2D point)
     {
         return Calculate(point.X, point.Y);
     }

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using SharpMath.FEM.Core;
 using SharpMath.FiniteElement.Core.Assembling.Boundary.First;
 using SharpMath.FiniteElement.Core.Assembling.Boundary.Second;
 using SharpMath.FiniteElement.Core.Assembling.Params;
@@ -7,7 +8,8 @@ using SharpMath.Geometry;
 
 namespace SharpMath.FiniteElement;
 
-public class Context<TPoint, TElement, TMatrix>
+public class Context<TPoint, TElement, TMatrix> 
+    where TElement : IElement
 {
     public required Grid<TPoint, TElement> Grid { get; set; }
     public required Equation<TMatrix> Equation { get; set; }
