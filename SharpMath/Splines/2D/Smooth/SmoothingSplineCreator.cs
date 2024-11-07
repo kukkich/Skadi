@@ -13,7 +13,7 @@ public class SmoothingSplineCreator : ISplineCreator<Point2D, IElement>
     private HermiteBasisFunctions2DProvider _basisFunctionsProvider;
     private SplineContext<Point2D, IElement, Matrix> _context;
     private readonly GaussZeidelSolver _slaeSolver;
-    private SplineEquationAssembler _equationAssembler;
+    private SplineEquationAssembler<Point2D> _equationAssembler;
     private bool _allocated;
 
     public SmoothingSplineCreator(GaussZeidelSolver slaeSolver)
@@ -28,18 +28,19 @@ public class SmoothingSplineCreator : ISplineCreator<Point2D, IElement>
             return;
         }
         _context = CreateContext(grid);
-        _equationAssembler = CreateAssembler(_context);
         _slaeSolver.Allocate(grid.Nodes.TotalPoints * 4);
         _allocated = true;
     }
 
-    public ISpline<Point2D> CreateSpline(FuncValue<Point2D>[] funcValues, double alpha)
+    public ISpline<Point2D> CreateSpline(FuncValue<Point2D>[] functionValues, double alpha)
     {
-        _context.FunctionValues = funcValues;
-        _context.Weights = CalculateWeights(funcValues);
+        _equationAssembler = CreateAssembler(_context, alpha);
+
+        _context.FunctionValues = functionValues;
+        _context.Weights = CalculateWeights(functionValues);
         _context.Alpha = alpha;
 
-        _equationAssembler.BuildEquation(_context);
+        _equationAssembler.BuildEquation(_context.Equation, _context.FunctionValues, _context.Grid.Elements, _context.Weights);
 
         var solution = _slaeSolver.Solve(_context.Equation.Matrix, _context.Equation.RightSide);
 
@@ -70,13 +71,13 @@ public class SmoothingSplineCreator : ISplineCreator<Point2D, IElement>
         return context;
     }
 
-    private SplineEquationAssembler CreateAssembler(SplineContext<Point2D, IElement, Matrix> context)
+    private SplineEquationAssembler2D CreateAssembler(SplineContext<Point2D, IElement, Matrix> context, double alpha)
     {
         _basisFunctionsProvider = new HermiteBasisFunctions2DProvider(context);
-        return new SplineEquationAssembler(
-            context,
-            new SplineLocalAssembler(_basisFunctionsProvider),
-            new HermiteLocalAssembler(context),
+        return new SplineEquationAssembler2D(
+            context.Grid.Nodes,
+            new SplineLocalAssembler2D(_basisFunctionsProvider),
+            new HermiteLocalAssembler(context.Grid.Nodes, alpha),
             new DenseMatrixInserter()
         );
     }

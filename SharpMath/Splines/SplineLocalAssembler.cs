@@ -1,17 +1,16 @@
 ﻿using SharpMath.FEM.Core;
 using SharpMath.FiniteElement.Core.Assembling;
 using SharpMath.FiniteElement.Core.BasisFunctions;
-using SharpMath.Geometry._2D;
 using SharpMath.Matrices;
 
 namespace SharpMath.Splines;
 
-public class SplineLocalAssembler : ISplineStackLocalAssembler<IElement, Point2D>
+public abstract class SplineLocalAssembler<TPoint> : ISplineStackLocalAssembler<IElement, TPoint>
 {
-    private readonly IBasisFunctionsProvider<IElement, Point2D> _basisFunctionsProvider;
-    private IBasisFunction<Point2D>[] _basisFunctions;
+    private readonly IBasisFunctionsProvider<IElement, TPoint> _basisFunctionsProvider;
+    private IBasisFunction<TPoint>[] _basisFunctions;
 
-    public SplineLocalAssembler(IBasisFunctionsProvider<IElement, Point2D> basisFunctionsProvider)
+    public SplineLocalAssembler(IBasisFunctionsProvider<IElement, TPoint> basisFunctionsProvider)
     {
         _basisFunctionsProvider = basisFunctionsProvider;
     }
@@ -21,9 +20,9 @@ public class SplineLocalAssembler : ISplineStackLocalAssembler<IElement, Point2D
         _basisFunctions = _basisFunctionsProvider.GetFunctions(element);
     }
 
-    public void AssembleMatrix(IElement element, Point2D point, double weight, StackMatrix matrix, StackIndexPermutation indexes)
+    public void AssembleMatrix(IElement element, TPoint point, double weight, StackMatrix matrix, StackIndexPermutation indexes)
     {
-        for (var i = 0; i < element.NodeIds.Count * 4; i++)
+        for (var i = 0; i < _basisFunctions.Length; i++)
         {
             for (var j = 0; j <= i; j++)
             {
@@ -35,9 +34,9 @@ public class SplineLocalAssembler : ISplineStackLocalAssembler<IElement, Point2D
         FillIndexes(element, indexes);
     }
 
-    public void AssembleRightSide(IElement element, FuncValue<Point2D> functionValue, double weight, Span<double> vector, StackIndexPermutation indexes)
+    public void AssembleRightSide(IElement element, FuncValue<TPoint> functionValue, double weight, Span<double> vector, StackIndexPermutation indexes)
     {
-        for (var i = 0; i < element.NodeIds.Count * 4; i++)
+        for (var i = 0; i < _basisFunctions.Length; i++)
         {
             vector[i] = weight * _basisFunctions[i].Evaluate(functionValue.Point) * functionValue.Value;
         }
@@ -45,14 +44,5 @@ public class SplineLocalAssembler : ISplineStackLocalAssembler<IElement, Point2D
         FillIndexes(element, indexes);
     }
 
-    private static void FillIndexes(IElement element, StackIndexPermutation indexes)
-    {
-        for (var i = 0; i < element.NodeIds.Count; i++)
-        {
-            for (var j = 0; j < 4; j++)
-            {
-                indexes.Permutation[i * 4 + j] = element.NodeIds[i] * 4 + j;
-            }
-        }
-    }
+    protected abstract void FillIndexes(IElement element, StackIndexPermutation indexes);
 }

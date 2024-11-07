@@ -82,7 +82,7 @@ public class RegularGridBuilder : IGridBuilder<Point2D, RegularGridDefinition>
             }
         }
         
-        return new Grid<Point2D, IElement>(new IrregularPointsCollection(nodes), elements);
+        return new Grid<Point2D, IElement>(new IrregularPointsCollection<Point2D>(nodes), elements);
     }
  
     private static (int XNodesCount, int YNodesCount) GetSizes(

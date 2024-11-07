@@ -1,19 +1,21 @@
 ﻿using SharpMath.FEM.Core;
+using SharpMath.FEM.Geometry;
 using SharpMath.FiniteElement.Core.Assembling;
 using SharpMath.FiniteElement.Core.Assembling.TemplateMatrices;
 using SharpMath.Geometry._2D;
 using SharpMath.Matrices;
-using SharpMath.Splines;
 
 namespace SharpMath.FiniteElement._2D.Assembling;
 
 public class HermiteLocalAssembler : IStackLocalAssembler<IElement>
 {
-    private readonly SplineContext<Point2D, IElement, Matrix> _context;
+    private readonly IPointsCollection<Point2D> _nodes; // для GetSizes
+    private readonly double _alpha;
 
-    public HermiteLocalAssembler(SplineContext<Point2D, IElement, Matrix> context)
+    public HermiteLocalAssembler(IPointsCollection<Point2D> nodes, double alpha)
     {
-        _context = context;
+        _nodes = nodes;
+        _alpha = alpha;
     }
 
     public void AssembleMatrix(IElement element, StackMatrix matrix, StackIndexPermutation indexes)
@@ -30,9 +32,9 @@ public class HermiteLocalAssembler : IStackLocalAssembler<IElement>
         {
             for (var j = 0; j <= i; j++)
             {
-                matrix[i, j] = _context.Alpha * 
+                matrix[i, j] = _alpha * 
                                (stiffnessMatrixX[Mu(i), Mu(j)] * massMatrixY[Nu(i), Nu(j)] + 
-                               massMatrixX[Mu(i), Mu(j)] * stiffnessMatrixY[Nu(i), Nu(j)]);
+                                massMatrixX[Mu(i), Mu(j)] * stiffnessMatrixY[Nu(i), Nu(j)]);
                 matrix[j, i] = matrix[i, j];
             }
         }

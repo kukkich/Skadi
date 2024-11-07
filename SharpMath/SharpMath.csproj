@@ -9,8 +9,6 @@
   <ItemGroup>
     <Folder Include="FiniteElement\Core\Assembling\Boundary\Second\" />
     <Folder Include="Matrices\Sparse\Storages\" />
-    <Folder Include="Splines\1D\" />
-    <Folder Include="Splines\2D\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,17 +1,65 @@
-﻿using SharpMath.FEM.Core;
+﻿using SharpMath.EquationsSystem.Solver;
+using SharpMath.FEM.Core;
+using SharpMath.FiniteElement._1D.Assembling;
+using SharpMath.FiniteElement._1D.BasisFunctions;
+using SharpMath.FiniteElement._2D.Assembling;
+using SharpMath.Matrices;
+using SharpMath.Vectors;
 
 namespace SharpMath.Splines._1D.CubicLagrange;
 
 public class LagrangeSplineCreator : ISplineCreator<double, IElement>
 {
-    
-    public void Allocate(Grid<double, IElement> param)
+    private const int InnerNodes = 2;
+    private bool _allocated;
+    private readonly GaussZeidelSolver _slaeSolver;
+    private Grid<double, IElement> _grid;
+    private Equation<Matrix> _equation;
+
+    public LagrangeSplineCreator(GaussZeidelSolver slaeSolver)
     {
-        throw new NotImplementedException();
+        _slaeSolver = slaeSolver;
+    }
+    
+    public void Allocate(Grid<double, IElement> grid)
+    {
+        if (_allocated)
+        {
+            return;
+        }
+
+        _grid = grid;
+        var equationSize = grid.Nodes.TotalPoints + grid.Elements.Length * InnerNodes;
+        _equation = new Equation<Matrix>(
+            Matrix: new Matrix(new double[equationSize, equationSize]),
+            RightSide: Vector.Create(equationSize),
+            Solution: Vector.Create(equationSize)
+        );
+        _slaeSolver.Allocate(equationSize);
+        _allocated = true;
     }
 
-    public ISpline<double> CreateSpline(FuncValue<double>[] funcValues, double alpha)
+    public ISpline<double> CreateSpline(FuncValue<double>[] functionValues, double alpha)
     {
-        throw new NotImplementedException();
+        EnsureAllocated();
+        var localFunctionsProvider = new LagrangeCubicFunction1DProvider(_grid);
+        var equationAssembler = new SplineEquationAssembler1D(
+            _grid.Nodes,
+            new SplineLocalAssembler1D(localFunctionsProvider),
+            new LagrangeCubicAssembler1D(_grid.Nodes, alpha),
+            new DenseMatrixInserter()
+        );
+        equationAssembler.BuildEquation(_equation, functionValues, _grid.Elements);
+        var solution = _slaeSolver.Solve(_equation.Matrix, _equation.RightSide);
+
+        return new LagrangeSpline(localFunctionsProvider, _grid, solution);
+    }
+
+    private void EnsureAllocated()
+    {
+        if (!_allocated)
+        {
+            throw new Exception("Not allocated");
+        }
     }
 }

@@ -1,45 +1,46 @@
 ﻿using SharpMath.FEM.Core;
+using SharpMath.FEM.Geometry;
 using SharpMath.FiniteElement.Core.Assembling;
-using SharpMath.Geometry._2D;
 using SharpMath.Matrices;
 
 namespace SharpMath.Splines;
 
-public class SplineEquationAssembler
+public abstract class SplineEquationAssembler<TPoint>
 {
-    public Equation<Matrix> FinalEquation => _context.Equation;
-
-    private readonly SplineContext<Point2D, IElement, Matrix> _context;
-    private readonly ISplineStackLocalAssembler<IElement, Point2D> _splineLocalAssembler;
+    protected abstract int LocalMatrixSize { get; }
+    protected readonly IPointsCollection<TPoint> Nodes;
+    private readonly ISplineStackLocalAssembler<IElement, TPoint> _splineLocalAssembler;
     private readonly IStackLocalAssembler<IElement> _localAssembler;
     private readonly IStackInserter<Matrix> _inserter;
-
+    
     public SplineEquationAssembler(
-        SplineContext<Point2D, IElement, Matrix> context,
-        ISplineStackLocalAssembler<IElement, Point2D> splineLocalAssembler,
+        IPointsCollection<TPoint> nodes,
+        ISplineStackLocalAssembler<IElement, TPoint> splineLocalAssembler,
         IStackLocalAssembler<IElement> localAssembler,
         IStackInserter<Matrix> inserter
     )
     {
-        _context = context;
+        Nodes = nodes;
         _splineLocalAssembler = splineLocalAssembler;
         _localAssembler = localAssembler;
         _inserter = inserter;
     }
 
-    public SplineEquationAssembler BuildEquation(SplineContext<Point2D, IElement, Matrix> context)
+    public void BuildEquation(
+        Equation<Matrix> equation,
+        FuncValue<TPoint>[] functionValues,
+        IEnumerable<IElement> elements,
+        double[]? weights = null)
     {
-        var equation = context.Equation;
+        var matrix = new StackMatrix(stackalloc double[LocalMatrixSize * LocalMatrixSize], LocalMatrixSize);
+        Span<double> vector = stackalloc double[LocalMatrixSize];
+        var indexes = new StackIndexPermutation(stackalloc int[LocalMatrixSize]);
 
-        var matrix = new StackMatrix(stackalloc double[16 * 16], 16);
-        Span<double> vector = stackalloc double[16];
-        var indexes = new StackIndexPermutation(stackalloc int[16]);
-
-        for (var i = 0; i < context.FunctionValues.Length; i++)
+        for (var i = 0; i < functionValues.Length; i++)
         {
-            var currentFunctionValue = context.FunctionValues[i];
-            var currentWeight = context.Weights[i];
-            var element = context.Grid.Elements.First(e => ElementHas(e, currentFunctionValue.Point));
+            var currentFunctionValue = functionValues[i];
+            var currentWeight = WeightFactory(i);
+            var element = elements.First(e => ElementHas(e, currentFunctionValue.Point));
 
             _splineLocalAssembler.AssembleBasisFunctions(element);
             _splineLocalAssembler.AssembleMatrix(element, currentFunctionValue.Point, currentWeight, matrix, indexes);
@@ -51,22 +52,17 @@ public class SplineEquationAssembler
             _inserter.InsertVector(equation.RightSide, localRightSide);
         }
 
-        foreach (var element in context.Grid.Elements)
+        foreach (var element in elements)
         {
             _localAssembler.AssembleMatrix(element, matrix, indexes);
             var localMatrix = new StackLocalMatrix(matrix, indexes);
             _inserter.InsertMatrix(equation.Matrix, localMatrix);
         }
 
-        return this;
+        return;
+
+        double WeightFactory(int index) => weights == null ? 1d : weights[index];
     }
 
-    private bool ElementHas(IElement element, Point2D node)
-    {
-        var leftBottom = _context.Grid.Nodes[element.NodeIds[0]];
-        var rightTop = _context.Grid.Nodes[element.NodeIds[^1]];
-
-        return leftBottom.X <= node.X && node.X <= rightTop.X && 
-               leftBottom.Y <= node.Y && node.Y <= rightTop.Y;
-    }
+    protected abstract bool ElementHas(IElement element, TPoint node);
 }
