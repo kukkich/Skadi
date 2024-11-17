@@ -2,7 +2,7 @@
 using SharpMath.Matrices.Sparse;
 using SharpMath.Vectors;
 
-namespace SharpMath.FiniteElement._2D.Assembling;
+namespace SharpMath.FiniteElement.Assembling;
 
 public class Inserter : IStackInserter<SparseMatrix>
 {

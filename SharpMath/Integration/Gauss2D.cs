@@ -4,7 +4,7 @@ using SharpMath.Geometry._2D;
 
 namespace SharpMath.Integration;
 
-public class Gauss2D : Method<GaussConfig>
+public class Gauss2D : Method<GaussConfig>, IIntegrator2D
 {
     public Gauss2D(GaussConfig config, ILogger logger)
         : base(config, logger)
@@ -34,7 +34,7 @@ public class Gauss2D : Method<GaussConfig>
                 xSum += Config.Weights[j] * f(new Point2D(x, y));
             }
 
-            ySum += xHalfLength * xSum;
+            ySum += Config.Weights[i] * xHalfLength * xSum;
         }
 
         return yHalfLength * ySum;
@@ -57,9 +57,9 @@ public class GaussConfig
     public static GaussConfig Gauss3(int segments) => new()
     {
         Nodes = [
-            -Math.Sqrt(3d / 7),
+            -Math.Sqrt(3d / 5),
             0,
-            Math.Sqrt(3d / 7),
+            Math.Sqrt(3d / 5),
         ],
         Weights = [
             5d / 9,

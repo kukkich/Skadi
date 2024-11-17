@@ -14,6 +14,7 @@ public class Gauss2DTest
     public void Setup()
     {
         integrator2Degree = new Gauss2D(GaussConfig.Gauss2(1), NullLogger.Instance);
+        integrator4Degree = new Gauss2D(GaussConfig.Gauss4(1), NullLogger.Instance);
     }
 
     [Test]
@@ -59,8 +60,8 @@ public class Gauss2DTest
             ((p.X + 4) * (p.Y + 5) - p.X * p.Y);
         const double expected = -74.8631548557;
 
-        var result = integrator2Degree.Calculate(f, xLine, yLine);
+        var result = integrator4Degree.Calculate(f, xLine, yLine);
         
-        Assert.That(Math.Abs(expected - result), Is.LessThan(2));
+        Assert.That(Math.Abs(expected - result), Is.LessThan(2e-3));
     }
 }

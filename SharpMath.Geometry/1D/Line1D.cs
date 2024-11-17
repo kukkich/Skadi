@@ -4,6 +4,8 @@ namespace SharpMath.Geometry._1D;
 
 public class Line1D : ICurve1D
 {
+    public static Line1D Unit { get; } = new(0, 1);
+
     public double Start { get; }
     public double End { get; }
 
