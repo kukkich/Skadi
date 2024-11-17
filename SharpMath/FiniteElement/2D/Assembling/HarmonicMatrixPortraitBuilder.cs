@@ -5,7 +5,7 @@ using SharpMath.Matrices.Sparse;
 namespace SharpMath.FiniteElement._2D.Assembling;
 
 // Пишется для гармонической 2D с линейными элементами
-public class MatrixPortraitBuilder : IMatrixPortraitBuilder<SparseMatrix, IElement>
+public class HarmonicMatrixPortraitBuilder : IMatrixPortraitBuilder<SparseMatrix, IElement>
 {
     private List<SortedSet<int>> _adjacencyList = null!;
 
