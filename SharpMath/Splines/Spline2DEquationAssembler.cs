@@ -10,7 +10,7 @@ using SharpMath.Matrices;
 
 namespace SharpMath.Splines;
 
-public class SplineEquationAssembler
+public class Spline2DEquationAssembler
 {
     public Equation<Matrix> FinalEquation => _context.Equation;
 
@@ -19,7 +19,7 @@ public class SplineEquationAssembler
     private readonly IStackLocalAssembler<Element> _localAssembler;
     private readonly IStackInserter<Matrix> _inserter;
 
-    public SplineEquationAssembler(
+    public Spline2DEquationAssembler(
         SplineContext<Point, Element, Matrix> context,
         ISplineStackLocalAssembler<Element, Point> splineLocalAssembler,
         IStackLocalAssembler<Element> localAssembler,
@@ -32,7 +32,7 @@ public class SplineEquationAssembler
         _inserter = inserter;
     }
 
-    public SplineEquationAssembler BuildEquation(SplineContext<Point, Element, Matrix> context)
+    public Spline2DEquationAssembler BuildEquation(SplineContext<Point, Element, Matrix> context)
     {
         var equation = context.Equation;
 
@@ -51,7 +51,7 @@ public class SplineEquationAssembler
             var localMatrix = new StackLocalMatrix(matrix, indexes);
             _inserter.InsertMatrix(equation.Matrix, localMatrix);
 
-            _splineLocalAssembler.AssembleRightSide(element, currentFunctionValue, currentWeight,  vector, indexes);
+            _splineLocalAssembler.AssembleRightSide(element, currentFunctionValue, currentWeight, vector, indexes);
             var localRightSide = new StackLocalVector(vector, indexes);
             _inserter.InsertVector(equation.RightSide, localRightSide);
         }

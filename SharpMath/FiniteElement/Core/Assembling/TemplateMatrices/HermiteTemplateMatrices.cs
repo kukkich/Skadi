@@ -5,7 +5,7 @@ namespace SharpMath.FiniteElement.Core.Assembling.TemplateMatrices;
 
 public static class HermiteTemplateMatrices
 {
-    public static ImmutableMatrix HermiteStiffness1D(double elementBoundSize)
+    public static ImmutableMatrix Stiffness1D(double elementBoundSize)
     {
         return new ImmutableMatrix
             (
@@ -20,7 +20,22 @@ public static class HermiteTemplateMatrices
             );
     }
 
-    public static ImmutableMatrix HermiteMass1D(double elementBoundSize)
+    public static ImmutableMatrix StiffnessDerivative1D(double elementBoundSize)
+    {
+        return new ImmutableMatrix
+        (
+            new[,]
+            {
+                {60 / Math.Pow(elementBoundSize, 3), 30 / Math.Pow(elementBoundSize, 2), -60 / Math.Pow(elementBoundSize, 3), 30 / Math.Pow(elementBoundSize, 2)},
+                {30 / Math.Pow(elementBoundSize, 2), 16 / elementBoundSize, -30 / Math.Pow(elementBoundSize, 2), 14 / elementBoundSize},
+                {-60 / Math.Pow(elementBoundSize, 3), -30 / Math.Pow(elementBoundSize, 2), 60 / Math.Pow(elementBoundSize, 3), -30 / Math.Pow(elementBoundSize, 2)},
+                {30 / Math.Pow(elementBoundSize, 2), 14 / elementBoundSize, -30 / Math.Pow(elementBoundSize, 2), 16 / elementBoundSize},
+            }, 
+            1
+        );
+    }
+
+    public static ImmutableMatrix Mass1D(double elementBoundSize)
     {
         return new ImmutableMatrix
             (

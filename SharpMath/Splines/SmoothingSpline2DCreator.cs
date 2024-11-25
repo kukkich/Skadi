@@ -15,15 +15,15 @@ using SharpMath.Vectors;
 
 namespace SharpMath.Splines;
 
-public class SmoothingSplineCreator : ISplineCreator<Point, Element>
+public class SmoothingSpline2DCreator : ISplineCreator<ISpline2D<Point>, Point, Element>
 {
     private HermiteBasisFunctions2DProvider _basisFunctionsProvider;
     private SplineContext<Point, Element, Matrix> _context;
     private readonly GaussZeidelSolver _slaeSolver;
-    private SplineEquationAssembler _equationAssembler;
+    private Spline2DEquationAssembler _2dEquationAssembler;
     private bool _allocated;
 
-    public SmoothingSplineCreator(GaussZeidelSolver slaeSolver)
+    public SmoothingSpline2DCreator(GaussZeidelSolver slaeSolver)
     {
         _slaeSolver = slaeSolver;
     }
@@ -35,18 +35,18 @@ public class SmoothingSplineCreator : ISplineCreator<Point, Element>
             return;
         }
         _context = CreateContext(grid);
-        _equationAssembler = CreateAssembler(_context);
+        _2dEquationAssembler = CreateAssembler(_context);
         _slaeSolver.Allocate(grid.Nodes.TotalPoints * 4);
         _allocated = true;
     }
 
-    public ISpline<Point> CreateSpline(FuncValue[] funcValues, double alpha)
+    public ISpline2D<Point> CreateSpline(FuncValue[] funcValues, double[] weights, double alpha)
     {
         _context.FunctionValues = funcValues;
-        _context.Weights = CalculateWeights(funcValues);
+        _context.Weights = weights;
         _context.Alpha = alpha;
 
-        _equationAssembler.BuildEquation(_context);
+        _2dEquationAssembler.BuildEquation(_context);
 
         var solution = _slaeSolver.Solve(_context.Equation.Matrix, _context.Equation.RightSide);
 
@@ -55,7 +55,7 @@ public class SmoothingSplineCreator : ISplineCreator<Point, Element>
             _context.Equation.Solution[i] = solution[i];
         }
 
-        return new SmoothingSpline(_basisFunctionsProvider, _context.Grid, _context.Equation.Solution);
+        return new SmoothingSpline2D(_basisFunctionsProvider, _context.Grid, _context.Equation.Solution);
     }
 
     private SplineContext<Point, Element, Matrix> CreateContext(Grid<Point, Element> grid)
@@ -77,26 +77,14 @@ public class SmoothingSplineCreator : ISplineCreator<Point, Element>
         return context;
     }
 
-    private SplineEquationAssembler CreateAssembler(SplineContext<Point, Element, Matrix> context)
+    private Spline2DEquationAssembler CreateAssembler(SplineContext<Point, Element, Matrix> context)
     {
         _basisFunctionsProvider = new HermiteBasisFunctions2DProvider(context);
-        return new SplineEquationAssembler(
+        return new Spline2DEquationAssembler(
             context,
-            new SplineLocalAssembler(_basisFunctionsProvider),
+            new Spline2DLocalAssembler(_basisFunctionsProvider),
             new HermiteLocalAssembler(context),
             new DenseMatrixInserter()
         );
-    }
-
-    private static double[] CalculateWeights(FuncValue[] funcValues)
-    {
-        var weights = new double[funcValues.Length];
-
-        for (var i = 0; i < funcValues.Length; i++)
-        {
-            weights[i] = 1;
-        }
-
-        return weights;
     }
 }

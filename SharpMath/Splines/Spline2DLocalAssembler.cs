@@ -7,12 +7,12 @@ using SharpMath.Matrices;
 
 namespace SharpMath.Splines;
 
-public class SplineLocalAssembler : ISplineStackLocalAssembler<Element, Point>
+public class Spline2DLocalAssembler : ISplineStackLocalAssembler<Element, Point>
 {
     private readonly IBasisFunctionsProvider<Element, Point> _basisFunctionsProvider;
     private IBasisFunction<Point>[] _basisFunctions;
 
-    public SplineLocalAssembler(IBasisFunctionsProvider<Element, Point> basisFunctionsProvider)
+    public Spline2DLocalAssembler(IBasisFunctionsProvider<Element, Point> basisFunctionsProvider)
     {
         _basisFunctionsProvider = basisFunctionsProvider;
     }
