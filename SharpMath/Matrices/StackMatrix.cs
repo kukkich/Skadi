@@ -20,7 +20,7 @@ public readonly ref struct StackMatrix
         _values = values;
         Size = size;
     }
-
+    
     private int GetSpanIndex(int row, int column)
     {
         return row * Size + column;

@@ -2,6 +2,7 @@
 using SharpMath.FEM.Core;
 using SharpMath.FiniteElement.Core.Assembling.Boundary.First;
 using SharpMath.FiniteElement.Core.Assembling.Boundary.Second;
+using SharpMath.FiniteElement.Core.Assembling.Boundary.Second.Harmonic;
 using SharpMath.FiniteElement.Core.Assembling.Params;
 using SharpMath.FiniteElement.Materials.HarmonicWithoutChi;
 using SharpMath.Geometry;
@@ -16,5 +17,5 @@ public class Context<TPoint, TElement, TMatrix>
     public required INodeDefinedParameter<Complex> DensityFunctionProvider { get; set; }
     public required IMaterialProvider<Material> Materials { get; set; }
     public required FirstCondition[] FirstConditions { get; set; }
-    public required SecondCondition[] SecondConditions { get; set; }
+    public required HarmonicSecondCondition[] SecondConditions { get; set; }
 }

@@ -150,9 +150,9 @@ public static class LinAl
         {
             AssertSameSize(x, resultMemory);
         }
-        if (matrix.RowIndexes.Length != x.Length)
+        if (matrix.Size != x.Length)
         {
-            throw new ArgumentOutOfRangeException($"{nameof(matrix.RowIndexes)} and {nameof(x)}", "must have the same length");
+            throw new ArgumentOutOfRangeException($"{nameof(matrix.Size)} and {nameof(x)}", "must have the same length");
         }
 
         for (var i = 0; i < x.Length; i++)

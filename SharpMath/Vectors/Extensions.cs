@@ -22,4 +22,12 @@ public static class Extensions
             vector[i] = 0;
         }
     }
+    
+    public static void Nullify(this Span<double> vector)
+    {
+        for (var i = 0; i < vector.Length; i++)
+        {
+            vector[i] = 0;
+        }
+    }
 }

@@ -1,62 +1,40 @@
-﻿using SharpMath.FEM.Core;
+﻿using SharpMath.FEM.Geometry;
 using SharpMath.Geometry._2D;
+using SharpMath.Geometry._2D.Shapes;
 using SharpMath.Matrices;
-using SharpMath.Matrices.Sparse;
-using SharpMath.FiniteElement.Core.Harmonic;
-using SharpMath.Primitives;
 
 namespace SharpMath.FiniteElement.Core.Assembling.Boundary.Second;
 
-public class SecondBoundaryApplier : ISecondBoundaryApplier<SparseMatrix>
+public class SecondBoundaryApplier<TMatrix> : ISecondBoundaryApplier<TMatrix>
 {
-    private readonly Context<Point2D, IElement, SparseMatrix> _context;
-    private readonly IStackInserter<SparseMatrix> _inserter;
+    private readonly IPointsCollection<Point2D> _nodes;
+    private readonly IStackInserter<TMatrix> _inserter;
 
-    public SecondBoundaryApplier(Context<Point2D, IElement, SparseMatrix> context, IStackInserter<SparseMatrix> inserter)
+    public SecondBoundaryApplier(
+        IPointsCollection<Point2D> nodes,
+        IStackInserter<TMatrix> inserter
+    )
     {
-        _context = context;
+        _nodes = nodes;
         _inserter = inserter;
     }
 
-    public void Apply(Equation<SparseMatrix> equation, SecondCondition condition)
+    public void Apply(Equation<TMatrix> equation, SecondBoundary condition)
     {
-        var element = _context.Grid.Elements[condition.ElementId];
-
-        var indexes = GetBoundNodeIndexes(element, condition.Bound, stackalloc int[2]);
-        for (var i = 0; i < indexes.Length; i++)
-        {
-            indexes[i] *= 2;
-            if (condition.Type is ComponentType.Imaginary)
-                indexes[i] += 1;
-        }
-
+        var edge = condition.Edge;
+        var edgeLength = Line2D.GetLength(_nodes[condition.Edge.Begin], _nodes[condition.Edge.End]);
+        
         var defaultMass = new StackMatrix([
             2, 1,
             1, 2
         ], 2);
 
-        var (width, lenght) = GetSizes( element);
-        
-        var massCoef = condition.Bound.Value switch
-        {
-            BoundTypes2D.Bottom or BoundTypes2D.Top => width / 6d,
-            BoundTypes2D.Left or BoundTypes2D.Right => lenght / 6d,
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        var massCoef = edgeLength / 6d;
+
         LinAl.Multiply(massCoef, defaultMass, defaultMass);
 
         var conditionImpact = LinAl.Multiply(defaultMass, condition.Thetta, stackalloc double[2]);
-        var local = new StackLocalVector(conditionImpact, new StackIndexPermutation(indexes));
+        var local = new StackLocalVector(conditionImpact, new StackIndexPermutation([edge.Begin, edge.End]));
         _inserter.InsertVector(equation.RightSide, local);
-    }
-
-    private Span<int> GetBoundNodeIndexes(IElement element, NonNegative<int> bound, Span<int> memory)
-    {
-        throw new NotImplementedException();
-    }
-    
-    private (double Width, double Length) GetSizes(IElement element)
-    {
-        throw new NotImplementedException("Замена для element.Width и element.Length");
     }
 }

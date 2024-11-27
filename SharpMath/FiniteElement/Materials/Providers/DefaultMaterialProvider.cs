@@ -3,9 +3,10 @@ using SharpMath.FiniteElement.Materials.HarmonicWithoutChi;
 
 namespace SharpMath.FiniteElement.Materials.Providers;
 
-public class DefaultMaterialProvider : IMaterialProvider<Material>
+public class DefaultMaterialProvider<TMaterial> : IMaterialProvider<TMaterial> 
+    where TMaterial : new()
 {
-    private static readonly Material Material = new (1d, 1d);
+    private static readonly TMaterial Material = new();
 
-    public Material GetById(int materialId) => Material;
+    public TMaterial GetById(int materialId) => Material;
 }

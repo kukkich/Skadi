@@ -9,21 +9,46 @@ public class Gauss2D : Method<GaussConfig>, IIntegrator2D
     public Gauss2D(GaussConfig config, ILogger logger)
         : base(config, logger)
     {
-        if (config.Segments != 1)
+        if (config.Segments < 1)
         {
-            throw new NotSupportedException();
+            throw new ArgumentException("The number of segments must be at least 1.");
         }
     }
 
     public double Calculate(Func<Point2D, double> f, Line1D xInterval, Line1D yInterval)
     {
+        var integral = 0d;
+
+        var xSegmentLength = (xInterval.End - xInterval.Start) / Config.Segments;
+        var ySegmentLength = (yInterval.End - yInterval.Start) / Config.Segments;
+
+        for (var i = 0; i < Config.Segments; i++)
+        {
+            for (var j = 0; j < Config.Segments; j++)
+            {
+                var xStart = xInterval.Start + i * xSegmentLength;
+                var xEnd = xStart + xSegmentLength;
+
+                var yStart = yInterval.Start + j * ySegmentLength;
+                var yEnd = yStart + ySegmentLength;
+
+                integral += CalculateOnSubinterval(f, xStart, xEnd, yStart, yEnd);
+            }
+        }
+
+        return integral;
+    }
+
+    private double CalculateOnSubinterval(Func<Point2D, double> f, double xStart, double xEnd, double yStart,
+        double yEnd)
+    {
         var ySum = 0d;
 
-        var xHalfLength = (xInterval.End - xInterval.Start) / 2;
-        var xMid = (xInterval.Start + xInterval.End) / 2;
-        var yHalfLength = (yInterval.End - yInterval.Start) / 2;
-        var yMid = (yInterval.Start + yInterval.End) / 2;
-        
+        var xHalfLength = (xEnd - xStart) / 2;
+        var xMid = (xStart + xEnd) / 2;
+        var yHalfLength = (yEnd - yStart) / 2;
+        var yMid = (yStart + yEnd) / 2;
+
         for (var i = 0; i < Config.Nodes.Count; i++)
         {
             var y = (yHalfLength * Config.Nodes[i] + yMid);
@@ -53,31 +78,35 @@ public class GaussConfig
         Weights = [1d, 1d],
         Segments = segments
     };
-    
+
     public static GaussConfig Gauss3(int segments) => new()
     {
-        Nodes = [
+        Nodes =
+        [
             -Math.Sqrt(3d / 5),
             0,
             Math.Sqrt(3d / 5),
         ],
-        Weights = [
+        Weights =
+        [
             5d / 9,
             8d / 9,
             5d / 9
         ],
         Segments = segments
     };
-    
+
     public static GaussConfig Gauss4(int segments) => new()
     {
-        Nodes = [
-            -Math.Sqrt((3 - 2 * Math.Sqrt(6d/5)) / 7),
-            Math.Sqrt((3 - 2 * Math.Sqrt(6d/5)) / 7),
-            -Math.Sqrt((3 + 2 * Math.Sqrt(6d/5)) / 7),
-            Math.Sqrt((3 + 2 * Math.Sqrt(6d/5)) / 7),
+        Nodes =
+        [
+            -Math.Sqrt((3 - 2 * Math.Sqrt(6d / 5)) / 7),
+            Math.Sqrt((3 - 2 * Math.Sqrt(6d / 5)) / 7),
+            -Math.Sqrt((3 + 2 * Math.Sqrt(6d / 5)) / 7),
+            Math.Sqrt((3 + 2 * Math.Sqrt(6d / 5)) / 7),
         ],
-        Weights = [
+        Weights =
+        [
             (18d + Math.Sqrt(30)) / 36,
             (18d + Math.Sqrt(30)) / 36,
             (18d - Math.Sqrt(30)) / 36,

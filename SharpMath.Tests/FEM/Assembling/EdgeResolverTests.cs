@@ -42,7 +42,7 @@ public class EdgeResolverTests
     [TestCase(10, 11, 16)]
     public void EdgeExistAndShouldBeCorrect(int node1, int node2, int expectedEdge)
     {
-        var edge = _edgeResolver.GetEdge(node1, node2);
+        var edge = _edgeResolver.GetEdgeId(node1, node2);
         
         Assert.That(edge, Is.EqualTo(expectedEdge));
     }
@@ -57,7 +57,7 @@ public class EdgeResolverTests
     public void EdgeNotExistShouldThrowException(int node1, int node2)
     {
         Assert.Throws<InvalidOperationException>(() => 
-            _edgeResolver.GetEdge(node1, node2)
+            _edgeResolver.GetEdgeId(node1, node2)
         );
     }
     
@@ -68,7 +68,7 @@ public class EdgeResolverTests
     public void NodesNotExistShouldThrowException(int node1, int node2)
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => 
-            _edgeResolver.GetEdge(node1, node2)
+            _edgeResolver.GetEdgeId(node1, node2)
         );
     }
 
