@@ -78,8 +78,6 @@ public class RegularBoundaryApplier<TMatrix> : IRegularBoundaryApplier<TMatrix>
                 var value = func(node);
                 _firstBoundaryApplier.Apply(matrix, new FirstCondition(nodeId, value));
             }
-
-            _firstBoundaryApplier.Apply(matrix, new FirstCondition());
         }
         else if (condition.Type == BoundaryConditionType.Second)
         {

@@ -12,7 +12,7 @@ public class RegularBoundaryReader(IConfiguration configuration)
         IReadOnlyList<LambdaExpression> lambdaExpressions
         ) Get()
     {
-        var path = configuration["Boundary"] ?? throw new Exception("GridPath not found in configuration.");
+        var path = configuration["Boundary"] ?? throw new Exception("Boundary path not found in configuration.");
         using var reader = new StreamReader(path);
 
         var firstLine = reader.ReadLine();

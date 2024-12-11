@@ -100,8 +100,6 @@ public class QuadLinearAssembler2D : IStackLocalAssembler<IElement>
                 matrix[j, i] = matrix[i, j];
             }
         }
-        
-        
     }
 
     public void AssembleRightSide(IElement element, Span<double> vector, StackIndexPermutation indexes)

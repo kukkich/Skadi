@@ -25,27 +25,4 @@ public static class ExpressionFactory
 
         return Expression.Lambda<Func<Point2D, double>>(body, pointParam);
     }
-
-    public static Expression<Func<Point2D, double, double>> CreatePointWithAdditionalParameter(string expression)
-    {
-        var pointParam = Expression.Parameter(typeof(Point2D), "point");
-        var additionalParam = Expression.Parameter(typeof(double), "additional");
-
-        var xProperty = Expression.PropertyOrField(pointParam, nameof(Point2D.X));
-        var yProperty = Expression.PropertyOrField(pointParam, nameof(Point2D.Y));
-
-        var parameterReplacer = new ParameterExpressionReplacer(
-            ("x", xProperty),
-            ("y", yProperty),
-            ("additional", additionalParam)
-        );
-
-        var parsedBody = System.Linq.Dynamic.Core.DynamicExpressionParser
-            .ParseLambda([pointParam, additionalParam], typeof(double), expression)
-            .Body;
-
-        var body = parameterReplacer.Visit(parsedBody);
-
-        return Expression.Lambda<Func<Point2D, double, double>>(body, pointParam, additionalParam);
-    }
 }
