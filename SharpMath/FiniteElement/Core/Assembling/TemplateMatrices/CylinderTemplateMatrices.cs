@@ -13,7 +13,7 @@ public class CylinderTemplateMatrices
                 { 1d, -1d },
                 { -1d, 1d },
             },
-            (2 * r + elementBoundSize) / (2 * elementBoundSize)
+            (r + elementBoundSize / 2) / elementBoundSize
         );
     }
 

@@ -96,6 +96,8 @@ public static class LinAl
             throw new ArgumentException();
         }
 
+        resultMemory.Nullify();
+
         var rowsIndexes = a.RowsIndexes;
         var columnsIndexes = a.ColumnsIndexes;
         var di = a.Diagonal;
