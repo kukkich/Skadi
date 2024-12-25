@@ -23,6 +23,11 @@ public record struct Point(double X, double Y)
     {
         return new Point(p.X * value, p.Y * value);
     }
+
+    public static double operator *(Point p1, Point p2)
+    {
+        return p1.X * p2.X + p1.Y * p2.Y;
+    }
     
     public Point Normalize()
     {
