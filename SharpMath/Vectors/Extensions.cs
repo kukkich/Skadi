@@ -31,3 +31,19 @@ public static class Extensions
         }
     }
 }
+
+public static class EnumerableVectorExtensions
+{
+    public static Vector ToVector(this IEnumerable<double> source)
+    {
+        return new Vector(source.ToArray());
+    }
+    
+    public static IEnumerable<T> WithNoIndexes<T>(this IReadonlyVector<T> source)
+    {
+        for (var i = 0; i < source.Length; i++)
+        {
+            yield return source[i];
+        }
+    }
+}

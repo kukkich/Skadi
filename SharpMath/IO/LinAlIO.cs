@@ -35,7 +35,7 @@ public static class LinAlIO
         }
     }
 
-    public static void Write(IReadonlyVector<double> v, string path)
+    public static void Write(IReadonlyVector<double> v, string path, bool specifyLength = true)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -45,7 +45,10 @@ public static class LinAlIO
         try
         {
             using var writer = new StreamWriter(path);
-            writer.WriteLine(v.Length);
+            if (specifyLength)
+            {
+                writer.WriteLine(v.Length);
+            }
 
             for (var i = 0; i < v.Length; i++)
             {
@@ -59,14 +62,38 @@ public static class LinAlIO
         }
     }
 
-    public static Vector ReadVector(string path)
+    public static Vector ReadVector(string path, bool lengthSpecified = true)
     {
         using var stream = new StreamReader(File.OpenRead(path));
-        var size = int.Parse(stream.ReadLine()!);
-        var result = Vector.Create(size, _ => double.Parse(stream.ReadLine()!));
+        Vector result;
+        if (lengthSpecified)
+        {
+            var size = int.Parse(stream.ReadLine()!);
+            result = Vector.Create(size, _ => double.Parse(stream.ReadLine()));
+        }
+        else
+        {
+            result = new Vector(EnumerateFileValues(stream));
+        }
 
         return result;
+
+        IEnumerable<double> EnumerateFileValues(StreamReader stream)
+        {
+            while (stream.ReadLine() is { } line)
+            {
+                line = line.Trim();
+
+                if (string.IsNullOrEmpty(line))
+                {
+                    yield break;
+                }
+
+                yield return double.Parse(line);
+            }
+        }
     }
+
     public static Matrix Read(string path, Matrix? resultMemory = null)
     {
         if (string.IsNullOrEmpty(path))

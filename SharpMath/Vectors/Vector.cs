@@ -9,11 +9,11 @@ public class Vector : IVector<double>
     {
         return Create(length, _ => defaultValue);
     }
-    public static Vector Create(int length, Func<int, double> filling)
+    public static Vector Create(int length, Func<int, double> factory)
     {
         var values = new double[length];
         for (int i = 0; i < length; i++)
-            values[i] = filling(i);
+            values[i] = factory(i);
 
         return new Vector(values);
     }
@@ -59,6 +59,11 @@ public class Vector : IVector<double>
     public Vector(params double[] values)
     {
         _values = values;
+    }
+    
+    public Vector(IEnumerable<double> values)
+    {
+        _values = values.ToArray();
     }
 
     public static double ScalarProduct(IReadonlyVector<double> v, IReadonlyVector<double> u)
