@@ -1,18 +1,17 @@
 ﻿using SharpMath.FiniteElement.Core.Assembling.Params;
-using SharpMath.FiniteElement.Materials.HarmonicWithoutChi;
 
 namespace SharpMath.FiniteElement.Materials.Providers;
 
-public class FromArrayMaterialProvider : IMaterialProvider<Material>
+public class FromArrayMaterialProvider<TMaterial> : IMaterialProvider<TMaterial>
 {
-    private readonly Material[] _materials;
+    private readonly TMaterial[] _materials;
 
-    public FromArrayMaterialProvider(Material[] materials)
+    public FromArrayMaterialProvider(TMaterial[] materials)
     {
         _materials = materials;
     }
 
-    public Material GetById(int materialId)
+    public TMaterial GetById(int materialId)
     {
         return _materials[materialId];
     }

@@ -4,7 +4,7 @@ using SharpMath.FiniteElement.Core.Assembling.Boundary.First;
 using SharpMath.Geometry._2D;
 using SharpMath.Matrices;
 using SharpMath.Matrices.Sparse;
-using SharpMath.FiniteElement.Core.Assembling.Boundary.Second;
+using SharpMath.FiniteElement.Core.Assembling.Boundary.Second.Harmonic;
 
 namespace SharpMath.FiniteElement._2D;
 
@@ -16,21 +16,21 @@ public class EquationAssembler
     private readonly IStackLocalAssembler<IElement> _localAssembler;
     private readonly IStackInserter<SparseMatrix> _inserter;
     private readonly IFirstBoundaryApplier<SparseMatrix> _firstBoundaryApplier;
-    private readonly ISecondBoundaryApplier<SparseMatrix> _secondBoundaryApplier;
+    private readonly IHarmonicSecondBoundaryApplier<SparseMatrix> _harmonicSecondBoundaryApplier;
 
     public EquationAssembler(
         Context<Point2D, IElement, SparseMatrix> context,
         IStackLocalAssembler<IElement> localAssembler,
         IStackInserter<SparseMatrix> inserter,
         IFirstBoundaryApplier<SparseMatrix> firstBoundaryApplier,
-        ISecondBoundaryApplier<SparseMatrix> secondBoundaryApplier
+        IHarmonicSecondBoundaryApplier<SparseMatrix> harmonicSecondBoundaryApplier
     )
     {
         _context = context;
         _localAssembler = localAssembler;
         _inserter = inserter;
         _firstBoundaryApplier = firstBoundaryApplier;
-        _secondBoundaryApplier = secondBoundaryApplier;
+        _harmonicSecondBoundaryApplier = harmonicSecondBoundaryApplier;
     }
 
     public EquationAssembler BuildEquation(Context<Point2D, IElement, SparseMatrix> context)
@@ -71,7 +71,7 @@ public class EquationAssembler
     {
         foreach (var condition in context.SecondConditions)
         {
-            _secondBoundaryApplier.Apply(context.Equation, condition);
+            _harmonicSecondBoundaryApplier.Apply(context.Equation, condition);
         }
 
         return this;

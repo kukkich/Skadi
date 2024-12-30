@@ -8,13 +8,11 @@ public class SymmetricSparseMatrix
     {
         get
         {
-            if (rowIndex < 0) throw new ArgumentOutOfRangeException(nameof(rowIndex));
+            ArgumentOutOfRangeException.ThrowIfNegative(rowIndex);
 
-            var end = _rowIndexes[rowIndex];
+            var end = _rowIndexes[rowIndex + 1];
 
-            var begin = rowIndex == 0
-                ? 0
-                : _rowIndexes[rowIndex - 1];
+            var begin = _rowIndexes[rowIndex];
             var length = end - begin;
 
             return new SparseMatrixRow(
@@ -32,17 +30,14 @@ public class SymmetricSparseMatrix
             if (rowIndex < 0 || columnIndex < 0) throw new ArgumentOutOfRangeException(nameof(rowIndex));
             if (rowIndex == columnIndex)
             {
-                //Diagonal[rowIndex] = value;
                 return ref Diagonal[rowIndex];
             }
             if (columnIndex > rowIndex)
                 (rowIndex, columnIndex) = (columnIndex, rowIndex);
 
-            var end = _rowIndexes[rowIndex];
+            var end = _rowIndexes[rowIndex + 1];
 
-            var begin = rowIndex == 0
-                ? 0
-                : _rowIndexes[rowIndex - 1];
+            var begin = _rowIndexes[rowIndex];
 
             for (var i = begin; i < end; i++)
             {
@@ -57,6 +52,7 @@ public class SymmetricSparseMatrix
 
     public ReadOnlySpan<int> RowIndexes => new(_rowIndexes);
     public ReadOnlySpan<int> ColumnIndexes => new(_columnIndexes);
+    public int Size => Diagonal.Length;
     public double[] Diagonal { get; }
     public double[] Values { get; }
 
@@ -88,7 +84,7 @@ public class SymmetricSparseMatrix
     {
         _rowIndexes = rowIndexes.ToArray();
         _columnIndexes = columnIndexes.ToArray();
-        Diagonal = new double[_rowIndexes.Length];
+        Diagonal = new double[_rowIndexes.Length - 1];
         Values = new double[_columnIndexes.Length];
     }
 }

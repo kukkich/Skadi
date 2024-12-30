@@ -19,7 +19,9 @@ public class SymmetricMatrixPortraitBuilder : IMatrixPortraitBuilder<SymmetricSp
         buf.Insert(0, 0);
 
         var rowsIndexes = buf.ToArray();
-        var columnsIndexes = _adjacencyList.SelectMany(nodeList => nodeList).ToArray();
+        var columnsIndexes = _adjacencyList
+            .SelectMany(nodeList => nodeList)
+            .ToArray();
 
         return new SymmetricSparseMatrix(rowsIndexes, columnsIndexes);
     }

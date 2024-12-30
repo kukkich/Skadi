@@ -25,14 +25,14 @@ public class EdgeResolver : IEdgeResolver
         var edges = edgesNodes.Select(tuple =>
             {
                 var (minNode, maxNode) = tuple;
-                return GetEdge(minNode, maxNode);
+                return GetEdgeId(minNode, maxNode);
             }).Order()
             .ToArray();
 
         return edges;
     }
 
-    public int GetEdge(int node1, int node2)
+    public int GetEdgeId(int node1, int node2)
     {
         var (minNodeId, maxNodeId) = (int.Min(node1, node2), int.Max(node1, node2));
         if (_rowIndexes.Length <= maxNodeId)

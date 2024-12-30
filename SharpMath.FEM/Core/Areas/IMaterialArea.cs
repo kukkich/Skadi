@@ -2,5 +2,5 @@
 
 public interface IMaterialArea
 {
-    public int MaterialId { get; set; }
+    public int MaterialId { get; init; }
 }

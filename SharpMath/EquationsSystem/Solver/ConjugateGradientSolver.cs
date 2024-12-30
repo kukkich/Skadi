@@ -37,7 +37,7 @@ public class ConjugateGradientSolver : ISLAESolver<SymmetricSparseMatrix>
     {
         var fNorm = _equation.RightSide.Norm;
 
-        for (var i = 1; i < _maxIteration && (_r.Norm / fNorm) >= _precision; i++)
+        for (var i = 1; i < _maxIteration && (_r.Norm / fNorm) >= _precision*_precision; i++)
         {
             var preconditionedRScalarProduct = Vector.ScalarProduct(
                 _preconditioner.MultiplyOn(_r, _aByZProduct), // could pass any memory
@@ -75,7 +75,13 @@ public class ConjugateGradientSolver : ISLAESolver<SymmetricSparseMatrix>
             );
 
             _r = _rNext;
+
+            if (i % 200 == 0)
+            {
+                Console.WriteLine($"[{i}]: {_r.Norm / fNorm:E15} / {_precision*_precision:E15}");
+            }
         }
+
     }
 
     private void InitializeStartValues(Equation<SymmetricSparseMatrix> equation)

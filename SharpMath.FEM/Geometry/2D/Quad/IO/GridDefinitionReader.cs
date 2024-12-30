@@ -26,6 +26,22 @@ public class GridDefinitionReader(IConfiguration configuration) : IGridDefinitio
     private static (ICurveSplitter[] xSplitter, ICurveSplitter[] ySplitters) ReadSplitters(string splitPath)
     {
         using var splitReader = new StreamReader(splitPath);
+        var nestingLine = splitReader.ReadLine();
+        if (nestingLine == null)
+        {
+            throw new Exception("Missing splitter data for nestingLine.");
+        }
+
+        var nestingArgs = nestingLine.Split(' ')
+            .Select(int.Parse)
+            .ToArray();
+        if (nestingArgs.Length != 2)
+        {
+            throw new Exception($"NestingArgs has invalid format: {nestingLine}");
+        }
+        var (nestingX, nestingY) = (nestingArgs[0], nestingArgs[1]);
+        
+        
         var xLine = splitReader.ReadLine();
         if (xLine == null)
         {
@@ -54,7 +70,7 @@ public class GridDefinitionReader(IConfiguration configuration) : IGridDefinitio
                 ? cx 
                 : 1d / cx;
             
-            xSplitters[i] = GetSplitter(nx, cx);
+            xSplitters[i] = GetSplitter(nx * nestingX, cx);
         }
 
         var yLine = splitReader.ReadLine();
@@ -85,7 +101,7 @@ public class GridDefinitionReader(IConfiguration configuration) : IGridDefinitio
                 ? cy 
                 : 1d / cy;
             
-            ySplitters[i] = GetSplitter(ny, cy);
+            ySplitters[i] = GetSplitter(ny * nestingY, cy);
         }
 
         return (xSplitters, ySplitters);
@@ -125,7 +141,11 @@ public class GridDefinitionReader(IConfiguration configuration) : IGridDefinitio
             var areaParams = areaLine.Split(',');
             if (areaParams.Length != 5)
             {
-                throw new Exception($"Invalid number of parameters for area {i}.");
+                areaParams = areaLine.Split(' ');
+                if (areaParams.Length != 5)
+                {
+                    throw new Exception($"Invalid number of parameters for area {i}.");
+                }
             }
 
             var materialId = int.Parse(areaParams[0].Trim());

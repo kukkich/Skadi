@@ -4,7 +4,7 @@ using SharpMath.Geometry._2D;
 
 namespace SharpMath.FiniteElement._2D.Parameters;
 
-public class ConvectionVelocity : IUniversalParameter<Point2D, Point2D>
+public class ConvectionVelocity : IUniversalParameterProvider<Point2D, Point2D>
 {
     private readonly double _maxVelocity;
     private readonly double _height;
