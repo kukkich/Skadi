@@ -141,7 +141,11 @@ public class GridDefinitionReader(IConfiguration configuration) : IGridDefinitio
             var areaParams = areaLine.Split(',');
             if (areaParams.Length != 5)
             {
-                throw new Exception($"Invalid number of parameters for area {i}.");
+                areaParams = areaLine.Split(' ');
+                if (areaParams.Length != 5)
+                {
+                    throw new Exception($"Invalid number of parameters for area {i}.");
+                }
             }
 
             var materialId = int.Parse(areaParams[0].Trim());
