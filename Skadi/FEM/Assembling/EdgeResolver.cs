@@ -18,78 +18,75 @@ public class EdgeResolver : IEdgeResolver
         _rowIndexes = portrait.RowIndexes;
     }
     
-    public int[] GetElementEdges(int elementId)
+    public int[] GetEdgeIdsByElement(int elementId)
     {
         var element = _elements[elementId];
         var edgesNodes = _elementEdgeResolver.GetEdgedNodes(element);
-        var edges = edgesNodes.Select(tuple =>
-            {
-                var (minNode, maxNode) = tuple;
-                return GetEdgeId(minNode, maxNode);
-            }).Order()
+        var edges = edgesNodes
+            .Select(GetEdgeId)
+            .Order()
             .ToArray();
 
         return edges;
     }
 
-    public int GetEdgeId(int node1, int node2)
+    public int GetEdgeId(Edge edge)
     {
-        var (minNodeId, maxNodeId) = (int.Min(node1, node2), int.Max(node1, node2));
-        if (_rowIndexes.Length <= maxNodeId)
+        if (_rowIndexes.Length <= edge.End)
         {
-            throw new ArgumentOutOfRangeException($"No node with id = {maxNodeId}");
+            throw new ArgumentOutOfRangeException($"No node with id = {edge.End}");
         }
-        if (_rowIndexes.Length <= maxNodeId + 1)
+        if (_rowIndexes.Length <= edge.End + 1)
         {
-            throw new ArgumentOutOfRangeException($"No node with id = {maxNodeId + 1}");
+            throw new ArgumentOutOfRangeException($"No node with id = {edge.End + 1}");
         }
         
-        var leftColumnIndexesBound = _rowIndexes[maxNodeId];
-        var rightColumnIndexesBound = _rowIndexes[maxNodeId + 1];
+        var leftColumnIndexesBound = _rowIndexes[edge.End];
+        var rightColumnIndexesBound = _rowIndexes[edge.End + 1];
 
         for (var i = leftColumnIndexesBound; i < rightColumnIndexesBound; i++)
         {
-            if (_columnIndexes[i] != minNodeId)
+            if (_columnIndexes[i] != edge.Begin)
             {
                 continue;
             }
             return i;
         }
         
-        throw new InvalidOperationException($"No edge for nodes ({minNodeId}, {maxNodeId})");
+        throw new InvalidOperationException($"No edge for edge {edge}");
     }
 
-    public bool TryGetEdge(int node1, int node2, out int? edge)
+    public bool TryGetEdgeId(Edge edge, out int? edgeId)
     {
-        edge = null;
-        var (minNodeId, maxNodeId) = (int.Min(node1, node2), int.Max(node1, node2));
-        if (_rowIndexes.Length <= maxNodeId + 1)
+        edgeId = null;
+        if (_rowIndexes.Length <= edge.End + 1)
         {
             return false;
         }
         
-        var leftColumnIndexesBound = _rowIndexes[maxNodeId];
-        var rightColumnIndexesBound = _rowIndexes[maxNodeId + 1];
+        var leftColumnIndexesBound = _rowIndexes[edge.End];
+        var rightColumnIndexesBound = _rowIndexes[edge.End + 1];
 
         for (var i = leftColumnIndexesBound; i < rightColumnIndexesBound; i++)
         {
-            if (_columnIndexes[i] != minNodeId)
+            if (_columnIndexes[i] != edge.Begin)
             {
                 continue;
             }
-            edge = i;
+            edgeId = i;
             return true;
         }
 
         return false;
     }
 
-    public (int minNode, int maxNode) GetNodesByEdge(int edgeId)
+    public Edge GetEdgeById(int edgeId)
     {
         if (edgeId < 0 || edgeId >= _columnIndexes.Length)
         {
             throw new ArgumentOutOfRangeException(nameof(edgeId));
         }
+        
         var minNode = _columnIndexes[edgeId];
         var index = Array.BinarySearch(_rowIndexes, edgeId);
         index = index switch
@@ -105,19 +102,19 @@ public class EdgeResolver : IEdgeResolver
         }
         
         return _rowIndexes[index] == edgeId 
-            ? (minNode, index) 
-            : (minNode, index - 1);
+            ? new Edge(minNode, index) 
+            : new Edge(minNode, index - 1);
     }
 
-    public int[] GetElementsByEdge(int edgeId)
+    public int[] GetElementsByEdgeId(int edgeId)
     {
-        var (node1, node2) = GetNodesByEdge(edgeId);
+        var edge = GetEdgeById(edgeId);
         var result = new List<int>(2);
 
         for (var i = 0; i < _elements.Count; i++)
         {
             var element = _elements[i];
-            if (!(element.NodeIds.Contains(node1) && element.NodeIds.Contains(node2)))
+            if (!(element.NodeIds.Contains(edge.Begin) && element.NodeIds.Contains(edge.Begin)))
             {
                 continue;
             }

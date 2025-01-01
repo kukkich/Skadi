@@ -1,6 +1,8 @@
-﻿namespace Skadi.FEM.Core.Geometry.Edges;
+﻿using System.Collections;
 
-public readonly record struct Edge
+namespace Skadi.FEM.Core.Geometry.Edges;
+
+public readonly record struct Edge : IEnumerable<int>
 {
     public int Begin { get; }
     public int End { get; }
@@ -9,5 +11,16 @@ public readonly record struct Edge
     {
         Begin = int.Min(node1, node2);
         End = int.Max(node1, node2);
+    }
+
+    public IEnumerator<int> GetEnumerator()
+    {
+        yield return Begin;
+        yield return End;
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }

@@ -48,7 +48,7 @@ public class EdgesPortraitBuilder : IEdgesPortraitBuilder
             {
                 foreach (var nodeIndex in nodesIndexes)
                 {
-                    if (currentNode > nodeIndex && _edgeResolver.HasEdgeWithNode(element, currentNode, nodeIndex))
+                    if (currentNode > nodeIndex && _edgeResolver.HasEdgeWithNode(element, new Edge(currentNode, nodeIndex)))
                         adjacencyList[currentNode].Add(nodeIndex);
                 }
             }

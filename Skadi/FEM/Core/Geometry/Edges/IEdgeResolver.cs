@@ -2,9 +2,9 @@
 
 public interface IEdgeResolver
 {
-    public int[] GetElementEdges(int elementId);
-    public int GetEdgeId(int node1, int node2);
-    public bool TryGetEdge(int node1, int node2, out int? edge);
-    public (int minNode, int maxNode) GetNodesByEdge(int edgeId);
-    public int[] GetElementsByEdge(int edgeId);
+    public int[] GetEdgeIdsByElement(int elementId);
+    public int GetEdgeId(Edge edge);
+    public bool TryGetEdgeId(Edge edge, out int? edgeId);
+    public Edge GetEdgeById(int edgeId);
+    public int[] GetElementsByEdgeId(int edgeId);
 }

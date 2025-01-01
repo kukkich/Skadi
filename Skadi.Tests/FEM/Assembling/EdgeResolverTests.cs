@@ -42,7 +42,7 @@ public class EdgeResolverTests
     [TestCase(10, 11, 16)]
     public void EdgeExistAndShouldBeCorrect(int node1, int node2, int expectedEdge)
     {
-        var edge = _edgeResolver.GetEdgeId(node1, node2);
+        var edge = _edgeResolver.GetEdgeId(new Edge(node1, node2));
         
         Assert.That(edge, Is.EqualTo(expectedEdge));
     }
@@ -57,7 +57,7 @@ public class EdgeResolverTests
     public void EdgeNotExistShouldThrowException(int node1, int node2)
     {
         Assert.Throws<InvalidOperationException>(() => 
-            _edgeResolver.GetEdgeId(node1, node2)
+            _edgeResolver.GetEdgeId(new Edge(node1, node2))
         );
     }
     
@@ -68,7 +68,7 @@ public class EdgeResolverTests
     public void NodesNotExistShouldThrowException(int node1, int node2)
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => 
-            _edgeResolver.GetEdgeId(node1, node2)
+            _edgeResolver.GetEdgeId(new Edge(node1, node2))
         );
     }
 
@@ -82,23 +82,23 @@ public class EdgeResolverTests
     [TestCase(12, 6, 9)]
     [TestCase(15, 8, 11)]
     [TestCase(16, 10, 11)]
-    public void GetNodesByEdgeWhenEdgeExistShouldBeCorrect(int edge, int minNodeExpected, int maxNodeExpected)
+    public void GetNodesByEdgeWhenEdgeExistShouldBeCorrect(int edgeId, int minNodeExpected, int maxNodeExpected)
     {
-        var (minNode, maxNode) = _edgeResolver.GetNodesByEdge(edge);
+        var edge = _edgeResolver.GetEdgeById(edgeId);
         Assert.Multiple(() =>
         {
-            Assert.That(minNode, Is.EqualTo(minNodeExpected));
-            Assert.That(maxNode, Is.EqualTo(maxNodeExpected));
+            Assert.That(edge.Begin, Is.EqualTo(minNodeExpected));
+            Assert.That(edge.End, Is.EqualTo(maxNodeExpected));
         });
     }
     
     [TestCase(-1)]
     [TestCase(17)]
     [TestCase(21)]
-    public void GivenEdgeNotExistAndShouldTrowException(int edge)
+    public void GivenEdgeNotExistAndShouldTrowException(int edgeId)
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => 
-            _edgeResolver.GetNodesByEdge(edge)
+            _edgeResolver.GetEdgeById(edgeId)
         );
     }
 
@@ -108,7 +108,7 @@ public class EdgeResolverTests
     [TestCase(5, 11, 13, 15, 16)]
     public void ElementEdgesShouldBeCorrect(int elementId, params int[] expectedEdges)
     {
-        var edges = _edgeResolver.GetElementEdges(elementId);
+        var edges = _edgeResolver.GetEdgeIdsByElement(elementId);
         Assert.That(edges.SequenceEqual(expectedEdges), Is.True);
     }
 }
