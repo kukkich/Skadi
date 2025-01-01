@@ -1,8 +1,10 @@
 ﻿using Skadi.FEM.Core;
 using Skadi.Geometry._2D;
 using Skadi.EquationsSystem.Solver;
-using Skadi.FiniteElement._2D.Assembling;
-using Skadi.FiniteElement._2D.BasisFunctions;
+using Skadi.FEM._2D.Assembling;
+using Skadi.FEM._2D.BasisFunctions;
+using Skadi.FEM.Assembling;
+using Skadi.FEM.Core.Geometry;
 using Skadi.Matrices;
 using Skadi.Vectors;
 

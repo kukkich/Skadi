@@ -7,10 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Skadi", "Skadi\Skadi.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Skadi.Tests", "Skadi.Tests\Skadi.Tests.csproj", "{EC2E1EB0-0E67-4352-8971-70F5366327D6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Skadi.Geometry", "Skadi.Geometry\Skadi.Geometry.csproj", "{D324A43A-4A25-43E2-B3FA-DCFDB347A938}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skadi.FEM", "Skadi.FEM\Skadi.FEM.csproj", "{5AE4CBD1-9E6D-4C79-8CD1-A9D441F60871}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,14 +21,6 @@ Global
 		{EC2E1EB0-0E67-4352-8971-70F5366327D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC2E1EB0-0E67-4352-8971-70F5366327D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC2E1EB0-0E67-4352-8971-70F5366327D6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D324A43A-4A25-43E2-B3FA-DCFDB347A938}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D324A43A-4A25-43E2-B3FA-DCFDB347A938}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D324A43A-4A25-43E2-B3FA-DCFDB347A938}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D324A43A-4A25-43E2-B3FA-DCFDB347A938}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5AE4CBD1-9E6D-4C79-8CD1-A9D441F60871}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5AE4CBD1-9E6D-4C79-8CD1-A9D441F60871}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5AE4CBD1-9E6D-4C79-8CD1-A9D441F60871}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5AE4CBD1-9E6D-4C79-8CD1-A9D441F60871}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

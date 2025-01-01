@@ -1,6 +1,7 @@
 ﻿using Skadi.FEM.Core;
+using Skadi.FEM.Core.BasisFunctions;
+using Skadi.FEM.Core.Geometry;
 using Skadi.Geometry._2D;
-using Skadi.FiniteElement.Core.BasisFunctions;
 using Skadi.Vectors;
 
 namespace Skadi.Splines._2D.Smooth;

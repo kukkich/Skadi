@@ -1,5 +1,6 @@
-﻿using Skadi.FEM.Core;
-using Skadi.FiniteElement._1D.BasisFunctions;
+﻿using Skadi.FEM._1D.BasisFunctions;
+using Skadi.FEM.Core;
+using Skadi.FEM.Core.Geometry;
 using Skadi.Vectors;
 
 namespace Skadi.Splines._1D.CubicLagrange;

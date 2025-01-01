@@ -32,14 +32,14 @@ public class Gauss2D : Method<GaussConfig>, IIntegrator2D
                 var yStart = yInterval.Start + j * ySegmentLength;
                 var yEnd = yStart + ySegmentLength;
 
-                integral += CalculateOnSubinterval(f, xStart, xEnd, yStart, yEnd);
+                integral += CalculateOnSubInterval(f, xStart, xEnd, yStart, yEnd);
             }
         }
 
         return integral;
     }
 
-    private double CalculateOnSubinterval(Func<Point2D, double> f, double xStart, double xEnd, double yStart,
+    private double CalculateOnSubInterval(Func<Point2D, double> f, double xStart, double xEnd, double yStart,
         double yEnd)
     {
         var ySum = 0d;
@@ -72,6 +72,10 @@ public class GaussConfig
     public IReadOnlyList<double> Weights { get; init; }
     public int Segments { get; init; }
 
+    private GaussConfig()
+    {
+    }
+    
     public static GaussConfig Gauss2(int segments) => new()
     {
         Nodes = [-1d / Math.Sqrt(3), 1d / Math.Sqrt(3)],

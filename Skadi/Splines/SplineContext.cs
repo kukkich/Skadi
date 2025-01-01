@@ -1,4 +1,5 @@
 ﻿using Skadi.FEM.Core;
+using Skadi.FEM.Core.Geometry;
 
 namespace Skadi.Splines;
 

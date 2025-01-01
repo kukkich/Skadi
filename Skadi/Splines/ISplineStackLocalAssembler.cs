@@ -1,4 +1,4 @@
-﻿using Skadi.FiniteElement.Core.Assembling;
+﻿using Skadi.FEM.Core.Assembling;
 using Skadi.Matrices;
 
 namespace Skadi.Splines;

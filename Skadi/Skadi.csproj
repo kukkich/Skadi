@@ -7,8 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="FiniteElement\Assembling\Boundary\" />
-    <Folder Include="FiniteElement\Core\Assembling\Boundary\Third\" />
+    <Folder Include="FEM\Assembling\Boundary\" />
+    <Folder Include="FEM\Core\Assembling\Boundary\Third\" />
+    <Folder Include="FEM\Deprecated\Core\Assembling\Boundary\" />
+    <Folder Include="Geometry\" />
     <Folder Include="Matrices\Sparse\Storages\" />
   </ItemGroup>
 
@@ -16,11 +18,8 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.11.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.4.9" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Skadi.FEM\Skadi.FEM.csproj" />
-    <ProjectReference Include="..\Skadi.Geometry\Skadi.Geometry.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

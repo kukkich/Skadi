@@ -1,6 +1,6 @@
-﻿using Skadi.FEM.Geometry;
-using Skadi.FEM.Geometry._2D.Quad;
-using Skadi.FiniteElement.Assembling;
+﻿using Skadi.FEM.Assembling;
+using Skadi.FEM.Core.Geometry._2D.Quad;
+using Skadi.FEM.Core.Geometry.Edges;
 using Skadi.Geometry._2D;
 using Skadi.Geometry.Splitting;
 

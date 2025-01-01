@@ -1,6 +1,7 @@
 ﻿using Skadi.FEM.Core;
-using Skadi.FiniteElement.Core.Assembling;
-using Skadi.FiniteElement.Core.BasisFunctions;
+using Skadi.FEM.Core.Assembling;
+using Skadi.FEM.Core.BasisFunctions;
+using Skadi.FEM.Core.Geometry;
 using Skadi.Matrices;
 
 namespace Skadi.Splines;
