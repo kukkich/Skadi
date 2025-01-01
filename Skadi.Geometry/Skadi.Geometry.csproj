@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Skadi.Primitives\Skadi.Primitives.csproj" />
-  </ItemGroup>
-
 </Project>

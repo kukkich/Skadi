@@ -1,16 +1,14 @@
-﻿using Skadi.Geometry._2D;
-using Skadi.Primitives;
-using Skadi.Geometry.Shapes;
+﻿using Skadi.Geometry.Shapes;
 
 namespace Skadi.Geometry.Splitting;
 
 public class ProportionalSplitter : ICurveSplitter
 {
-    public Positive<int> Steps { get; }
+    public int Steps { get; }
     public double DischargeRatio { get; }
     private readonly double _lengthCoefficient;
 
-    public ProportionalSplitter(Positive<int> steps, double dischargeRatio)
+    public ProportionalSplitter(int steps, double dischargeRatio)
     {
         if (Math.Abs(dischargeRatio - 1d) < 1e-5)
             throw new NotSupportedException();

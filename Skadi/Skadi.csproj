@@ -21,7 +21,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Skadi.FEM\Skadi.FEM.csproj" />
     <ProjectReference Include="..\Skadi.Geometry\Skadi.Geometry.csproj" />
-    <ProjectReference Include="..\Skadi.Primitives\Skadi.Primitives.csproj" />
   </ItemGroup>
 
 </Project>

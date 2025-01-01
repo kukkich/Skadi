@@ -1,13 +1,12 @@
-﻿using Skadi.Primitives;
-using Skadi.Geometry.Shapes;
+﻿using Skadi.Geometry.Shapes;
 
 namespace Skadi.Geometry.Splitting;
 
 public class UniformSplitter : ICurveSplitter
 {
-    public Positive<int> Steps { get; }
+    public int Steps { get; }
 
-    public UniformSplitter(Positive<int> steps)
+    public UniformSplitter(int steps)
     {
         Steps = steps;
     }

@@ -1,6 +1,5 @@
 ﻿using Skadi.FEM.Core;
 using Skadi.Geometry._2D;
-using Skadi.Primitives;
 using Skadi.FiniteElement.Core.Harmonic;
 using Skadi.Matrices;
 using Skadi.Matrices.Sparse;
@@ -37,7 +36,7 @@ public class HarmonicSecondBoundaryApplier : IHarmonicSecondBoundaryApplier<Spar
 
         var (width, lenght) = GetSizes( element);
         
-        var massCoef = condition.LocalBound.Value switch
+        var massCoef = condition.LocalBound switch
         {
             BoundTypes2D.Bottom or BoundTypes2D.Top => width / 6d,
             BoundTypes2D.Left or BoundTypes2D.Right => lenght / 6d,
@@ -50,7 +49,7 @@ public class HarmonicSecondBoundaryApplier : IHarmonicSecondBoundaryApplier<Spar
         _inserter.InsertVector(equation.RightSide, local);
     }
 
-    private Span<int> GetBoundNodeIndexes(IElement element, NonNegative<int> bound, Span<int> memory)
+    private Span<int> GetBoundNodeIndexes(IElement element, int bound, Span<int> memory)
     {
         throw new NotImplementedException();
     }
