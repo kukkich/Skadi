@@ -21,14 +21,14 @@ public abstract class SplineLocalAssembler<TPoint> : ISplineStackLocalAssembler<
         _basisFunctions = _basisFunctionsProvider.GetFunctions(element);
     }
 
-    public void AssembleMatrix(IElement element, TPoint point, double weight, StackMatrix matrix, StackIndexPermutation indexes)
+    public void AssembleMatrix(IElement element, TPoint point, double weight, MatrixSpan matrixSpan, StackIndexPermutation indexes)
     {
         for (var i = 0; i < _basisFunctions.Length; i++)
         {
             for (var j = 0; j <= i; j++)
             {
-                matrix[i, j] = weight * _basisFunctions[i].Evaluate(point) * _basisFunctions[j].Evaluate(point);
-                matrix[j, i] = matrix[i, j];
+                matrixSpan[i, j] = weight * _basisFunctions[i].Evaluate(point) * _basisFunctions[j].Evaluate(point);
+                matrixSpan[j, i] = matrixSpan[i, j];
             }
         }
 

@@ -32,7 +32,7 @@ public abstract class SplineEquationAssembler<TPoint>
         IEnumerable<IElement> elements,
         double[]? weights = null)
     {
-        var matrix = new StackMatrix(stackalloc double[LocalMatrixSize * LocalMatrixSize], LocalMatrixSize);
+        var matrix = new MatrixSpan(stackalloc double[LocalMatrixSize * LocalMatrixSize], LocalMatrixSize);
         Span<double> vector = stackalloc double[LocalMatrixSize];
         var indexes = new StackIndexPermutation(stackalloc int[LocalMatrixSize]);
 
