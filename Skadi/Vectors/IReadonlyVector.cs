@@ -10,6 +10,3 @@ public interface IReadonlyVector<T> : IEnumerable<IndexValue<T>>
 
     public T ScalarProduct(IReadonlyVector<T> v);
 }
-
-public interface IReadonlyVector : IReadonlyVector<double> 
-    {}

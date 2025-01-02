@@ -10,7 +10,6 @@ public readonly ref struct MatrixSpan
     public double this[int row, int column]
     {
         get => _values[GetSpanIndex(row, column)];
-
         set => _values[GetSpanIndex(row, column)] = value;
     }
 
