@@ -13,6 +13,6 @@ public interface ILocalAssembler<in TElement>
 public interface IStackLocalAssembler<in TElement>
     where TElement : IElement
 {
-    public void AssembleMatrix(TElement element, StackMatrix matrix, StackIndexPermutation indexes);
+    public void AssembleMatrix(TElement element, MatrixSpan matrixSpan, StackIndexPermutation indexes);
     public void AssembleRightSide(TElement element, Span<double> vector, StackIndexPermutation indexes);
 }

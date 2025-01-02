@@ -22,7 +22,7 @@ public class LagrangeCubicAssembler1D : IStackLocalAssembler<IElement>
         _alpha = alpha;
     }
 
-    public void AssembleMatrix(IElement element, StackMatrix matrix, StackIndexPermutation indexes)
+    public void AssembleMatrix(IElement element, MatrixSpan matrixSpan, StackIndexPermutation indexes)
     {
         var left = _nodes[element.NodeIds[0]];
         var right = _nodes[element.NodeIds[1]];
@@ -34,7 +34,7 @@ public class LagrangeCubicAssembler1D : IStackLocalAssembler<IElement>
         {
             for (var j = 0; j < 4; j++)
             {
-                matrix[i, j] = k *  StiffnessMatrix[i, j];
+                matrixSpan[i, j] = k *  StiffnessMatrix[i, j];
             }
         }
 

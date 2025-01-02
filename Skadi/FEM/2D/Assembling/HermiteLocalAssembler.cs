@@ -17,7 +17,7 @@ public class HermiteLocalAssembler : IStackLocalAssembler<IElement>
         _alpha = alpha;
     }
 
-    public void AssembleMatrix(IElement element, StackMatrix matrix, StackIndexPermutation indexes)
+    public void AssembleMatrix(IElement element, MatrixSpan matrixSpan, StackIndexPermutation indexes)
     {
         var (width, lenght) = GetSizes(element);
 
@@ -31,10 +31,10 @@ public class HermiteLocalAssembler : IStackLocalAssembler<IElement>
         {
             for (var j = 0; j <= i; j++)
             {
-                matrix[i, j] = _alpha * 
+                matrixSpan[i, j] = _alpha * 
                                (stiffnessMatrixX[Mu(i), Mu(j)] * massMatrixY[Nu(i), Nu(j)] + 
                                 massMatrixX[Mu(i), Mu(j)] * stiffnessMatrixY[Nu(i), Nu(j)]);
-                matrix[j, i] = matrix[i, j];
+                matrixSpan[j, i] = matrixSpan[i, j];
             }
         }
 

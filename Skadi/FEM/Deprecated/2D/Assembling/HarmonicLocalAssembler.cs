@@ -47,7 +47,7 @@ public class HarmonicLocalAssembler : IStackLocalAssembler<IElement>
         _context = context;
     }
 
-    public void AssembleMatrix(IElement element, StackMatrix matrix, StackIndexPermutation indexes)
+    public void AssembleMatrix(IElement element, MatrixSpan matrixSpan, StackIndexPermutation indexes)
     {
         throw new NotImplementedException("Мигрировать на изменённый формат сетки");
         // var material = _context.Materials.GetById(element.MaterialId);

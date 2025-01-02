@@ -44,7 +44,7 @@ public class QuadLinearAssembler2D : IStackLocalAssembler<IElement>
         _density = density;
     }
 
-    public void AssembleMatrix(IElement element, StackMatrix matrix, StackIndexPermutation indexes)
+    public void AssembleMatrix(IElement element, MatrixSpan matrixSpan, StackIndexPermutation indexes)
     {
         var areaId = element.AreaId;
         var area = _areaProvider.GetArea(areaId);
@@ -95,8 +95,8 @@ public class QuadLinearAssembler2D : IStackLocalAssembler<IElement>
                     Line1D.Unit
                 );
                 
-                matrix[i, j] = mass + stiffness;
-                matrix[j, i] = matrix[i, j];
+                matrixSpan[i, j] = mass + stiffness;
+                matrixSpan[j, i] = matrixSpan[i, j];
             }
         }
     }
@@ -108,7 +108,7 @@ public class QuadLinearAssembler2D : IStackLocalAssembler<IElement>
         var functions = _basisFunctionsProvider.GetFunctions(element);
         var jacobian = GetJacobian(element);
         
-        var mass = new StackMatrix(stackalloc double[vector.Length * vector.Length], vector.Length);
+        var mass = new MatrixSpan(stackalloc double[vector.Length * vector.Length], vector.Length);
         Span<double> f = stackalloc double[4];
         Span<double> x = stackalloc double[4];
         Span<double> y = stackalloc double[4];

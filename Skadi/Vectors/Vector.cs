@@ -3,7 +3,7 @@ using Skadi.Matrices.Sparse.Storages;
 
 namespace Skadi.Vectors;
 
-public class Vector : IVector<double>
+public sealed class Vector : IVector<double>
 {
     public static Vector Create(int length, double defaultValue = 0)
     {
@@ -18,7 +18,7 @@ public class Vector : IVector<double>
         return new Vector(values);
     }
 
-    public virtual double this[int x]
+    public double this[int x]
     {
         get => _values[x];
         set => _values[x] = value;
@@ -83,7 +83,14 @@ public class Vector : IVector<double>
     {
         return ScalarProduct(this, v);
     }
+    
+    public static implicit operator Span<double>(Vector v) => new(v._values);
 
+    public static implicit operator ReadOnlySpan<double>(Vector v) => new(v._values);
+    
+    public Span<double> AsSpan() => this;
+    public ReadOnlySpan<double> AsReadOnlySpan() => this;
+    
     public IEnumerator<IndexValue<double>> GetEnumerator()
     {
         for (var i = 0; i < Length; i++)

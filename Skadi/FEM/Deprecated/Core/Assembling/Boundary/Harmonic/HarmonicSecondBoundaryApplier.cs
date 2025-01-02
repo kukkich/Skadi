@@ -30,7 +30,7 @@ public class HarmonicSecondBoundaryApplier : IHarmonicSecondBoundaryApplier<Spar
                 indexes[i] += 1;
         }
 
-        var defaultMass = new StackMatrix([
+        var defaultMass = new MatrixSpan([
             2, 1,
             1, 2
         ], 2);

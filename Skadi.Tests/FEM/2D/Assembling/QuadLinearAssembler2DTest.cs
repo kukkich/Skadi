@@ -54,7 +54,7 @@ public class QuadLinearAssembler2DTest
         
         Span<double> matrixValues = stackalloc double[4 * 4];
         Span<int> permutations = [0, 1, 2, 3];
-        var matrix = new StackMatrix(matrixValues, 4);
+        var matrix = new MatrixSpan(matrixValues, 4);
         var permutation = new StackIndexPermutation(permutations);
         
         assembler.AssembleMatrix(element, matrix, permutation);

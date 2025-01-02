@@ -24,7 +24,7 @@ public class SecondBoundaryApplier<TMatrix> : ISecondBoundaryApplier<TMatrix>
         var edge = condition.Edge;
         var edgeLength = Line2D.GetLength(_nodes[condition.Edge.Begin], _nodes[condition.Edge.End]);
         
-        var defaultMass = new StackMatrix([
+        var defaultMass = new MatrixSpan([
             2, 1,
             1, 2
         ], 2);

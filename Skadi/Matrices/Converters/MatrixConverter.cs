@@ -2,7 +2,7 @@
 
 namespace Skadi.Matrices.Converters;
 
-public class MatrixConverter
+public static class MatrixConverter
 {
     public static ProfileMatrix Convert(SparseMatrix sparseMatrix)
     {

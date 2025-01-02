@@ -38,7 +38,7 @@ public class EquationAssembler
     {
         var equation = context.Equation;
 
-        var matrix = new StackMatrix(stackalloc double[8 * 8], 8);
+        var matrix = new MatrixSpan(stackalloc double[8 * 8], 8);
         Span<double> vector = stackalloc double[8];
         var indexes = new StackIndexPermutation(stackalloc int[8]);
 

@@ -1,4 +1,5 @@
-﻿using Skadi.Matrices;
+﻿using System.Runtime.CompilerServices;
+using Skadi.Matrices;
 using Skadi.Matrices.Sparse;
 using Skadi.Vectors;
 
@@ -49,12 +50,9 @@ public static class LinAl
 
         return resultMemory;
     }
-    public static StackMatrix Multiply(double coefficient, StackMatrix a, StackMatrix resultMemory)
+    public static MatrixSpan Multiply(double coefficient, MatrixSpan a, MatrixSpan resultMemory)
     {
-        if (a.Size != resultMemory.Size)
-        {
-            throw new ArgumentException();
-        }
+        AsserSameSize(a, resultMemory);
 
         for (var i = 0; i < a.Size; i++)
         for (var j = 0; j < a.Size; j++)
@@ -62,6 +60,7 @@ public static class LinAl
 
         return resultMemory;
     }
+
     public static ImmutableMatrix Multiply(double coefficient, ImmutableMatrix a)
     {
         return new ImmutableMatrix(a, a.Coefficient * coefficient);
@@ -71,16 +70,9 @@ public static class LinAl
         return new ImmutableMatrix(a, a.Coefficient * coefficient);
     }
 
-    public static Vector Multiply(SparseMatrix a, Vector v, Vector? resultMemory = null)
+    public static Vector Multiply(SparseMatrix a, IReadonlyVector v, Vector? resultMemory = null)
     {
-        if (resultMemory is null)
-        {
-            resultMemory = Vector.Create(a.RowsCount);
-        } 
-        else if (resultMemory.Length != a.RowsCount)
-        {
-            throw new ArgumentException();
-        }
+        ValidateOrAllocateIfNull(v, ref resultMemory!);
 
         var rowsIndexes = a.RowsIndexes;
         var columnsIndexes = a.ColumnsIndexes;
@@ -105,20 +97,16 @@ public static class LinAl
     {
         ValidateOrAllocateIfNull(v, ref resultMemory!);
 
-        //var result = new double[v.TotalPoints];
-
         for (var i = 0; i < v.Length; i++)
             for (var j = 0; j < v.Length; j++)
                 resultMemory[i] += a[i, j] * v[j];
 
         return resultMemory;
     }
-    public static Span<double> Multiply(StackMatrix a, ReadOnlySpan<double> v, Span<double> resultMemory)
+    public static Span<double> Multiply(MatrixSpan a, ReadOnlySpan<double> v, Span<double> resultMemory)
     {
-        if (a.Size != v.Length || v.Length != resultMemory.Length)
-        {
-            throw new ArgumentException();
-        }
+        AssertSameSize(a, v);
+        AssertSameSize(v, resultMemory);
         
         for (var i = 0; i < v.Length; i++)
         for (var j = 0; j < v.Length; j++)
@@ -126,13 +114,12 @@ public static class LinAl
 
         return resultMemory;
     }
+
     public static Span<double> Multiply(MatrixBase a, ReadOnlySpan<double> v, Span<double> resultMemory)
     {
-        if (a.Columns != v.Length || a.Rows != v.Length || v.Length != resultMemory.Length)
-        {
-            throw new ArgumentException();
-        }
-
+        AssertSameSize(a, v);
+        AssertSameSize(v, resultMemory);
+            
         for (var i = 0; i < v.Length; i++)
         for (var j = 0; j < v.Length; j++)
             resultMemory[i] += a[i, j] * v[j];
@@ -142,18 +129,8 @@ public static class LinAl
 
     public static Vector Multiply(SymmetricSparseMatrix matrix, Vector x, Vector? resultMemory = null)
     {
-        if (resultMemory == null)
-        {
-            resultMemory = new Vector(new double[x.Length]);
-        }
-        else
-        {
-            AssertSameSize(x, resultMemory);
-        }
-        if (matrix.Size != x.Length)
-        {
-            throw new ArgumentOutOfRangeException($"{nameof(matrix.Size)} and {nameof(x)}", "must have the same length");
-        }
+        ValidateOrAllocateIfNull(x, ref resultMemory!);
+        AssertSameSize(matrix, x);
 
         for (var i = 0; i < x.Length; i++)
             resultMemory[i] = x[i] * matrix.Diagonal[i];
@@ -169,11 +146,12 @@ public static class LinAl
 
         return resultMemory;
     }
+
     public static Matrix Multiply(MatrixBase a, MatrixBase b, Matrix? resultMemory = null)
     {
         AssertSameSize(a, b);
-        if (a == resultMemory || b == resultMemory) 
-            throw new ArgumentOutOfRangeException($"{nameof(resultMemory)}", "can't be equal to one of the arguments");
+        AssertDifferentObjects(a, resultMemory);
+        AssertDifferentObjects(b, resultMemory);
         resultMemory = ValidateOrAllocateIfNullForMultiplying(a, b, resultMemory).AsMutable();
 
         for (var aRow = 0; aRow < a.Rows; aRow++)
@@ -190,6 +168,7 @@ public static class LinAl
 
         return resultMemory;
     }
+
     public static MatrixBase Sum(MatrixBase a, MatrixBase b, Matrix? resultMemory = null)
     {
         AssertCanBeMultiplied(a, b);
@@ -201,7 +180,7 @@ public static class LinAl
 
         return resultMemory;
     }
-    public static StackMatrix Sum(MatrixBase a, MatrixBase b, StackMatrix resultMemory)
+    public static MatrixSpan Sum(MatrixBase a, MatrixBase b, MatrixSpan resultMemory)
     {
         AssertCanBeMultiplied(a, b);
 
@@ -212,7 +191,7 @@ public static class LinAl
         return resultMemory;
     }
 
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static MatrixBase ValidateOrAllocateIfNull(MatrixBase a, MatrixBase? b)
     {
         if (b is null)
@@ -221,6 +200,8 @@ public static class LinAl
 
         return b;
     }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void AssertSameSize(MatrixBase a, MatrixBase b)
     {
         if (a.Rows != b.Rows)
@@ -229,6 +210,7 @@ public static class LinAl
             throw new ArgumentOutOfRangeException($"{nameof(a)} and {nameof(b)}", "must have the same columns");
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static MatrixBase ValidateOrAllocateIfNullForMultiplying(MatrixBase a, MatrixBase b, MatrixBase? c)
     {
         AssertCanBeMultiplied(a, b);
@@ -239,21 +221,72 @@ public static class LinAl
 
         return c;
     }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void AssertCanBeMultiplied(MatrixBase a, MatrixBase b)
     {
         if (a.Columns != b.Rows)
             throw new ArgumentOutOfRangeException($"{nameof(a)} and {nameof(b)}", "can't be multiplied");
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void ValidateOrAllocateIfNull(IReadonlyVector<double> v, ref Vector? u)
     {
         if (u is null)
             u = Vector.Create(v.Length);
         else AssertSameSize(v, u);
     }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void AssertSameSize<T>(IReadonlyVector<T> v, IReadonlyVector<T> u)
     {
         if (v.Length != u.Length)
             throw new ArgumentOutOfRangeException($"{nameof(v)} and {nameof(u)}", "must have the same length");
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void AssertSameSize(SymmetricSparseMatrix matrix, Vector x)
+    {
+        if (matrix.Size != x.Length)
+        {
+            throw new ArgumentOutOfRangeException($"{nameof(matrix.Size)} and {nameof(x)}", "must have the same length");
+        }
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void AssertSameSize(MatrixBase a, ReadOnlySpan<double> v)
+    {
+        if (a.Columns != v.Length || a.Rows != v.Length)
+        {
+            throw new ArgumentException();
+        }
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void AssertSameSize(MatrixSpan a, ReadOnlySpan<double> v)
+    {
+        if (a.Size != v.Length)
+        {
+            throw new ArgumentException();
+        }
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void AssertSameSize(ReadOnlySpan<double> v, ReadOnlySpan<double> u)
+    {
+        if (v.Length != u.Length)
+        {
+            throw new ArgumentException();
+        }
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void AsserSameSize(ReadOnlyMatrixSpan a, ReadOnlyMatrixSpan b)
+    {
+        if (a.Size != b.Size)
+        {
+            throw new ArgumentException();
+        }
+    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void AssertDifferentObjects(object a, object? resultMemory)
+    {
+        if (a == resultMemory) 
+            throw new ArgumentOutOfRangeException($"{nameof(resultMemory)}", "can't be equal to one of the arguments");
     }
 }

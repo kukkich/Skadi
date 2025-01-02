@@ -17,13 +17,13 @@ public class LocalMatrix
 
 public readonly ref struct StackLocalMatrix
 {
-    public double this[int x, int y] => Matrix[x, y];
+    public double this[int x, int y] => MatrixSpan[x, y];
     public StackIndexPermutation IndexPermutation { get; }
-    public StackMatrix Matrix { get; }
+    public MatrixSpan MatrixSpan { get; }
 
-    public StackLocalMatrix(StackMatrix matrix, StackIndexPermutation indexPermutation)
+    public StackLocalMatrix(MatrixSpan matrixSpan, StackIndexPermutation indexPermutation)
     {
-        Matrix = matrix;
+        MatrixSpan = matrixSpan;
         IndexPermutation = indexPermutation;
     }
 }
