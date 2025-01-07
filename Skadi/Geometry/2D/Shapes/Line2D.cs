@@ -22,6 +22,6 @@ public class Line2D : IParametricCurve2D
 
     public static double GetLength(Vector2D start, Vector2D end)
     {
-        return Math.Sqrt(Math.Pow(end.X - start.X, 2) + Math.Pow(end.Y - start.Y, 2));
+        return (end - start).Length;
     }
 }

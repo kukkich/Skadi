@@ -7,7 +7,8 @@ using Vector = Skadi.Vectors.Vector;
 
 namespace Skadi.Geometry._2D;
 
-public readonly record struct Vector2D(double X, double Y) : INumberBase<Vector2D>
+public readonly record struct Vector2D(double X, double Y) : INumberBase<Vector2D>,
+    IMultiplyOperators<Vector2D, double, Vector2D>
 {
     public static Vector2D Zero => new(0, 0);
     public static Vector2D XAxis => new(1, 0);
@@ -251,7 +252,6 @@ public readonly record struct Vector2D(double X, double Y) : INumberBase<Vector2
     #region NotSupported
     public static Vector2D One => throw new NotSupportedException(); // INumberBase
     public static int Radix => throw new NotSupportedException(); // INumberBase
-    
     public static Vector2D operator --(Vector2D value) => throw new NotSupportedException(); // IDecrementOperators
     public static Vector2D operator /(Vector2D left, Vector2D right) => throw new NotSupportedException(); // IDivisionOperators<TSelf, TSelf, TSelf>,
     public static Vector2D operator ++(Vector2D value) => throw new NotSupportedException(); // IIncrementOperators<TSelf>
