@@ -15,7 +15,7 @@ public class EdgeResolverTests
     {
         var gridBuilder = new RegularGridBuilder();
         var gridDefinition = new RegularGridDefinition(
-            new Point2D[,]
+            new Vector2D[,]
             {
                 { new(0, 0), new(1, 0) },
                 { new(0, 1), new(1, 1) },

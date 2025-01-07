@@ -40,9 +40,9 @@ public class HarmonicLocalAssembler : IStackLocalAssembler<IElement>
         });
     }
 
-    private readonly HarmonicContext<Point2D, IElement, SparseMatrix> _context;
+    private readonly HarmonicContext<Vector2D, IElement, SparseMatrix> _context;
 
-    public HarmonicLocalAssembler(HarmonicContext<Point2D, IElement, SparseMatrix> context)
+    public HarmonicLocalAssembler(HarmonicContext<Vector2D, IElement, SparseMatrix> context)
     {
         _context = context;
     }

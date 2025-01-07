@@ -6,17 +6,17 @@ using Skadi.Vectors;
 
 namespace Skadi.FEM._2D;
 
-public class QuadLinearSolution : IFiniteElementSolution<Point2D>
+public class QuadLinearSolution : IFiniteElementSolution<Vector2D>
 {
     public IReadonlyVector<double> Weights { get; }
 
     private const double Epsilon = 1e-10;
-    private readonly IBasisFunctionsProvider<IElement, Point2D> _basisFunctionsProvider;
-    private readonly Grid<Point2D, IElement> _grid;
+    private readonly IBasisFunctionsProvider<IElement, Vector2D> _basisFunctionsProvider;
+    private readonly Grid<Vector2D, IElement> _grid;
 
     public QuadLinearSolution(
-        IBasisFunctionsProvider<IElement, Point2D> basisFunctionsProvider,
-        Grid<Point2D, IElement> grid,
+        IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider,
+        Grid<Vector2D, IElement> grid,
         IReadonlyVector<double> weights)
     {
         _basisFunctionsProvider = basisFunctionsProvider;
@@ -24,10 +24,10 @@ public class QuadLinearSolution : IFiniteElementSolution<Point2D>
         Weights = weights;
     }
 
-    public double Calculate(Point2D point)
+    public double Calculate(Vector2D vector)
     {
         var element = _grid.Elements
-            .First(x => ElementHas(x, point));
+            .First(x => ElementHas(x, vector));
 
         Span<double> x = stackalloc double[4];
         Span<double> y = stackalloc double[4];
@@ -47,31 +47,31 @@ public class QuadLinearSolution : IFiniteElementSolution<Point2D>
         var alpha1 = (x[1] - x[0]) * (y[3] - y[2]) - (y[1] - y[0]) * (x[3] - x[2]);
         var alpha2 = (x[3] - x[1]) * (y[2] - y[0]) - (y[3] - y[1]) * (x[2] - x[0]);
 
-        var w = b6 * (point.X - x[0]) - b5 * (point.Y - y[0]);
+        var w = b6 * (vector.X - x[0]) - b5 * (vector.Y - y[0]);
         double ksi;
         double eta;
 
         if (Math.Abs(alpha1) < Epsilon && Math.Abs(alpha2) < Epsilon)
         {
-            ksi = (b3 * (point.X - x[0]) - b1 * (point.Y - y[0])) / (b2 * b3 - b1 * b4);
-            eta = (b2 * (point.Y - y[0]) - b4 * (point.X - x[0])) / (b2 * b3 - b1 * b4);
+            ksi = (b3 * (vector.X - x[0]) - b1 * (vector.Y - y[0])) / (b2 * b3 - b1 * b4);
+            eta = (b2 * (vector.Y - y[0]) - b4 * (vector.X - x[0])) / (b2 * b3 - b1 * b4);
         }
         else if (Math.Abs(alpha1) < Epsilon)
         {
-            ksi = (alpha2 * (point.X - x[0]) + b1 * w) / (alpha2 * b2 - b5 * w);
+            ksi = (alpha2 * (vector.X - x[0]) + b1 * w) / (alpha2 * b2 - b5 * w);
             eta = -1d * w / alpha2;
         }
         else if (Math.Abs(alpha2) < Epsilon)
         {
             ksi = w / alpha1;
-            eta = (alpha1 * (point.Y - y[0]) - b4 * w) / (alpha1 * b3 + b6 * w);
+            eta = (alpha1 * (vector.Y - y[0]) - b4 * w) / (alpha1 * b3 + b6 * w);
         }
         else
         {
             throw new NotImplementedException();
         }
 
-        var pointInTemplate = new Point2D(ksi, eta);
+        var pointInTemplate = new Vector2D(ksi, eta);
         var functions = _basisFunctionsProvider.GetFunctions(element);
         Span<double> funcValues = stackalloc double[functions.Length];
         for (var i = 0; i < functions.Length; i++)
@@ -90,12 +90,12 @@ public class QuadLinearSolution : IFiniteElementSolution<Point2D>
         return result;
     }
 
-    public double Derivative(Point2D point)
+    public double Derivative(Vector2D vector)
     {
         throw new NotImplementedException();
     }
 
-    private bool ElementHas(IElement element, Point2D point)
+    private bool ElementHas(IElement element, Vector2D vector)
     {
         var nodes = element.NodeIds
             .Select(nodeId => _grid.Nodes[nodeId])
@@ -105,10 +105,10 @@ public class QuadLinearSolution : IFiniteElementSolution<Point2D>
         var leftTop = nodes[2];
         var rightTop = nodes[3];
 
-        return IsPointInTriangle(point, leftBottom, rightBottom, leftTop) ||
-               IsPointInTriangle(point, leftTop, rightBottom, rightTop);
+        return IsPointInTriangle(vector, leftBottom, rightBottom, leftTop) ||
+               IsPointInTriangle(vector, leftTop, rightBottom, rightTop);
 
-        bool IsPointInTriangle(Point2D p, Point2D a, Point2D b, Point2D c)
+        bool IsPointInTriangle(Vector2D p, Vector2D a, Vector2D b, Vector2D c)
         {
             // Векторные произведения для всех трёх рёбер треугольника
             var v1 = (b - a).X * (p.Y - a.Y) - (b - a).Y * (p.X - a.X);

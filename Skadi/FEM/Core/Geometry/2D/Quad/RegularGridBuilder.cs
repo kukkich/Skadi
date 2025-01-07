@@ -5,15 +5,15 @@ using Skadi.Geometry.Splitting;
 
 namespace Skadi.FEM.Core.Geometry._2D.Quad;
 
-public class RegularGridBuilder : IGridBuilder<Point2D, RegularGridDefinition>
+public class RegularGridBuilder : IGridBuilder<Vector2D, RegularGridDefinition>
 {
-    public Grid<Point2D, IElement> Build(RegularGridDefinition definition)
+    public Grid<Vector2D, IElement> Build(RegularGridDefinition definition)
     {
         var (_, xSplitters, ySplitters, areas, _) = definition;
         
         var (xNodesCount, yNodesCount) = GetSizes(xSplitters, ySplitters);
         var elementsCount = (xNodesCount - 1) * (yNodesCount - 1);
-        var nodes = new Point2D[xNodesCount * yNodesCount];
+        var nodes = new Vector2D[xNodesCount * yNodesCount];
         var elements = new Element[elementsCount];
         var elementIndex = 0;
         
@@ -80,7 +80,7 @@ public class RegularGridBuilder : IGridBuilder<Point2D, RegularGridDefinition>
             }
         }
         
-        return new Grid<Point2D, IElement>(new IrregularPointsCollection<Point2D>(nodes), elements);
+        return new Grid<Vector2D, IElement>(new IrregularPointsCollection<Vector2D>(nodes), elements);
     }
  
     private static (int XNodesCount, int YNodesCount) GetSizes(
@@ -88,11 +88,11 @@ public class RegularGridBuilder : IGridBuilder<Point2D, RegularGridDefinition>
         IEnumerable<ICurveSplitter> ySplitters
         ) => (xSplitters.Sum(x => x.Steps) + 1, ySplitters.Sum(x => x.Steps) + 1);
 
-    private Point2D[] SplitMasterArea(ICurveSplitter xSplitter, ICurveSplitter ySplitter)
+    private Vector2D[] SplitMasterArea(ICurveSplitter xSplitter, ICurveSplitter ySplitter)
     {
         var line = new Line1D(0, 1);
         var (xNodesCount, yNodesCount) = GetSizes([xSplitter], [ySplitter]);
-        var points = new Point2D[xNodesCount * yNodesCount];
+        var points = new Vector2D[xNodesCount * yNodesCount];
         var xValues = xSplitter.EnumerateValues(line).ToArray();
         var yValues = ySplitter.EnumerateValues(line).ToArray();
 
@@ -103,7 +103,7 @@ public class RegularGridBuilder : IGridBuilder<Point2D, RegularGridDefinition>
             for (var j = 0; j < xValues.Length; j++)
             {
                 var x = xValues[j];
-                points[i * xValues.Length + j] = new Point2D(x, y);
+                points[i * xValues.Length + j] = new Vector2D(x, y);
             }
         }
 
@@ -113,7 +113,7 @@ public class RegularGridBuilder : IGridBuilder<Point2D, RegularGridDefinition>
 
 file static class GridDefinitionExtensions
 {
-    public static (ICurve2D Curve, ICurveSplitter Spliter) GetCurveWithSplitter(
+    public static (IParametricCurve2D Curve, ICurveSplitter Spliter) GetCurveWithSplitter(
         this RegularGridDefinition definition, 
         Orientation orientation, int lineId, int intervalId
         )

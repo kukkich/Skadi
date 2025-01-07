@@ -3,7 +3,7 @@ using Skadi.Geometry._2D;
 
 namespace Skadi.FEM._2D.BasisFunctions;
 
-public class BasisFunction2D : IBasisFunction<Point2D>
+public class BasisFunction2D : IBasisFunction<Vector2D>
 {
     private readonly Func<double, double> _xFunction;
     private readonly Func<double, double> _yFunction;
@@ -14,9 +14,9 @@ public class BasisFunction2D : IBasisFunction<Point2D>
         _yFunction = yFunction;
     }
 
-    public double Evaluate(Point2D point)
+    public double Evaluate(Vector2D vector)
     {
-        return Calculate(point.X, point.Y);
+        return Calculate(vector.X, vector.Y);
     }
 
     public double Calculate(double x, double y)

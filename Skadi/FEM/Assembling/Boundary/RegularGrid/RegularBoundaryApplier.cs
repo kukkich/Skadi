@@ -16,7 +16,7 @@ public class RegularBoundaryApplier<TMatrix> : IRegularBoundaryApplier<TMatrix>
     private readonly IFirstBoundaryApplier<TMatrix> _firstBoundaryApplier;
     private readonly ISecondBoundaryApplier<TMatrix> _secondBoundaryApplier;
     private readonly IExpressionProvider _expressionProvider;
-    private readonly IPointsCollection<Point2D> _nodes;
+    private readonly IPointsCollection<Vector2D> _nodes;
     private readonly int[,] _nodeStartIndexes;
     private readonly int _xNodesPerLayer;
 
@@ -24,7 +24,7 @@ public class RegularBoundaryApplier<TMatrix> : IRegularBoundaryApplier<TMatrix>
         IFirstBoundaryApplier<TMatrix> firstBoundaryApplier,
         ISecondBoundaryApplier<TMatrix> secondBoundaryApplier,
         IExpressionProvider expressionProvider,
-        IPointsCollection<Point2D> nodes,
+        IPointsCollection<Vector2D> nodes,
         RegularGridDefinition gridDefinition
     )
     {
@@ -69,7 +69,7 @@ public class RegularBoundaryApplier<TMatrix> : IRegularBoundaryApplier<TMatrix>
 
         if (condition.Type == BoundaryConditionType.First)
         {
-            var expression = (Expression<Func<Point2D, double>>) _expressionProvider.GetExpression(condition.ExpressionId);
+            var expression = (Expression<Func<Vector2D, double>>) _expressionProvider.GetExpression(condition.ExpressionId);
             var func = expression.Compile();
 
             foreach (var nodeId in EnumerateNodes(condition))
@@ -81,7 +81,7 @@ public class RegularBoundaryApplier<TMatrix> : IRegularBoundaryApplier<TMatrix>
         }
         else if (condition.Type == BoundaryConditionType.Second)
         {
-            var expression = (Expression<Func<Point2D, double>>) _expressionProvider.GetExpression(condition.ExpressionId);
+            var expression = (Expression<Func<Vector2D, double>>) _expressionProvider.GetExpression(condition.ExpressionId);
             var func = expression.Compile();
             var thetta = new double[2];
             foreach (var edge in EnumerateEdges(condition))

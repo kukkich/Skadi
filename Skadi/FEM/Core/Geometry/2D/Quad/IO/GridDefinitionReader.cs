@@ -160,7 +160,7 @@ public class GridDefinitionReader(IConfiguration configuration) : IGridDefinitio
         return areas;
     }
 
-    private static Point2D[,] ReadPoints(StreamReader reader)
+    private static Vector2D[,] ReadPoints(StreamReader reader)
     {
         var firstLine = reader.ReadLine();
         if (firstLine == null)
@@ -177,7 +177,7 @@ public class GridDefinitionReader(IConfiguration configuration) : IGridDefinitio
         var kx = int.Parse(gridSize[0]);
         var ky = int.Parse(gridSize[1]);
 
-        var controlPoints = new Point2D[ky, kx];
+        var controlPoints = new Vector2D[ky, kx];
         for (var i = 0; i < ky; i++)
         {
             var line = reader.ReadLine();
@@ -200,7 +200,7 @@ public class GridDefinitionReader(IConfiguration configuration) : IGridDefinitio
                     throw new Exception($"Invalid point format at ({i}, {j}).");
                 }
 
-                controlPoints[i, j] = new Point2D(double.Parse(point[0]), double.Parse(point[1]));
+                controlPoints[i, j] = new Vector2D(double.Parse(point[0]), double.Parse(point[1]));
             }
         }
 

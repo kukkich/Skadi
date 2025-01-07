@@ -5,7 +5,7 @@ using Skadi.Geometry._2D;
 
 namespace Skadi.FEM._2D.BasisFunctions;
 
-public class QuadLinearNonScaledFunctions2DProvider : IBasisFunctionsProvider<IElement, Point2D>, IBasisFunctionsDerivativeProvider2D
+public class QuadLinearNonScaledFunctions2DProvider : IBasisFunctionsProvider<IElement, Vector2D>, IBasisFunctionsDerivativeProvider2D
 {
     private readonly Func<double, double>[] _functions1D = [
         t => 1 - t,
@@ -16,7 +16,7 @@ public class QuadLinearNonScaledFunctions2DProvider : IBasisFunctionsProvider<IE
         _ => 1d
     ];
     
-    public IBasisFunction<Point2D>[] GetFunctions(IElement element)
+    public IBasisFunction<Vector2D>[] GetFunctions(IElement element)
     {
         return
         [
@@ -27,7 +27,7 @@ public class QuadLinearNonScaledFunctions2DProvider : IBasisFunctionsProvider<IE
         ];
     }
 
-    public IBasisFunction<Point2D>[] GetDerivativeByX(IElement element)
+    public IBasisFunction<Vector2D>[] GetDerivativeByX(IElement element)
     {
         return
         [
@@ -38,7 +38,7 @@ public class QuadLinearNonScaledFunctions2DProvider : IBasisFunctionsProvider<IE
         ];
     }
 
-    public IBasisFunction<Point2D>[] GetDerivativeByY(IElement element)
+    public IBasisFunction<Vector2D>[] GetDerivativeByY(IElement element)
     {
         return
         [

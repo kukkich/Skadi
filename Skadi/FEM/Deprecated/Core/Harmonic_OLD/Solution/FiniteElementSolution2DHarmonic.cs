@@ -6,12 +6,12 @@ namespace Skadi.FEM.Deprecated.Core.Harmonic_OLD.Solution;
 
 public class FiniteElementSolution2DHarmonic
 {
-    private readonly Grid<Point2D, IElement> _grid;
+    private readonly Grid<Vector2D, IElement> _grid;
     private readonly Vector _weights;
     private readonly double _frequency;
 
     public FiniteElementSolution2DHarmonic(
-        Grid<Point2D, IElement> grid, 
+        Grid<Vector2D, IElement> grid, 
         Vector weights,
         double frequency
     )
@@ -21,9 +21,9 @@ public class FiniteElementSolution2DHarmonic
         _frequency = frequency;
     }
 
-    public double Calculate(Point2D point, double time)
+    public double Calculate(Vector2D vector, double time)
     {
-        var element = _grid.Elements.First(x => ElementHas(x, point));
+        var element = _grid.Elements.First(x => ElementHas(x, vector));
 
         var leftBottom = _grid.Nodes[element.NodeIds[0]];
         var rightTop = _grid.Nodes[element.NodeIds[^1]];
@@ -34,10 +34,10 @@ public class FiniteElementSolution2DHarmonic
         Span<double> x = stackalloc double[2];
         Span<double> y = stackalloc double[2];
 
-        x[0] = (xMax - point.X) / hx;
-        y[0] = (yMax - point.Y) / hy;
-        x[1] = (point.X - xMin) / hx;
-        y[1] = (point.Y - yMin) / hy;
+        x[0] = (xMax - vector.X) / hx;
+        y[0] = (yMax - vector.Y) / hy;
+        x[1] = (vector.X - xMin) / hx;
+        y[1] = (vector.Y - yMin) / hy;
 
         Span<double> basicValues = stackalloc double[x.Length * y.Length];
 
@@ -60,7 +60,7 @@ public class FiniteElementSolution2DHarmonic
 
     }
 
-    private bool ElementHas(IElement element, Point2D node)
+    private bool ElementHas(IElement element, Vector2D node)
     {
         var leftBottom = _grid.Nodes[element.NodeIds[0]];
         var rightTop = _grid.Nodes[element.NodeIds[^1]];

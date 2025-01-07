@@ -22,11 +22,11 @@ public class QuadLinearAssembler2DTest
     [SetUp]
     public void Setup()
     {
-        var points = new IrregularPointsCollection<Point2D>([
-            new Point2D(1, 1),
-            new Point2D(5, 3),
-            new Point2D(2, 5),
-            new Point2D(4, 5)
+        var points = new IrregularPointsCollection<Vector2D>([
+            new Vector2D(1, 1),
+            new Vector2D(5, 3),
+            new Vector2D(2, 5),
+            new Vector2D(4, 5)
         ]);
         var basicFunctionsProvider = new QuadLinearNonScaledFunctions2DProvider();
         assembler = new QuadLinearAssembler2D(
@@ -36,7 +36,7 @@ public class QuadLinearAssembler2DTest
             new FromArrayMaterialProvider<Material>([new Material(1, 0)]),
             basicFunctionsProvider,
             basicFunctionsProvider,
-            new FuncDensity<Point2D, double>(points, x => 0)
+            new FuncDensity<Vector2D, double>(points, x => 0)
         );
     }
 

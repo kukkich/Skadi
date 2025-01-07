@@ -17,20 +17,20 @@ namespace Skadi.FEM._2D.Assembling;
 
 public class QuadLinearAssembler2D : IStackLocalAssembler<IElement>
 {
-    private readonly IPointsCollection<Point2D> _nodes;
+    private readonly IPointsCollection<Vector2D> _nodes;
     private readonly IAreaProvider<AreaDefinition> _areaProvider;
     private readonly IIntegrator2D _integrator;
     private readonly IMaterialProvider<Material> _materialProvider;
-    private readonly IBasisFunctionsProvider<IElement, Point2D> _basisFunctionsProvider;
+    private readonly IBasisFunctionsProvider<IElement, Vector2D> _basisFunctionsProvider;
     private readonly IBasisFunctionsDerivativeProvider2D _derivativesProvider;
     private readonly INodeDefinedParameter<double> _density;
 
     public QuadLinearAssembler2D(
-        IPointsCollection<Point2D> nodes,
+        IPointsCollection<Vector2D> nodes,
         IAreaProvider<AreaDefinition> areaProvider,
         IIntegrator2D integrator,
         IMaterialProvider<Material> materialProvider,
-        IBasisFunctionsProvider<IElement, Point2D> basisFunctionsProvider,
+        IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider,
         IBasisFunctionsDerivativeProvider2D derivativesProvider,
         INodeDefinedParameter<double> density
      )
@@ -138,7 +138,7 @@ public class QuadLinearAssembler2D : IStackLocalAssembler<IElement>
         LinAl.Multiply(mass, f, vector);
     }
 
-    private Func<Point2D, double> GetJacobian(IElement element)
+    private Func<Vector2D, double> GetJacobian(IElement element)
     {
         Span<double> x = stackalloc double[4];
         Span<double> y = stackalloc double[4];

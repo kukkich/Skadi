@@ -7,12 +7,12 @@ namespace Skadi.FEM.Core.Geometry._2D.Areas;
 
 public class FromSplineGridLayoutBuilder
 {
-    public (Point2D[,] controlPoints, AreaDefinition[] areas) Build(IEnumerable<ICurve<Point2D>> horizontalBounds, ICurveSplitter splitter)
+    public (Vector2D[,] controlPoints, AreaDefinition[] areas) Build(IEnumerable<IParametricCurve<Vector2D>> horizontalBounds, ICurveSplitter splitter)
     {
         var curveBounds = horizontalBounds.ToArray();
         var areasCount = (curveBounds.Length - 1) * splitter.Steps;
         
-        var points = new Point2D[curveBounds.Length, splitter.Steps + 1];
+        var points = new Vector2D[curveBounds.Length, splitter.Steps + 1];
         var areas = new AreaDefinition[areasCount];
 
         var areaId = 0;
