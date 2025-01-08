@@ -27,4 +27,27 @@ public abstract class MatrixBase
 
         return new Matrix(values);
     }
+    
+    public virtual void CopyTo(MatrixSpan destination)
+    {
+        if (destination.Size != Rows || destination.Size != Columns)
+        {
+            throw new ArgumentException("Matrix size mismatch");
+        }
+        
+        for (var i = 0; i < Rows; i++)
+        for (var j = 0; j < Columns; j++)
+            destination[i, j] = this[i, j];
+    }
+    public virtual void CopyTo(Matrix destination)
+    {
+        if (destination.Rows != Rows || destination.Columns != Columns)
+        {
+            throw new ArgumentException("Matrix size mismatch");
+        }
+        
+        for (var i = 0; i < Rows; i++)
+        for (var j = 0; j < Columns; j++)
+            destination[i, j] = this[i, j];
+    }
 }

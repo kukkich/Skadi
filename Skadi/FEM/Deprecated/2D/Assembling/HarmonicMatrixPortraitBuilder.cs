@@ -29,7 +29,7 @@ public class HarmonicMatrixPortraitBuilder : IMatrixPortraitBuilder<SparseMatrix
 
         for (var i = 0; i < nodesCount * 2; i++)
         {
-            _adjacencyList.Add(new SortedSet<int>());
+            _adjacencyList.Add([]);
         }
 
         foreach (var element in elements)

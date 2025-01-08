@@ -52,7 +52,7 @@ public static class LinAl
 
         return resultMemory;
     }
-    public static MatrixSpan Multiply(double coefficient, MatrixSpan a, MatrixSpan resultMemory)
+    public static MatrixSpan Multiply(double coefficient, ReadOnlyMatrixSpan a, MatrixSpan resultMemory)
     {
         AsserSameSize(a, resultMemory);
 

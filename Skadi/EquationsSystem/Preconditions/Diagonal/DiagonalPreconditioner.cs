@@ -15,9 +15,7 @@ public class DiagonalPreconditioner : IPreconditioner
 
     public DiagonalPreconditioner(IReadOnlyList<double> diagonal)
     {
-        _inverseDiagonal = Vector.Create(diagonal.Count);
-        for (var i = 0; i < diagonal.Count; i++)
-            _inverseDiagonal[i] = 1d / diagonal[i];
+        _inverseDiagonal = diagonal.Select(x => 1d / x).ToVector();
     }
 
     public Vector MultiplyOn(Vector v, Vector? resultMemory = null)
