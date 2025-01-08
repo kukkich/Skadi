@@ -2,7 +2,7 @@ using Skadi.Geometry.Shapes.Primitives;
 
 namespace Skadi.Geometry._2D.Shapes;
 
-public class CubicSpline
+public class CubicSpline : IParametricCurve2D
 {
     private readonly Vector2D[] _points;
     public Vector2D Start => _points[0];
