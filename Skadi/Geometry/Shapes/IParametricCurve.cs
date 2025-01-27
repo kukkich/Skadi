@@ -2,7 +2,7 @@
 
 namespace Skadi.Geometry.Shapes;
 
-public interface ICurve<out TPoint>
+public interface IParametricCurve<out TPoint>
 {
     public TPoint Start { get; }
     public TPoint End { get; }

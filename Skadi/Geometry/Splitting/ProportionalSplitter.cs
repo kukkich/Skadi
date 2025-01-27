@@ -17,7 +17,7 @@ public class ProportionalSplitter : ICurveSplitter
         _lengthCoefficient = (DischargeRatio - 1d) / (Math.Pow(DischargeRatio, steps) - 1d);
     }
     
-    public IEnumerable<TPoint> EnumerateValues<TPoint>(ICurve<TPoint> curve)
+    public IEnumerable<TPoint> EnumerateValues<TPoint>(IParametricCurve<TPoint> parametricCurve)
     {
         var step = _lengthCoefficient;
 
@@ -26,7 +26,7 @@ public class ProportionalSplitter : ICurveSplitter
 
         while (stepNumber < Steps)
         {
-            yield return curve.GetByParameter(t);
+            yield return parametricCurve.GetByParameter(t);
             var tNext = step * (Math.Pow(DischargeRatio, stepNumber + 1) - 1d) / (DischargeRatio - 1d);
 
             if (t == tNext)
@@ -38,6 +38,6 @@ public class ProportionalSplitter : ICurveSplitter
             stepNumber++;
         }
 
-        yield return curve.GetByParameter(1d);
+        yield return parametricCurve.GetByParameter(1d);
     }
 }

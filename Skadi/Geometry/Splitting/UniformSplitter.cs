@@ -11,7 +11,7 @@ public class UniformSplitter : ICurveSplitter
         Steps = steps;
     }
 
-    public IEnumerable<TPoint> EnumerateValues<TPoint>(ICurve<TPoint> curve)
+    public IEnumerable<TPoint> EnumerateValues<TPoint>(IParametricCurve<TPoint> parametricCurve)
     {
         var step = 1d / Steps;
 
@@ -20,11 +20,11 @@ public class UniformSplitter : ICurveSplitter
 
         do
         {
-            yield return curve.GetByParameter(t);
+            yield return parametricCurve.GetByParameter(t);
             stepNumber++;
             t = stepNumber * step;
         } while (stepNumber < Steps);
 
-        yield return curve.GetByParameter(1d);
+        yield return parametricCurve.GetByParameter(1d);
     }
 }

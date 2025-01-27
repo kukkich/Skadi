@@ -8,10 +8,10 @@ namespace Skadi.FEM._2D.Assembling;
 
 public class HermiteLocalAssembler : IStackLocalAssembler<IElement>
 {
-    private readonly IPointsCollection<Point2D> _nodes; // для GetSizes
+    private readonly IPointsCollection<Vector2D> _nodes; // для GetSizes
     private readonly double _alpha;
 
-    public HermiteLocalAssembler(IPointsCollection<Point2D> nodes, double alpha)
+    public HermiteLocalAssembler(IPointsCollection<Vector2D> nodes, double alpha)
     {
         _nodes = nodes;
         _alpha = alpha;

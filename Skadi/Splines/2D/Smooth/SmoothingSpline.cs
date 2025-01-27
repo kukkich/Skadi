@@ -6,15 +6,15 @@ using Skadi.Vectors;
 
 namespace Skadi.Splines._2D.Smooth;
 
-public class SmoothingSpline : ISpline<Point2D>
+public class SmoothingSpline : ISpline<Vector2D>
 {
-    private readonly IBasisFunctionsProvider<IElement, Point2D> _basisFunctionsProvider;
-    private readonly Grid<Point2D, IElement> _grid;
+    private readonly IBasisFunctionsProvider<IElement, Vector2D> _basisFunctionsProvider;
+    private readonly Grid<Vector2D, IElement> _grid;
     private readonly Vector _qValues;
 
     public SmoothingSpline(
-        IBasisFunctionsProvider<IElement, Point2D> basisFunctionsProvider,
-        Grid<Point2D, IElement> grid, 
+        IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider,
+        Grid<Vector2D, IElement> grid, 
         Vector qValues
     )
     {
@@ -23,9 +23,9 @@ public class SmoothingSpline : ISpline<Point2D>
         _qValues = qValues;
     }
 
-    public double Calculate(Point2D point)
+    public double Calculate(Vector2D vector)
     {
-        var element = _grid.Elements.First(e => ElementHas(e, point));
+        var element = _grid.Elements.First(e => ElementHas(e, vector));
 
         var basisFunctions = _basisFunctionsProvider.GetFunctions(element);
 
@@ -35,14 +35,14 @@ public class SmoothingSpline : ISpline<Point2D>
         {
             for (var j = 0; j < 4; j++)
             {
-                sum += _qValues[element.NodeIds[i] * 4 + j] * basisFunctions[i * 4 + j].Evaluate(point);
+                sum += _qValues[element.NodeIds[i] * 4 + j] * basisFunctions[i * 4 + j].Evaluate(vector);
             }
         }
 
         return sum;
     }
 
-    private bool ElementHas(IElement element, Point2D node)
+    private bool ElementHas(IElement element, Vector2D node)
     {
         var leftBottom = _grid.Nodes[element.NodeIds[0]];
         var rightTop = _grid.Nodes[element.NodeIds[^1]];

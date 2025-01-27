@@ -2,5 +2,5 @@
 
 public interface IVector<T> : IReadonlyVector<T>
 {
-    public T this[int x] { set; }
+    public new T this[int x] { set; }
 }

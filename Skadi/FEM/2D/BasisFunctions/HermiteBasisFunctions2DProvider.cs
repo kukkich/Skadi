@@ -7,26 +7,26 @@ using Skadi.Splines;
 namespace Skadi.FEM._2D.BasisFunctions;
 
 //Наверн надо абстрактный класс ещё сделать, потому что контексты разные могут быть
-public class HermiteBasisFunctions2DProvider : IBasisFunctionsProvider<IElement, Point2D>
+public class HermiteBasisFunctions2DProvider : IBasisFunctionsProvider<IElement, Vector2D>
 {
-    private readonly SplineContext<Point2D, IElement, Matrix> _context;
-    private static readonly IBasisFunction<Point2D>[] BasisFunctions2D;
+    private readonly SplineContext<Vector2D, IElement, Matrix> _context;
+    private static readonly IBasisFunction<Vector2D>[] BasisFunctions2D;
     private static readonly Func<double, double>[] XBasisFunctions1D;
     private static readonly Func<double, double>[] YBasisFunctions1D;
 
     static HermiteBasisFunctions2DProvider()
     {
-        BasisFunctions2D = new IBasisFunction<Point2D>[16];
+        BasisFunctions2D = new IBasisFunction<Vector2D>[16];
         XBasisFunctions1D = new Func<double, double>[4];
         YBasisFunctions1D = new Func<double, double>[4];
     }
 
-    public HermiteBasisFunctions2DProvider(SplineContext<Point2D, IElement, Matrix> context)
+    public HermiteBasisFunctions2DProvider(SplineContext<Vector2D, IElement, Matrix> context)
     {
         _context = context;
     }
 
-    public IBasisFunction<Point2D>[] GetFunctions(IElement element)
+    public IBasisFunction<Vector2D>[] GetFunctions(IElement element)
     {
         var firstNodeOfElement = _context.Grid.Nodes[element.NodeIds[0]];
         var (width, lenght) = GetSizes(element);

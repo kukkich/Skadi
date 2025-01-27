@@ -15,7 +15,7 @@ public class Gauss2D : Method<GaussConfig>, IIntegrator2D
         }
     }
 
-    public double Calculate(Func<Point2D, double> f, Line1D xInterval, Line1D yInterval)
+    public double Calculate(Func<Vector2D, double> f, Line1D xInterval, Line1D yInterval)
     {
         var integral = 0d;
 
@@ -39,7 +39,7 @@ public class Gauss2D : Method<GaussConfig>, IIntegrator2D
         return integral;
     }
 
-    private double CalculateOnSubInterval(Func<Point2D, double> f, double xStart, double xEnd, double yStart,
+    private double CalculateOnSubInterval(Func<Vector2D, double> f, double xStart, double xEnd, double yStart,
         double yEnd)
     {
         var ySum = 0d;
@@ -56,7 +56,7 @@ public class Gauss2D : Method<GaussConfig>, IIntegrator2D
             for (var j = 0; j < Config.Nodes.Count; j++)
             {
                 var x = xHalfLength * Config.Nodes[j] + xMid;
-                xSum += Config.Weights[j] * f(new Point2D(x, y));
+                xSum += Config.Weights[j] * f(new Vector2D(x, y));
             }
 
             ySum += Config.Weights[i] * xHalfLength * xSum;

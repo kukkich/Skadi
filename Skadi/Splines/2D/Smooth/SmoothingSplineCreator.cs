@@ -10,12 +10,12 @@ using Skadi.Vectors;
 
 namespace Skadi.Splines._2D.Smooth;
 
-public class SmoothingSplineCreator : ISplineCreator<Point2D, IElement>
+public class SmoothingSplineCreator : ISplineCreator<Vector2D, IElement>
 {
     private HermiteBasisFunctions2DProvider _basisFunctionsProvider;
-    private SplineContext<Point2D, IElement, Matrix> _context;
+    private SplineContext<Vector2D, IElement, Matrix> _context;
     private readonly GaussZeidelSolver _slaeSolver;
-    private SplineEquationAssembler<Point2D> _equationAssembler;
+    private SplineEquationAssembler<Vector2D> _equationAssembler;
     private bool _allocated;
 
     public SmoothingSplineCreator(GaussZeidelSolver slaeSolver)
@@ -23,7 +23,7 @@ public class SmoothingSplineCreator : ISplineCreator<Point2D, IElement>
         _slaeSolver = slaeSolver;
     }
 
-    public void Allocate(Grid<Point2D, IElement> grid)
+    public void Allocate(Grid<Vector2D, IElement> grid)
     {
         if (_allocated)
         {
@@ -34,7 +34,7 @@ public class SmoothingSplineCreator : ISplineCreator<Point2D, IElement>
         _allocated = true;
     }
 
-    public ISpline<Point2D> CreateSpline(FuncValue<Point2D>[] functionValues, double alpha)
+    public ISpline<Vector2D> CreateSpline(FuncValue<Vector2D>[] functionValues, double alpha)
     {
         _equationAssembler = CreateAssembler(_context, alpha);
 
@@ -54,9 +54,9 @@ public class SmoothingSplineCreator : ISplineCreator<Point2D, IElement>
         return new SmoothingSpline(_basisFunctionsProvider, _context.Grid, _context.Equation.Solution);
     }
 
-    private SplineContext<Point2D, IElement, Matrix> CreateContext(Grid<Point2D, IElement> grid)
+    private SplineContext<Vector2D, IElement, Matrix> CreateContext(Grid<Vector2D, IElement> grid)
     {
-        var context = new SplineContext<Point2D, IElement, Matrix>
+        var context = new SplineContext<Vector2D, IElement, Matrix>
         {
             Grid = grid,
             Equation = new Equation<Matrix>(
@@ -73,7 +73,7 @@ public class SmoothingSplineCreator : ISplineCreator<Point2D, IElement>
         return context;
     }
 
-    private SplineEquationAssembler2D CreateAssembler(SplineContext<Point2D, IElement, Matrix> context, double alpha)
+    private SplineEquationAssembler2D CreateAssembler(SplineContext<Vector2D, IElement, Matrix> context, double alpha)
     {
         _basisFunctionsProvider = new HermiteBasisFunctions2DProvider(context);
         return new SplineEquationAssembler2D(
@@ -84,7 +84,7 @@ public class SmoothingSplineCreator : ISplineCreator<Point2D, IElement>
         );
     }
 
-    private static double[] CalculateWeights(FuncValue<Point2D>[] funcValues)
+    private static double[] CalculateWeights(FuncValue<Vector2D>[] funcValues)
     {
         var weights = new double[funcValues.Length];
 

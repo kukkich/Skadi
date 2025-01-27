@@ -2,4 +2,4 @@
 
 namespace Skadi.Geometry._1D;
 
-public interface ICurve1D : ICurve<double>;
+public interface IParametricCurve1D : IParametricCurve<double>;

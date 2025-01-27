@@ -2,12 +2,12 @@
 
 namespace Skadi.FEM.Core.Geometry._2D.Quad;
 
-public class LinearTemplatePointsMapper(Point2D[] areaPoints) : ITemplatePointsMapper<Point2D>
+public class LinearTemplatePointsMapper(Vector2D[] areaPoints) : ITemplatePointsMapper<Vector2D>
 {
-    public Point2D Map(Point2D point)
+    public Vector2D Map(Vector2D vector)
     {
-        Span<double> wx = [1 - point.X, point.X];
-        Span<double> wy = [1 - point.Y, point.Y];
+        Span<double> wx = [1 - vector.X, vector.X];
+        Span<double> wy = [1 - vector.Y, vector.Y];
 
         var (x, y) = (0d, 0d);
         for (var i = 0; i < 4; i++)
@@ -16,6 +16,6 @@ public class LinearTemplatePointsMapper(Point2D[] areaPoints) : ITemplatePointsM
             y += wx[i % 2] * wy[i / 2] * areaPoints[i].Y;
         }
         
-        return new Point2D(x, y);
+        return new Vector2D(x, y);
     }
 }

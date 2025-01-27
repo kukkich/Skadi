@@ -1,7 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using Skadi.Matrices;
 using Skadi.Matrices.Sparse;
 using Skadi.Vectors;
+using Vector = Skadi.Vectors.Vector;
 
 namespace Skadi;
 
@@ -50,7 +52,7 @@ public static class LinAl
 
         return resultMemory;
     }
-    public static MatrixSpan Multiply(double coefficient, MatrixSpan a, MatrixSpan resultMemory)
+    public static MatrixSpan Multiply(double coefficient, ReadOnlyMatrixSpan a, MatrixSpan resultMemory)
     {
         AsserSameSize(a, resultMemory);
 
@@ -116,7 +118,7 @@ public static class LinAl
     public static Span<double> Multiply(ReadOnlyMatrixSpan a, ReadOnlySpan<double> v, Span<double> resultMemory)
     {
         AssertSameSize(a, v);
-        AssertSameSize(v, resultMemory);
+        AssertSameSize(v, (ReadOnlySpan<double>)resultMemory);
         
         for (var i = 0; i < v.Length; i++)
         for (var j = 0; j < v.Length; j++)
@@ -124,10 +126,35 @@ public static class LinAl
 
         return resultMemory;
     }
+    
+    /// <returns>v * u^T</returns>
+    public static TResult MultiplyAsTransparent<T1, T2, TResult>(ReadOnlySpan<T1> v, ReadOnlySpan<T2> u)
+        where TResult : IAdditiveIdentity<TResult, TResult>, IAdditionOperators<TResult, TResult, TResult>
+        where T1 : IMultiplyOperators<T1, T2, TResult>
+    {
+        AssertSameSize(v, u);
+        
+        var result = TResult.AdditiveIdentity;
+        for (var i = 0; i < v.Length; i++)
+            result += v[i] * u[i]!;
+        return result;
+    }
+    /// <returns>v * u^T</returns>
+    public static TResult MultiplyAsTransparent<TResult>(ReadOnlySpan<double> v, ReadOnlySpan<TResult> u)
+        where TResult : IAdditiveIdentity<TResult, TResult>, IAdditionOperators<TResult, TResult, TResult>, 
+        IMultiplyOperators<TResult, double, TResult>
+    {
+        AssertSameSize(v, u);
+        
+        var result = TResult.AdditiveIdentity;
+        for (var i = 0; i < v.Length; i++)
+            result += u[i] * v[i];
+        return result;
+    }
     public static Span<double> Multiply(MatrixBase a, ReadOnlySpan<double> v, Span<double> resultMemory)
     {
         AssertSameSize(a, v);
-        AssertSameSize(v, resultMemory);
+        AssertSameSize(v, (ReadOnlySpan<double>)resultMemory);
             
         for (var i = 0; i < v.Length; i++)
         for (var j = 0; j < v.Length; j++)
@@ -295,11 +322,11 @@ public static class LinAl
         }
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AssertSameSize(ReadOnlySpan<double> v, ReadOnlySpan<double> u)
+    private static void AssertSameSize<T1, T2>(ReadOnlySpan<T1> v, ReadOnlySpan<T2> u)
     {
         if (v.Length != u.Length)
         {
-            throw new ArgumentException();
+            throw new ArgumentException("Both vectors must have the same length.");
         }
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

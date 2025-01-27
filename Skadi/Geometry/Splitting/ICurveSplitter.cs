@@ -5,5 +5,5 @@ namespace Skadi.Geometry.Splitting;
 public interface ICurveSplitter
 {
     public int Steps { get; }
-    public IEnumerable<TPoint> EnumerateValues<TPoint>(ICurve<TPoint> curve);
+    public IEnumerable<TPoint> EnumerateValues<TPoint>(IParametricCurve<TPoint> parametricCurve);
 }

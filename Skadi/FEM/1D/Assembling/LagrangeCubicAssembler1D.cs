@@ -8,13 +8,15 @@ public class LagrangeCubicAssembler1D : IStackLocalAssembler<IElement>
 {
     private readonly IPointsCollection<double> _nodes;
     private readonly double _alpha;
-    private static readonly Matrix StiffnessMatrix = new (new double[,]
-    {
-        {148, -189, 54, -13},
-        {-189, 432, -297, 54},
-        {54, -297, 432, -189},
-        {-13, 54, -189, 148},
-    });
+
+    private static readonly double[] StiffnessMatrixValues =
+    [
+        148, -189, 54, -13,
+        -189, 432, -297, 54,
+        54, -297, 432, -189,
+        -13, 54, -189, 148
+    ];
+    private static ReadOnlyMatrixSpan StiffnessMatrix => new(StiffnessMatrixValues, 4);
     
     public LagrangeCubicAssembler1D(IPointsCollection<double> nodes, double alpha)
     {
@@ -30,13 +32,7 @@ public class LagrangeCubicAssembler1D : IStackLocalAssembler<IElement>
         
         var k = _alpha / (40d * length);
         
-        for (var i = 0; i < 4; i++)
-        {
-            for (var j = 0; j < 4; j++)
-            {
-                matrixSpan[i, j] = k *  StiffnessMatrix[i, j];
-            }
-        }
+        LinAl.Multiply(k, StiffnessMatrix, matrixSpan);
 
         var leftNodeId = element.NodeIds[0];
         for (var i = 0; i < 4; i++)

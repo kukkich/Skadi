@@ -7,11 +7,11 @@ namespace Skadi.FEM.Core.Assembling.Boundary.Second;
 
 public class SecondBoundaryApplier<TMatrix> : ISecondBoundaryApplier<TMatrix>
 {
-    private readonly IPointsCollection<Point2D> _nodes;
+    private readonly IPointsCollection<Vector2D> _nodes;
     private readonly IStackInserter<TMatrix> _inserter;
 
     public SecondBoundaryApplier(
-        IPointsCollection<Point2D> nodes,
+        IPointsCollection<Vector2D> nodes,
         IStackInserter<TMatrix> inserter
     )
     {

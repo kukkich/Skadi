@@ -73,7 +73,7 @@ public class SymmetricSparseMatrix
         if (Values.Length != _columnIndexes.Length) throw new ArgumentException(
             nameof(columnIndexes) + " and " + nameof(values) + "must have the same length"
         );
-        if (Diagonal.Length != _rowIndexes.Length) throw new ArgumentException(
+        if (Diagonal.Length != _rowIndexes.Length - 1) throw new ArgumentException(
             nameof(rowIndexes) + " and " + nameof(diagonal) + "must have the same length"
         );
     }

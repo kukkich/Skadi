@@ -5,7 +5,7 @@ namespace Skadi.FEM.Core.Geometry._2D.Quad;
 
 public record RegularGridDefinition
 (
-    Point2D[,] ControlPoints,
+    Vector2D[,] ControlPoints,
     ICurveSplitter[] XSplitters,
     ICurveSplitter[] YSplitters,
     AreaDefinition[] Areas,
