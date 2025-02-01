@@ -135,11 +135,9 @@ public readonly record struct Vector2D(double X, double Y) : INumberBase<Vector2
                Math.Abs(other.Y - Y) < tolerance;
     }
 
-    public string ToString(string? format, IFormatProvider? formatProvider)
-    {
-        throw new NotImplementedException();
-    }
-    
+    public string ToString(string? format, IFormatProvider? formatProvider) => $"<{X};{Y}>";
+    public override string ToString() => $"<{X};{Y}>";
+
     public static Vector2D AdditiveIdentity => Zero;
 
     public static bool IsCanonical(Vector2D value) => true;
