@@ -57,7 +57,6 @@ public class FiniteElementSolution2DHarmonic
 
         return us * Math.Sin(_frequency * time)
              + uc * Math.Cos(_frequency * time);
-
     }
 
     private bool ElementHas(IElement element, Vector2D node)
