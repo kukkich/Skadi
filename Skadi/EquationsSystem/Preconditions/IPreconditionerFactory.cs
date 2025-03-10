@@ -1,9 +1,8 @@
-﻿using Skadi.Matrices;
-using Skadi.Matrices.Sparse;
+﻿using Skadi.Matrices.Sparse;
 
 namespace Skadi.EquationsSystem.Preconditions;
 
-public interface IPreconditionerFactory
+public interface IPreconditionerFactory<in TMatrix>
 {
-    public IPreconditioner CreatePreconditioner(SymmetricRowSparseMatrix matrix);
+    public IPreconditioner CreatePreconditioner(TMatrix matrix);
 }

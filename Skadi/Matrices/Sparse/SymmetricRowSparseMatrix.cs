@@ -4,16 +4,6 @@ namespace Skadi.Matrices.Sparse;
 
 public class SymmetricRowSparseMatrix
 {
-    /// <summary>
-    /// Создаёт экземпляр матрицы, конвертируя представление с учетом верхнего треугольника
-    /// в внутреннее представление с хранением нижнего треугольника.
-    /// Writed By GPT.
-    /// </summary>
-    /// <param name="upperRowPointers">Массив указателей строк для верхнего треугольника.</param>
-    /// <param name="upperColumnIndexes">Массив номеров столбцов для ненулевых элементов верхнего треугольника.</param>
-    /// <param name="upperValues">Массив значений ненулевых элементов верхнего треугольника.</param>
-    /// <param name="diagonal">Массив диагональных элементов.</param>
-    /// <returns>Новый экземпляр SymmetricRowSparseMatrix с нижним треугольником</returns>
     public static SymmetricRowSparseMatrix FromUpperTriangle
     (
         int[] upperRowPointers,
@@ -75,15 +65,6 @@ public class SymmetricRowSparseMatrix
         return new SymmetricRowSparseMatrix(lowerRowPointers, lowerColumnIndexes, lowerValues, diagonal);
     }
 
-    /// <summary>
-    /// Создаёт экземпляр матрицы, конвертируя портрет верхнего треугольника
-    /// (представленный rowPointers и columnIndexes) в портрет нижнего треугольника.
-    /// Значения элементов и диагональ будут проинициализированы конструктором по умолчанию (нулевыми значениями).
-    /// Writed By GPT.
-    /// </summary>
-    /// <param name="upperRowPointers">Массив указателей строк для верхнего треугольника.</param>
-    /// <param name="upperColumnIndexes">Массив номеров столбцов для портрета верхнего треугольника.</param>
-    /// <returns>Новый экземпляр SymmetricRowSparseMatrix с портретом нижнего треугольника.</returns>
     public static SymmetricRowSparseMatrix FromUpperTriangle(int[] upperRowPointers, int[] upperColumnIndexes)
     {
         var n = upperRowPointers.Length - 1;
@@ -180,19 +161,7 @@ public class SymmetricRowSparseMatrix
             throw new IndexOutOfRangeException($"Matrix portrait doesn't contain element [{rowIndex},{columnIndex}]");
         }
     }
-
-    public double GetValue(int rowIndex, int columnIndex)
-    {
-        try
-        {
-            return this[rowIndex, columnIndex];
-        }
-        catch (IndexOutOfRangeException)
-        {
-            return 0;
-        }
-    }
-
+    
     public ReadOnlySpan<int> RowPointers => new(_rowPointers);
     public ReadOnlySpan<int> ColumnIndexes => new(_columnIndexes);
     public int Size => Diagonal.Length;
@@ -204,13 +173,13 @@ public class SymmetricRowSparseMatrix
 
     public SymmetricRowSparseMatrix
     (
-        IEnumerable<int> rowIndexes,
+        IEnumerable<int> rowPointers,
         IEnumerable<int> columnIndexes,
         IEnumerable<double> values,
         IEnumerable<double> diagonal
     )
     {
-        _rowPointers = rowIndexes.ToArray();
+        _rowPointers = rowPointers.ToArray();
         _columnIndexes = columnIndexes.ToArray();
         Values = values.ToArray();
         Diagonal = diagonal.ToArray();
@@ -221,15 +190,38 @@ public class SymmetricRowSparseMatrix
             );
         if (Diagonal.Length != _rowPointers.Length - 1)
             throw new ArgumentException(
-                nameof(rowIndexes) + " and " + nameof(diagonal) + "must have the same length"
+                nameof(rowPointers) + " and " + nameof(diagonal) + "must have the same length"
             );
     }
 
-    public SymmetricRowSparseMatrix(IEnumerable<int> rowIndexes, IEnumerable<int> columnIndexes)
+    public SymmetricRowSparseMatrix(IEnumerable<int> rowPointers, IEnumerable<int> columnIndexes)
     {
-        _rowPointers = rowIndexes.ToArray();
+        _rowPointers = rowPointers.ToArray();
         _columnIndexes = columnIndexes.ToArray();
         Diagonal = new double[_rowPointers.Length - 1];
         Values = new double[_columnIndexes.Length];
+    }
+
+    public SymmetricRowSparseMatrix Clone()
+    {
+        return new SymmetricRowSparseMatrix
+        (
+            _rowPointers.ToArray(),
+            _columnIndexes.ToArray(),
+            Values.ToArray(),
+            Diagonal.ToArray()
+        );
+    }
+    
+    public double GetValue(int rowIndex, int columnIndex)
+    {
+        try
+        {
+            return this[rowIndex, columnIndex];
+        }
+        catch (IndexOutOfRangeException)
+        {
+            return 0;
+        }
     }
 }

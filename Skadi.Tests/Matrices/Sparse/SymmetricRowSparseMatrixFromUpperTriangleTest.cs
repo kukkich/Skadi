@@ -1,4 +1,3 @@
-using NUnit.Framework.Legacy;
 using Skadi.Matrices;
 using Skadi.Matrices.Sparse;
 
@@ -6,7 +5,7 @@ using Skadi.Matrices.Sparse;
 
 namespace Skadi.Tests.Matrices.Sparse;
 
-public class SymmetricRowSparseMatrixTest
+public class SymmetricRowSparseMatrixFromUpperTriangleTest
 {
     private Matrix originalMatrix = null!;
     private double[] diagonal = null!;

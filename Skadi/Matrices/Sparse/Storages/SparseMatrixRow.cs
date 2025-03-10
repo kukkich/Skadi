@@ -14,13 +14,32 @@ public readonly ref struct SparseMatrixRow
             return ref _values[valueIndex];
         }
     }
-
+    
+    public bool TryGetValue(int column, out double value)
+    {
+        value = default;
+        if (!HasColumn(column, out var valueIndex))
+            return false;
+        
+        value = _values[valueIndex];
+        return true;
+    }
+    
+    public bool TrySetValue(int column, double value)
+    {
+        if (!HasColumn(column, out var valueIndex))
+            return false;
+        
+        _values[valueIndex] = value;
+        return true;
+    }
+    
     public bool HasColumn(int column)
     {
         var valueIndex = _columnIndexes.BinarySearch(column);
         return valueIndex >= 0;
     }
-
+    
     private bool HasColumn(int column, out int columnIndex)
     {
         columnIndex = _columnIndexes.BinarySearch(column);

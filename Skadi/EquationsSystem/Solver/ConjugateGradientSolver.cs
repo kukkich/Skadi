@@ -6,7 +6,7 @@ namespace Skadi.EquationsSystem.Solver;
 
 public class ConjugateGradientSolver : ISLAESolver<SymmetricRowSparseMatrix>
 {
-    private readonly IPreconditionerFactory _preconditionerFactory;
+    private readonly IPreconditionerFactory<SymmetricRowSparseMatrix> _preconditionerFactory;
     private readonly double _precision;
     private readonly int _maxIteration;
 
@@ -17,7 +17,7 @@ public class ConjugateGradientSolver : ISLAESolver<SymmetricRowSparseMatrix>
     private Vector _rNext = null!;
     private Vector _aByZProduct = null!;
 
-    public ConjugateGradientSolver(IPreconditionerFactory preconditionerFactory, double precision, int maxIteration)
+    public ConjugateGradientSolver(IPreconditionerFactory<SymmetricRowSparseMatrix> preconditionerFactory, double precision, int maxIteration)
     {
         _preconditionerFactory = preconditionerFactory;
         _precision = precision;
