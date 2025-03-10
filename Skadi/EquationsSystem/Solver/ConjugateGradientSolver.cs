@@ -4,14 +4,14 @@ using Skadi.Vectors;
 
 namespace Skadi.EquationsSystem.Solver;
 
-public class ConjugateGradientSolver : ISLAESolver<SymmetricSparseMatrix>
+public class ConjugateGradientSolver : ISLAESolver<SymmetricRowSparseMatrix>
 {
     private readonly IPreconditionerFactory _preconditionerFactory;
     private readonly double _precision;
     private readonly int _maxIteration;
 
     private IPreconditioner _preconditioner = null!;
-    private Equation<SymmetricSparseMatrix> _equation = null!;
+    private Equation<SymmetricRowSparseMatrix> _equation = null!;
     private Vector _r = null!;
     private Vector _z = null!;
     private Vector _rNext = null!;
@@ -24,7 +24,7 @@ public class ConjugateGradientSolver : ISLAESolver<SymmetricSparseMatrix>
         _maxIteration = maxIteration;
     }
      
-    public Vector Solve(Equation<SymmetricSparseMatrix> equation)
+    public Vector Solve(Equation<SymmetricRowSparseMatrix> equation)
     {
         InitializeStartValues(equation);
 
@@ -84,7 +84,7 @@ public class ConjugateGradientSolver : ISLAESolver<SymmetricSparseMatrix>
 
     }
 
-    private void InitializeStartValues(Equation<SymmetricSparseMatrix> equation)
+    private void InitializeStartValues(Equation<SymmetricRowSparseMatrix> equation)
     {
         _preconditioner = _preconditionerFactory.CreatePreconditioner(equation.Matrix);
 

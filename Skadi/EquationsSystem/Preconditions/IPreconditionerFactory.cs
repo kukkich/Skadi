@@ -5,5 +5,5 @@ namespace Skadi.EquationsSystem.Preconditions;
 
 public interface IPreconditionerFactory
 {
-    public IPreconditioner CreatePreconditioner(SymmetricSparseMatrix matrix);
+    public IPreconditioner CreatePreconditioner(SymmetricRowSparseMatrix matrix);
 }

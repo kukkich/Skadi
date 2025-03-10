@@ -2,7 +2,7 @@
 
 namespace Skadi.Matrices.Sparse;
 
-public class SymmetricSparseMatrix
+public class SymmetricRowSparseMatrix
 {
     public SparseMatrixRow this[int rowIndex]
     {
@@ -59,7 +59,7 @@ public class SymmetricSparseMatrix
     private readonly int[] _rowIndexes;
     private readonly int[] _columnIndexes;
 
-    public SymmetricSparseMatrix(
+    public SymmetricRowSparseMatrix(
         IEnumerable<int> rowIndexes, IEnumerable<int> columnIndexes,
         IEnumerable<double> values,
         IEnumerable<double> diagonal
@@ -78,7 +78,7 @@ public class SymmetricSparseMatrix
         );
     }
 
-    public SymmetricSparseMatrix(
+    public SymmetricRowSparseMatrix(
         IEnumerable<int> rowIndexes, IEnumerable<int> columnIndexes
     )
     {

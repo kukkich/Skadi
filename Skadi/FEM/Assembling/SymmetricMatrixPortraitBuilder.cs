@@ -4,11 +4,11 @@ using Skadi.Matrices.Sparse;
 
 namespace Skadi.FEM.Assembling;
 
-public class SymmetricMatrixPortraitBuilder : IMatrixPortraitBuilder<SymmetricSparseMatrix, IElement>
+public class SymmetricMatrixPortraitBuilder : IMatrixPortraitBuilder<SymmetricRowSparseMatrix, IElement>
 {
     private List<SortedSet<int>> _adjacencyList = null!;
 
-    public SymmetricSparseMatrix Build(IEnumerable<IElement> elements, int nodesCount)
+    public SymmetricRowSparseMatrix Build(IEnumerable<IElement> elements, int nodesCount)
     {
         BuildAdjacencyList(elements, nodesCount);
 
@@ -23,7 +23,7 @@ public class SymmetricMatrixPortraitBuilder : IMatrixPortraitBuilder<SymmetricSp
             .SelectMany(nodeList => nodeList)
             .ToArray();
 
-        return new SymmetricSparseMatrix(rowsIndexes, columnsIndexes);
+        return new SymmetricRowSparseMatrix(rowsIndexes, columnsIndexes);
     }
 
     private void BuildAdjacencyList(IEnumerable<IElement> elements, int nodesCount)

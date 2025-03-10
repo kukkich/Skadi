@@ -5,7 +5,7 @@ namespace Skadi.EquationsSystem.Preconditions.Diagonal;
 
 public class DiagonalPreconditionerFactory : IPreconditionerFactory
 {
-    public IPreconditioner CreatePreconditioner(SymmetricSparseMatrix matrix)
+    public IPreconditioner CreatePreconditioner(SymmetricRowSparseMatrix matrix)
     {
         return new DiagonalPreconditioner(matrix.Diagonal);
     }

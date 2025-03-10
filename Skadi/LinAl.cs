@@ -163,7 +163,7 @@ public static class LinAl
         return resultMemory;
     }
 
-    public static Vector Multiply(SymmetricSparseMatrix matrix, IReadonlyVector<double> x, Vector? resultMemory = null)
+    public static Vector Multiply(SymmetricRowSparseMatrix matrix, IReadonlyVector<double> x, Vector? resultMemory = null)
     {
         ValidateOrAllocateIfNull(x, ref resultMemory!);
         AssertSameSize(matrix, x);
@@ -290,7 +290,7 @@ public static class LinAl
             throw new ArgumentOutOfRangeException($"{nameof(v)} and {nameof(u)}", "must have the same length");
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AssertSameSize(SymmetricSparseMatrix matrix, IReadonlyVector<double> x)
+    private static void AssertSameSize(SymmetricRowSparseMatrix matrix, IReadonlyVector<double> x)
     {
         if (matrix.Size != x.Length)
         {

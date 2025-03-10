@@ -2,9 +2,9 @@
 
 namespace Skadi.FEM.Core.Assembling.Boundary.First;
 
-public class GaussExcluderSymmetricSparse : IFirstBoundaryApplier<SymmetricSparseMatrix>
+public class GaussExcluderSymmetricSparse : IFirstBoundaryApplier<SymmetricRowSparseMatrix>
 {
-    public void Apply(Equation<SymmetricSparseMatrix> equation, FirstCondition condition)
+    public void Apply(Equation<SymmetricRowSparseMatrix> equation, FirstCondition condition)
     {
         var value = condition.Value;
         var index = condition.NodeIndex;
