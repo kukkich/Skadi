@@ -1,14 +1,13 @@
-﻿using Skadi.EquationsSystem.Preconditions;
+﻿using Microsoft.Extensions.Logging;
+using Skadi.EquationsSystem.Preconditions;
 using Skadi.Matrices.Sparse;
 using Skadi.Vectors;
 
 namespace Skadi.EquationsSystem.Solver;
 
-public class ConjugateGradientSolver : ISLAESolver<SymmetricRowSparseMatrix>
+public class ConjugateGradientSolver : Method<ConjugateGradientSolverConfig>, ISLAESolver<SymmetricRowSparseMatrix>
 {
     private readonly IPreconditionerFactory<SymmetricRowSparseMatrix> _preconditionerFactory;
-    private readonly double _precision;
-    private readonly int _maxIteration;
 
     private IPreconditioner _preconditioner = null!;
     private Equation<SymmetricRowSparseMatrix> _equation = null!;
@@ -17,13 +16,16 @@ public class ConjugateGradientSolver : ISLAESolver<SymmetricRowSparseMatrix>
     private Vector _rNext = null!;
     private Vector _aByZProduct = null!;
 
-    public ConjugateGradientSolver(IPreconditionerFactory<SymmetricRowSparseMatrix> preconditionerFactory, double precision, int maxIteration)
+    public ConjugateGradientSolver
+    (
+        IPreconditionerFactory<SymmetricRowSparseMatrix> preconditionerFactory,
+        ConjugateGradientSolverConfig config,
+        ILogger logger
+    ) : base(config, logger)
     {
         _preconditionerFactory = preconditionerFactory;
-        _precision = precision;
-        _maxIteration = maxIteration;
     }
-     
+
     public Vector Solve(Equation<SymmetricRowSparseMatrix> equation)
     {
         InitializeStartValues(equation);
@@ -37,7 +39,7 @@ public class ConjugateGradientSolver : ISLAESolver<SymmetricRowSparseMatrix>
     {
         var fNorm = _equation.RightSide.Norm;
 
-        for (var i = 1; i < _maxIteration && (_r.Norm / fNorm) >= _precision*_precision; i++)
+        for (var i = 1; i < Config.MaxIteration && _r.Norm / fNorm >= Config.Precision * Config.Precision; i++)
         {
             var preconditionedRScalarProduct = Vector.ScalarProduct(
                 _preconditioner.MultiplyOn(_r, _aByZProduct), // could pass any memory
@@ -78,10 +80,9 @@ public class ConjugateGradientSolver : ISLAESolver<SymmetricRowSparseMatrix>
 
             if (i % 200 == 0)
             {
-                Console.WriteLine($"[{i}]: {_r.Norm / fNorm:E15} / {_precision*_precision:E15}");
+                Console.WriteLine($"[{i}]: {_r.Norm / fNorm:E15} / {Config.Precision * Config.Precision:E15}");
             }
         }
-
     }
 
     private void InitializeStartValues(Equation<SymmetricRowSparseMatrix> equation)
@@ -100,3 +101,5 @@ public class ConjugateGradientSolver : ISLAESolver<SymmetricRowSparseMatrix>
         _aByZProduct = Vector.Create(equation.RightSide.Length);
     }
 }
+
+public readonly record struct ConjugateGradientSolverConfig(double Precision, int MaxIteration);
