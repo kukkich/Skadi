@@ -190,7 +190,7 @@ public class SymmetricRowSparseMatrix
             );
         if (Diagonal.Length != _rowPointers.Length - 1)
             throw new ArgumentException(
-                nameof(rowPointers) + " and " + nameof(diagonal) + "must have the same length"
+                nameof(rowPointers) + " length must be equal to " + nameof(diagonal) + " length - 1"
             );
     }
 

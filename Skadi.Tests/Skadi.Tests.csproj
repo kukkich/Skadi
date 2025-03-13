@@ -28,8 +28,4 @@
     <ProjectReference Include="..\Skadi\Skadi.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="EquationsSystem\Preconditions\" />
-  </ItemGroup>
-
 </Project>
