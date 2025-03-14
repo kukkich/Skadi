@@ -4,7 +4,7 @@ using Skadi.Vectors;
 
 namespace Skadi.FEM.Assembling;
 
-public class SymmetricInserter : IStackInserter<SymmetricSparseMatrix>
+public class SymmetricInserter : IStackInserter<SymmetricRowSparseMatrix>
 {
     public void InsertVector(Vector vector, StackLocalVector localVector)
     {
@@ -14,7 +14,7 @@ public class SymmetricInserter : IStackInserter<SymmetricSparseMatrix>
         }
     }
 
-    public void InsertMatrix(SymmetricSparseMatrix matrix, StackLocalMatrix localMatrix)
+    public void InsertMatrix(SymmetricRowSparseMatrix matrix, StackLocalMatrix localMatrix)
     {
         var matrixSize = localMatrix.IndexPermutation.Length;
         for (var i = 0; i < matrixSize; i++)
