@@ -3,6 +3,7 @@ using Moq;
 using Skadi.EquationsSystem.Preconditions;
 using Skadi.EquationsSystem.Preconditions.Diagonal;
 using Skadi.EquationsSystem.Preconditions.Hollesky;
+using Skadi.EquationsSystem.Preconditions.LDLT;
 using Skadi.EquationsSystem.Solver;
 using Skadi.Matrices.Sparse;
 using Vector = Skadi.Vectors.Vector;
@@ -17,6 +18,7 @@ public class ConjugateGradientSolverTestTests
 {
     private readonly IPreconditionerFactory<SymmetricRowSparseMatrix> diagonalPreconditionerFactory = new DiagonalPreconditionerFactory();
     private readonly IPreconditionerFactory<SymmetricRowSparseMatrix> holesskyPreconditionerFactory = new IncompleteHolleskyPreconditionerFactory();
+    private readonly IPreconditionerFactory<SymmetricRowSparseMatrix> LDLTPreconditionerFactory = new IncompleteLDLTPreconditionerFactory();
     private IPreconditionerFactory<SymmetricRowSparseMatrix> UnitPreconditioner = null!;
     private Equation<SymmetricRowSparseMatrix> equation = null!;
     private readonly Vector solutionExpected = new (-10, 9, -8, 7, -6, 5);
@@ -65,6 +67,17 @@ public class ConjugateGradientSolverTestTests
     public void TestWithIncompleteHolleskyPreconditioner()
     {
         var solver = solverFactory(holesskyPreconditionerFactory);
+        var solutionActual = solver.Solve(equation);
+
+        var diff = LinAl.Subtract(solutionActual, solutionExpected);
+        
+        Assert.That(diff.Norm, Is.LessThanOrEqualTo(config.Precision));
+    }
+    
+    [Test]
+    public void TestWithIncompleteLDLTPreconditioner()
+    {
+        var solver = solverFactory(LDLTPreconditionerFactory);
         var solutionActual = solver.Solve(equation);
 
         var diff = LinAl.Subtract(solutionActual, solutionExpected);
