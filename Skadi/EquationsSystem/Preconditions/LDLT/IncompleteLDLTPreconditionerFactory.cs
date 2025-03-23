@@ -8,6 +8,6 @@ public class IncompleteLDLTPreconditionerFactory : IPreconditionerFactory<Symmet
 {
     public IPreconditioner CreatePreconditioner(SymmetricRowSparseMatrix matrix)
     {
-        return new CholeskyPreconditioner(IncompleteHollesky.Decompose(matrix));
+        return new CholeskyPreconditioner(IncompleteLDLT.Decompose(matrix));
     }
 }
