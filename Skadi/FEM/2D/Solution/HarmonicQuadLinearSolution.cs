@@ -31,8 +31,10 @@ public class HarmonicQuadLinearSolution : IHarmonicFiniteElementSolution<Vector2
     public double Calculate(Vector2D point, double time)
     {
         var element = _grid.Elements
-            .First(x => ElementHas(x, point));
-
+            .FirstOrDefault(x => ElementHas(x, point));
+        if (element is null)
+            throw new Exception();
+        
         Span<double> x = stackalloc double[4];
         Span<double> y = stackalloc double[4];
         for (var i = 0; i < 4; i++)

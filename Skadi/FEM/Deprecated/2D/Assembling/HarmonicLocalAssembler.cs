@@ -7,6 +7,7 @@ using Skadi.Matrices.Sparse;
 
 namespace Skadi.FEM.Deprecated._2D.Assembling;
 
+[Obsolete]
 public class HarmonicLocalAssembler : IStackLocalAssembler<IElement>
 {
     public static readonly ImmutableMatrix MassTemplate;
