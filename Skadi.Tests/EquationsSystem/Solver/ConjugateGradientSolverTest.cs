@@ -22,7 +22,7 @@ public class ConjugateGradientSolverTestTests
     private IPreconditionerFactory<SymmetricRowSparseMatrix> UnitPreconditioner = null!;
     private Equation<SymmetricRowSparseMatrix> equation = null!;
     private readonly Vector solutionExpected = new (-10, 9, -8, 7, -6, 5);
-    private static readonly ConjugateGradientSolverConfig config = new (1e-14, 7);
+    private static readonly ConjugateGradientSolverConfig config = new (1e-14, 100);
 
     private readonly Func<IPreconditionerFactory<SymmetricRowSparseMatrix>, ConjugateGradientSolver> solverFactory =
         factory => new ConjugateGradientSolver(factory, config, NullLogger.Instance);
