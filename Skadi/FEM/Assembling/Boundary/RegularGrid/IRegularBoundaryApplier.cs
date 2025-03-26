@@ -2,5 +2,5 @@
 
 public interface IRegularBoundaryApplier<TMatrix>
 {
-    public void Apply(Equation<TMatrix> matrix, RegularBoundaryCondition condition);
+    public void Apply(Equation<TMatrix> equation, RegularBoundaryCondition condition);
 }

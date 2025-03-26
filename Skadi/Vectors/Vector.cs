@@ -12,7 +12,7 @@ public sealed class Vector : IVector<double>
     public static Vector Create(int length, Func<int, double> factory)
     {
         var values = new double[length];
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
             values[i] = factory(i);
 
         return new Vector(values);

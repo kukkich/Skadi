@@ -7,6 +7,7 @@ using Skadi.Matrices.Sparse;
 
 namespace Skadi.FEM.Deprecated.Core.Assembling.Boundary.Harmonic;
 
+[Obsolete]
 public class HarmonicSecondBoundaryApplier : IHarmonicSecondBoundaryApplier<SparseMatrix>
 {
     private readonly Context<Vector2D, IElement, SparseMatrix> _context;

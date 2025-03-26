@@ -1,34 +1,40 @@
-﻿using Skadi.FEM.Core;
+using Skadi.FEM.Core;
 using Skadi.FEM.Core.BasisFunctions;
 using Skadi.FEM.Core.Geometry;
 using Skadi.Geometry._2D;
 using Skadi.Vectors;
 
-namespace Skadi.FEM._2D;
+namespace Skadi.FEM._2D.Solution;
 
-public class QuadLinearSolution : IFiniteElementSolution<Vector2D>
+public class HarmonicQuadLinearSolution : IHarmonicFiniteElementSolution<Vector2D>
 {
+    public double Frequency { get; }
     public IReadonlyVector<double> Weights { get; }
-
+    
     private const double Epsilon = 1e-10;
-    private readonly IBasisFunctionsProvider<IElement, Vector2D> _basisFunctionsProvider;
     private readonly Grid<Vector2D, IElement> _grid;
+    private readonly IBasisFunctionsProvider<IElement, Vector2D> _basisFunctionsProvider;
 
-    public QuadLinearSolution(
+    public HarmonicQuadLinearSolution(
         IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider,
         Grid<Vector2D, IElement> grid,
-        IReadonlyVector<double> weights)
+        IReadonlyVector<double> weights,
+        double frequency
+    )
     {
         _basisFunctionsProvider = basisFunctionsProvider;
         _grid = grid;
         Weights = weights;
+        Frequency = frequency;
     }
 
-    public double Calculate(Vector2D vector)
+    public double Calculate(Vector2D point, double time)
     {
         var element = _grid.Elements
-            .First(x => ElementHas(x, vector));
-
+            .FirstOrDefault(x => ElementHas(x, point));
+        if (element is null)
+            throw new Exception();
+        
         Span<double> x = stackalloc double[4];
         Span<double> y = stackalloc double[4];
         for (var i = 0; i < 4; i++)
@@ -47,24 +53,24 @@ public class QuadLinearSolution : IFiniteElementSolution<Vector2D>
         var alpha1 = (x[1] - x[0]) * (y[3] - y[2]) - (y[1] - y[0]) * (x[3] - x[2]);
         var alpha2 = (x[3] - x[1]) * (y[2] - y[0]) - (y[3] - y[1]) * (x[2] - x[0]);
 
-        var w = b6 * (vector.X - x[0]) - b5 * (vector.Y - y[0]);
+        var w = b6 * (point.X - x[0]) - b5 * (point.Y - y[0]);
         double ksi;
         double eta;
 
         if (Math.Abs(alpha1) < Epsilon && Math.Abs(alpha2) < Epsilon)
         {
-            ksi = (b3 * (vector.X - x[0]) - b1 * (vector.Y - y[0])) / (b2 * b3 - b1 * b4);
-            eta = (b2 * (vector.Y - y[0]) - b4 * (vector.X - x[0])) / (b2 * b3 - b1 * b4);
+            ksi = (b3 * (point.X - x[0]) - b1 * (point.Y - y[0])) / (b2 * b3 - b1 * b4);
+            eta = (b2 * (point.Y - y[0]) - b4 * (point.X - x[0])) / (b2 * b3 - b1 * b4);
         }
         else if (Math.Abs(alpha1) < Epsilon)
         {
-            ksi = (alpha2 * (vector.X - x[0]) + b1 * w) / (alpha2 * b2 - b5 * w);
+            ksi = (alpha2 * (point.X - x[0]) + b1 * w) / (alpha2 * b2 - b5 * w);
             eta = -1d * w / alpha2;
         }
         else if (Math.Abs(alpha2) < Epsilon)
         {
             ksi = w / alpha1;
-            eta = (alpha1 * (vector.Y - y[0]) - b4 * w) / (alpha1 * b3 + b6 * w);
+            eta = (alpha1 * (point.Y - y[0]) - b4 * w) / (alpha1 * b3 + b6 * w);
         }
         else
         {
@@ -79,20 +85,17 @@ public class QuadLinearSolution : IFiniteElementSolution<Vector2D>
             funcValues[i] = functions[i].Evaluate(pointInTemplate);
         }
 
-        var result = 0d;
-        for (var i = 0; i < functions.Length; i++)
-        {
-            var weightId = element.NodeIds[i];
-            var weight = Weights[weightId];
-            result += funcValues[i] * weight;
-        }
-        
-        return result;
-    }
+        var (us, uc) = (0d, 0d);
 
-    public double Derivative(Vector2D vector)
-    {
-        throw new NotImplementedException();
+        for (var i = 0; i < funcValues.Length; i++)
+        {
+            var nodeIndex = element.NodeIds[i];
+            us += Weights[nodeIndex * 2] * funcValues[i];
+            uc += Weights[nodeIndex * 2 + 1] * funcValues[i];
+        }
+
+        return us * Math.Sin(Frequency * time) + 
+               uc * Math.Cos(Frequency * time); //Todo тесты
     }
 
     private bool ElementHas(IElement element, Vector2D vector)

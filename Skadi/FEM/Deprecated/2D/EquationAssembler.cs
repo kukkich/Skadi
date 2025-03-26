@@ -1,13 +1,12 @@
 ﻿using Skadi.FEM.Core.Assembling;
 using Skadi.FEM.Core.Assembling.Boundary.First;
 using Skadi.FEM.Core.Geometry;
-using Skadi.FEM.Deprecated;
 using Skadi.FEM.Deprecated.Core.Assembling.Boundary.Harmonic;
 using Skadi.Geometry._2D;
 using Skadi.Matrices;
 using Skadi.Matrices.Sparse;
 
-namespace Skadi.FEM._2D;
+namespace Skadi.FEM.Deprecated._2D;
 
 public class EquationAssembler
 {

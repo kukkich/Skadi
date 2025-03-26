@@ -12,6 +12,7 @@ using Skadi.FEM.Providers.Density;
 using Skadi.Geometry._2D;
 using Skadi.Integration;
 using Skadi.Matrices;
+// ReSharper disable InconsistentNaming
 
 namespace Skadi.Tests.FEM._2D.Assembling;
 
@@ -44,7 +45,7 @@ public class QuadLinearAssembler2DTest
     public void StiffnessShouldBeCorrect()
     {
         var element = new Element(0, [0, 1, 2, 3]);
-        var expectedMatrix = new Matrix(new double[,]
+        var expectedMatrix = new Matrix(new[,]
         {
             {0.3982285392, -0.04645707836, -0.1205713479, -0.2312001129 },
             {-0.04645707836, 0.8429141567, -0.5088573041, -0.2875997743 },
