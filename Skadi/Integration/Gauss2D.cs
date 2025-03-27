@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Numerics;
+using Microsoft.Extensions.Logging;
 using Skadi.Geometry._1D;
 using Skadi.Geometry._2D;
 
@@ -15,9 +16,10 @@ public class Gauss2D : Method<GaussConfig>, IIntegrator2D
         }
     }
 
-    public double Calculate(Func<Vector2D, double> f, Line1D xInterval, Line1D yInterval)
+    public T Calculate<T>(Func<Vector2D, T> f, Line1D xInterval, Line1D yInterval) 
+        where T : IAdditiveIdentity<T, T>, IAdditionOperators<T, T, T>, IMultiplyOperators<T, double, T>
     {
-        var integral = 0d;
+        var integral = T.AdditiveIdentity;
 
         var xSegmentLength = (xInterval.End - xInterval.Start) / Config.Segments;
         var ySegmentLength = (yInterval.End - yInterval.Start) / Config.Segments;
@@ -39,10 +41,10 @@ public class Gauss2D : Method<GaussConfig>, IIntegrator2D
         return integral;
     }
 
-    private double CalculateOnSubInterval(Func<Vector2D, double> f, double xStart, double xEnd, double yStart,
-        double yEnd)
+    private T CalculateOnSubInterval<T>(Func<Vector2D, T> f, double xStart, double xEnd, double yStart, double yEnd)
+        where T : IAdditiveIdentity<T, T>, IAdditionOperators<T, T, T>, IMultiplyOperators<T, double, T>
     {
-        var ySum = 0d;
+        var ySum = T.AdditiveIdentity;
 
         var xHalfLength = (xEnd - xStart) / 2;
         var xMid = (xStart + xEnd) / 2;
@@ -52,29 +54,27 @@ public class Gauss2D : Method<GaussConfig>, IIntegrator2D
         for (var i = 0; i < Config.Nodes.Count; i++)
         {
             var y = (yHalfLength * Config.Nodes[i] + yMid);
-            var xSum = 0d;
+            var xSum = T.AdditiveIdentity;
             for (var j = 0; j < Config.Nodes.Count; j++)
             {
                 var x = xHalfLength * Config.Nodes[j] + xMid;
-                xSum += Config.Weights[j] * f(new Vector2D(x, y));
+                xSum += f(new Vector2D(x, y)) * Config.Weights[j];
             }
 
-            ySum += Config.Weights[i] * xHalfLength * xSum;
+            ySum += xSum * (Config.Weights[i] * xHalfLength);
         }
 
-        return yHalfLength * ySum;
+        return ySum * yHalfLength ;
     }
 }
 
 public class GaussConfig
 {
-    public IReadOnlyList<double> Nodes { get; init; }
-    public IReadOnlyList<double> Weights { get; init; }
-    public int Segments { get; init; }
+    public required IReadOnlyList<double> Nodes { get; init; }
+    public required IReadOnlyList<double> Weights { get; init; }
+    public int Segments { get; private init; }
 
-    private GaussConfig()
-    {
-    }
+    private GaussConfig() { }
     
     public static GaussConfig Gauss2(int segments) => new()
     {
