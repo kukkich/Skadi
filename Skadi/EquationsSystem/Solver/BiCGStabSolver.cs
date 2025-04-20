@@ -11,7 +11,6 @@ public class BiCGStabSolver<T> : Method<ConjugateGradientSolverConfig>, ISLAESol
     private readonly IExtendedPreconditionerFactory<T> _preconditionerFactory;
     private IPreconditioner _preconditioner = null!;
     private IPreconditionerPart _preconditionerPart = null!;
-    private Equation<T> _equation = null!;
     
     public BiCGStabSolver
     (

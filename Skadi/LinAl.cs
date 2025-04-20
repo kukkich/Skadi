@@ -20,6 +20,7 @@ public static class LinAl
     {
         return LinearCombination(v, u, 1.0, -1.0, resultMemory);
     }
+    
     public static Vector LinearCombination(
         IReadonlyVector<double> v, IReadonlyVector<double> u,
         double vCoefficient, double uCoefficient,

@@ -122,9 +122,8 @@ public class SymmetricRowSparseMatrix
         {
             ArgumentOutOfRangeException.ThrowIfNegative(rowIndex);
 
-            var end = _rowPointers[rowIndex + 1];
-
             var begin = _rowPointers[rowIndex];
+            var end = _rowPointers[rowIndex + 1];
             var length = end - begin;
 
             return new SparseMatrixRow(
