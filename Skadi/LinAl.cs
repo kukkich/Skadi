@@ -11,7 +11,6 @@ namespace Skadi;
 
 public static class LinAl
 {
-    // TODO replace Vector with IVector and IReadonlyVector where possible
     public static Vector Sum(IReadonlyVector<double> v, IReadonlyVector<double> u, Vector? resultMemory = null)
     {
         return LinearCombination(v, u, 1.0, 1.0, resultMemory);
@@ -29,13 +28,38 @@ public static class LinAl
     {
         AssertSameSize(v, u);
         ValidateOrAllocateIfNull(v, ref resultMemory!);
+        var length = v.Length;
 
-        for (var i = 0; i < v.Length; i++)
+        var i = 0;
+        var simdWidth = Vector256<double>.Count;
+
+        var vCoeffVec = Vector256.Create(vCoefficient);
+        var uCoeffVec = Vector256.Create(uCoefficient);
+
+        for (; i <= length - simdWidth; i += simdWidth)
+        {
+            var vVec = Vector256.Create(v[i], v[i + 1], v[i + 2], v[i + 3]);
+            var uVec = Vector256.Create(u[i], u[i + 1], u[i + 2], u[i + 3]);
+
+            var vMul = Avx.Multiply(vVec, vCoeffVec);
+            var uMul = Avx.Multiply(uVec, uCoeffVec);
+
+            var sum = Avx.Add(vMul, uMul);
+
+            resultMemory[i] = sum[0];
+            resultMemory[i + 1] = sum[1];
+            resultMemory[i + 2] = sum[2];
+            resultMemory[i + 3] = sum[3];
+        }
+
+        for (; i < length; i++)
+        {
             resultMemory[i] = v[i] * vCoefficient + u[i] * uCoefficient;
+        }
 
         return resultMemory;
     }
-
+    
     public static Vector Multiply(double coefficient, IReadonlyVector<double> v, Vector? resultMemory = null)
     {
         ValidateOrAllocateIfNull(v, ref resultMemory!);
@@ -107,7 +131,6 @@ public static class LinAl
                 sum += mul[0] + mul[1] + mul[2] + mul[3];
             }
 
-            // Обработка оставшихся элементов
             for (; i < length; i++)
             {
                 var idx = rowStart + i;
