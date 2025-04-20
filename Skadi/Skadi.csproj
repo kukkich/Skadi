@@ -11,7 +11,6 @@
     <Folder Include="FEM\Core\Assembling\Boundary\Third\" />
     <Folder Include="FEM\Deprecated\Core\Assembling\Boundary\" />
     <Folder Include="Matrices\Sparse\Storages\" />
-    <Folder Include="Numeric\" />
   </ItemGroup>
 
   <ItemGroup>

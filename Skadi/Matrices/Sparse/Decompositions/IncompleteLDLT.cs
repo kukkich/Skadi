@@ -1,6 +1,6 @@
 namespace Skadi.Matrices.Sparse.Decompositions;
 
-public class IncompleteLDLT
+public static class IncompleteLDLT
 {
     public static SymmetricRowSparseMatrix Decompose(SymmetricRowSparseMatrix matrix)
     {

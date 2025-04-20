@@ -1,4 +1,5 @@
 using Skadi.Matrices;
+using Skadi.Matrices.Sparse;
 using Skadi.Vectors;
 
 namespace Skadi.Tests.LinAlTests.MVOperations;

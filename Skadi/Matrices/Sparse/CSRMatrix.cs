@@ -1,6 +1,9 @@
-namespace Skadi.Matrices;
+using Skadi.Numeric;
+using Skadi.Vectors;
 
-public class CSRMatrix
+namespace Skadi.Matrices.Sparse;
+
+public class CSRMatrix : ILinearOperator
 {
     public ReadOnlySpan<int> RowPointers => new(_rowPointers);
     public ReadOnlySpan<int> ColumnIndexes => new(_columnIndexes);
@@ -21,4 +24,7 @@ public class CSRMatrix
         _columnIndexes = columnIndexes;
         Values = values;
     }
+
+    public Vector MultiplyOn(IReadonlyVector<double> vector, Vector? resultMemory = null) 
+        => LinAl.Multiply(this, vector, resultMemory);
 }

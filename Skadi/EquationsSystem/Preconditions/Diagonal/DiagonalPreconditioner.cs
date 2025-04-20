@@ -18,7 +18,7 @@ public class DiagonalPreconditioner : IPreconditioner
         _inverseDiagonal = diagonal.Select(x => 1d / x).ToVector();
     }
 
-    public Vector MultiplyOn(Vector x, Vector? resultMemory = null)
+    public Vector MultiplyOn(IReadonlyVector<double> x, Vector? resultMemory = null)
     {
         if (_inverseDiagonal.Length != x.Length)
             throw new ArgumentOutOfRangeException($"{nameof(x)} must have length {_inverseDiagonal.Length}");

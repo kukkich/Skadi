@@ -13,22 +13,25 @@ public class CholeskyPreconditioner : IPreconditioner
     }
     
     // Evaluate M^-1 * v = x, where M = L*L^T
-    public Vector MultiplyOn(Vector v, Vector? resultMemory = null)
+    public Vector MultiplyOn(IReadonlyVector<double> vector, Vector? resultMemory = null)
     {
-        LinAl.ValidateOrAllocateIfNull(v, ref resultMemory);
+        LinAl.ValidateOrAllocateIfNull(vector, ref resultMemory);
         
         // M^-1 * v = x 
         // v = M * r = L*(L^T * x) = L * y
-        var y = ResolveY(v, resultMemory!);
+        var y = ResolveY(vector, resultMemory!);
         // L^T * x = y
         var x = ResolveX(y);
 
         return x;
     }
 
-    private Vector ResolveY(Vector v, Vector y)
+    private Vector ResolveY(IReadonlyVector<double> v, Vector y)
     {
-        v.CopyTo(y);
+        for (var i = 0; i < v.Length; i++)
+        {
+            y[i] = v[i];
+        }
         
         for (var i = 0; i < _decomposedMatrix.Size; i++)
         {
