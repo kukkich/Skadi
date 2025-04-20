@@ -1,7 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using BenchmarkDotNet.Running;
+using SkadiBenchmarks.LinearAlgebra;
 
-using BenchmarkDotNet.Running;
-using SkadiBenchmarks;
-
-BenchmarkRunner.Run<MatrixVectorMultiplicationBenchmark>();
+BenchmarkRunner.Run<LinearCombinationBenchmarks>();
 Console.ReadLine();
+
+

@@ -19,4 +19,10 @@ public readonly ref struct RefIndexValue
         _valueIndex = valueIndex;
         ColumnIndex = columnIndex;
     }
+
+    public void Deconstruct(out int columnIndex, out double value)
+    {
+        columnIndex = ColumnIndex;
+        value = _value[_valueIndex];
+    }
 }
