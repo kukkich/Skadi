@@ -3,6 +3,7 @@ using Skadi.Matrices.Sparse.Decompositions;
 
 namespace Skadi.Tests.Matrices.Sparse.Decompositions;
 
+[TestOf(typeof(IncompleteLU))]
 public class IncompleteLUTest
 {
     private const double Tolerance = 1e-3;

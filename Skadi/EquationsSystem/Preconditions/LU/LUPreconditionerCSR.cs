@@ -17,50 +17,58 @@ public class LUPreconditionerCSR : IPreconditioner
     {
         var n = _decomposed.Size;
         LinAl.ValidateOrAllocateIfNull(vector, ref resultMemory!);
-        var y = Vector.Create(n);
-
-        // Прямая подстановка: L·y = v
+        
+        // Временный вектор для хранения решения L·y = v (y = L⁻¹·v)
+        var y = new double[n];
+        
+        // Решаем L·y = v (прямой ход, учитываем, что L имеет единицы на диагонали)
+        // Для i=0..n-1:
+        //   y[i] = v[i] - sum_{j < i} L(i,j)*y[j]
+        var rowPointers = _decomposed.RowPointers;
+        var cols = _decomposed.ColumnIndexes;
+        var vals = _decomposed.Values;
         for (var i = 0; i < n; i++)
         {
             var sum = vector[i];
-            for (var j = _decomposed.RowPointers[i]; j < _decomposed.RowPointers[i + 1]; j++)
+            // Проходим по строке i: ищем элементы слева от диагонали (j < i)
+            for (var idx = rowPointers[i]; idx < rowPointers[i + 1]; idx++)
             {
-                var col = _decomposed.ColumnIndexes[j];
-                if (col >= i) // Только нижняя часть (L), без диагонали
+                var col = cols[idx];
+                if (col < i)
                 {
-                    break;
+                    // Элемент L(i,col)
+                    sum -= vals[idx] * y[col];
                 }
-                sum -= _decomposed.Values[j] * y[col];
+                // Остальные элементы (col == i или col > i) принадлежат U
             }
-
-            y[i] = sum; // Диагональ L предполагается равной 1
+            y[i] = sum;
         }
-
-        // Обратная подстановка: U·x = y
+        
+        // Решаем U·x = y (обратный ход)
+        // Для i=n-1..0:
+        //   x[i] = (y[i] - sum_{j > i} U(i,j)*x[j]) / U(i,i)
         for (var i = n - 1; i >= 0; i--)
         {
             var sum = y[i];
-            var diag = 0.0;
-
-            for (var j = _decomposed.RowPointers[i]; j < _decomposed.RowPointers[i + 1]; j++)
+            double diag = 0;
+            for (var idx = rowPointers[i]; idx < rowPointers[i + 1]; idx++)
             {
-                var col = _decomposed.ColumnIndexes[j];
+                var col = cols[idx];
                 if (col == i)
                 {
-                    diag = _decomposed.Values[j];
+                    diag = vals[idx];
                 }
                 else if (col > i)
                 {
-                    sum -= _decomposed.Values[j] * resultMemory[col];
+                    sum -= vals[idx] * resultMemory[col];
                 }
+                // Пропускаем элементы L (col < i)
             }
-
-            if (Math.Abs(diag) < 1e-14)
-                throw new InvalidOperationException($"Zero diagonal element at row {i} in U");
-
+            if (diag == 0)
+                throw new Exception($"В матрице нулевая диагональ на строке {i}");
             resultMemory[i] = sum / diag;
         }
-
+        
         return resultMemory;
     }
 
@@ -80,23 +88,27 @@ public class LUPreconditionerCSR : IPreconditioner
         {
             var n = _decomposed.Size;
             LinAl.ValidateOrAllocateIfNull(vector, ref resultMemory!);
-
+            
+            var rowPointers = _decomposed.RowPointers;
+            var cols = _decomposed.ColumnIndexes;
+            var vals = _decomposed.Values;
+            
             for (var i = 0; i < n; i++)
             {
                 var sum = vector[i];
-                for (var j = _decomposed.RowPointers[i]; j < _decomposed.RowPointers[i + 1]; j++)
+                // Для каждого элемента L(i,j) c j < i
+                for (var idx = rowPointers[i]; idx < rowPointers[i + 1]; idx++)
                 {
-                    var col = _decomposed.ColumnIndexes[j];
-                    if (col >= i) // Только нижняя часть (L), без диагонали
+                    var col = cols[idx];
+                    if (col < i)
                     {
-                        break;
+                        sum -= vals[idx] * resultMemory[col];
                     }
-                    sum -= _decomposed.Values[j] * resultMemory[col];
+                    // Пропускаем diag и верхнюю часть U
                 }
-
-                resultMemory[i] = sum; // Диагональ L предполагается равной 1
+                resultMemory[i] = sum;
             }
-
+            
             return resultMemory;
         }
     }

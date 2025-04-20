@@ -23,6 +23,7 @@ public class BiCGStabSolver<T> : Method<ConjugateGradientSolverConfig>, ISLAESol
         _preconditionerFactory = preconditionerFactory;
     }
 
+    // notations from https://en.wikipedia.org/wiki/Biconjugate_gradient_stabilized_method
     public Vector Solve(Equation<T> equation)
     {
         (_preconditioner, _preconditionerPart) = _preconditionerFactory.Create(equation.Matrix);
@@ -31,37 +32,43 @@ public class BiCGStabSolver<T> : Method<ConjugateGradientSolverConfig>, ISLAESol
         var x = equation.Solution;
         var A = equation.Matrix;
         var bNorm = b.Norm;
-        
         var r = LinAl.Subtract(b, A.MultiplyOn(x));
         var rLid = r.Copy();
         var ro = Vector.ScalarProduct(rLid, r);
         var p = r.Copy();
 
+        var h = Vector.Create(x.Length);
+        var s = Vector.Create(x.Length);
+        var nu = Vector.Create(x.Length);
+        var y = Vector.Create(x.Length);
+        var z = Vector.Create(x.Length);
+        var t = Vector.Create(x.Length);
+        var tPreconditioned = Vector.Create(x.Length);
+        var sPreconditioned = Vector.Create(x.Length);
+        
         for (var i = 1; i < Config.MaxIteration && r.Norm / bNorm >= Config.Precision * Config.Precision; i++)
         {
-            var y = _preconditioner.MultiplyOn(p);
-            var nu = A.MultiplyOn(y);
+            y = _preconditioner.MultiplyOn(p, y);
+            nu = A.MultiplyOn(y, nu);
             var alpha = ro / Vector.ScalarProduct(rLid, nu);
-            var h = LinAl.LinearCombination(x, y, 1, alpha);
-            var s = LinAl.LinearCombination(r, nu, 1, -alpha);
+            h = LinAl.LinearCombination(x, y, 1, alpha, h);
+            s = LinAl.LinearCombination(r, nu, 1, -alpha, s);
             
-            //Check that h is solution and quit if so
-            var discrepancy = LinAl.Subtract(b, A.MultiplyOn(h)).Norm;
+            var discrepancy = LinAl.Subtract(b, A.MultiplyOn(h, z), z).Norm; // could pass any result memory
             if (discrepancy / bNorm <= Config.Precision)
             {
                 h.CopyTo(x);
                 return x;
             }
             
-            var z = _preconditioner.MultiplyOn(s);
-            var t = A.MultiplyOn(z);
-            var tPreconditioned = _preconditionerPart.MultiplyOn(t);
-            var sPreconditioned = _preconditionerPart.MultiplyOn(s);
+            z = _preconditioner.MultiplyOn(s, z);
+            t = A.MultiplyOn(z, t);
+            tPreconditioned = _preconditionerPart.MultiplyOn(t, tPreconditioned);
+            sPreconditioned = _preconditionerPart.MultiplyOn(s, sPreconditioned);
             var omega = Vector.ScalarProduct(tPreconditioned, sPreconditioned) / Vector.ScalarProduct(tPreconditioned, tPreconditioned);
-            x = LinAl.LinearCombination(h, z, 1, omega);
-            r = LinAl.LinearCombination(s, t, 1, -omega);
+            x = LinAl.LinearCombination(h, z, 1, omega, x);
+            r = LinAl.LinearCombination(s, t, 1, -omega, r);
             
-            //Check that x is solution and quit if so
             discrepancy = r.Norm;
             if (discrepancy / bNorm <= Config.Precision)
             {
@@ -72,9 +79,11 @@ public class BiCGStabSolver<T> : Method<ConjugateGradientSolverConfig>, ISLAESol
             var betta = roNext * alpha / (ro * omega);
             p = LinAl.LinearCombination
             (
-                r, LinAl.LinearCombination(p, nu, 1, -omega), 
-                1, betta
+                r, LinAl.LinearCombination(p, nu, 1, -omega, p), 
+                1, betta,
+                p
             );
+            
             ro = roNext;
         }
 
