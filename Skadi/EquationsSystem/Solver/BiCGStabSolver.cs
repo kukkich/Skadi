@@ -45,13 +45,12 @@ public class BiCGStabSolver<T> : Method<ConjugateGradientSolverConfig>, ISLAESol
         var tPreconditioned = Vector.Create(x.Length);
         var sPreconditioned = Vector.Create(x.Length);
         
-        for (var i = 1; i < Config.MaxIteration && r.Norm / bNorm >= Config.Precision * Config.Precision; i++)
+        for (var i = 1; i < Config.MaxIteration; i++)
         {
             y = _preconditioner.MultiplyOn(p, y);
             nu = A.MultiplyOn(y, nu);
             var alpha = ro / Vector.ScalarProduct(rLid, nu);
             h = LinAl.LinearCombination(x, y, 1, alpha, h);
-            s = LinAl.LinearCombination(r, nu, 1, -alpha, s);
             
             var discrepancy = LinAl.Subtract(b, A.MultiplyOn(h, z), z).Norm; // could pass any result memory
             if (discrepancy / bNorm <= Config.Precision)
@@ -60,6 +59,7 @@ public class BiCGStabSolver<T> : Method<ConjugateGradientSolverConfig>, ISLAESol
                 return x;
             }
             
+            s = LinAl.LinearCombination(r, nu, 1, -alpha, s);
             z = _preconditioner.MultiplyOn(s, z);
             t = A.MultiplyOn(z, t);
             tPreconditioned = _preconditionerPart.MultiplyOn(t, tPreconditioned);
