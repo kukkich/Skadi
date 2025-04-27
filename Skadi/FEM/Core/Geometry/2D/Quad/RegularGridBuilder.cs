@@ -5,7 +5,7 @@ using Skadi.Geometry.Splitting;
 
 namespace Skadi.FEM.Core.Geometry._2D.Quad;
 
-public class RegularGridBuilder : IGridBuilder<Vector2D, RegularGridDefinition>
+public class RegularGridBuilder : IGridBuilder<Vector2D, RegularGridDefinition, IElement>
 {
     public Grid<Vector2D, IElement> Build(RegularGridDefinition definition)
     {

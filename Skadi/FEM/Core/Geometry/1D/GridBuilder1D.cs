@@ -3,7 +3,7 @@ using Skadi.Geometry.Splitting;
 
 namespace Skadi.FEM.Core.Geometry._1D;
 
-public class GridBuilder1D : IGridBuilder<double, GridDefinition1D> 
+public class GridBuilder1D : IGridBuilder<double, GridDefinition1D, IElement> 
 {
     public Grid<double, IElement> Build(GridDefinition1D definition)
     {

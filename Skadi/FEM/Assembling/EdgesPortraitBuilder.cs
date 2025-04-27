@@ -12,7 +12,8 @@ public class EdgesPortraitBuilder : IEdgesPortraitBuilder
         _edgeResolver = edgeResolver;
     }
     
-    public EdgesPortrait Build(IEnumerable<IElement> elements, int nodesCount)
+    public EdgesPortrait Build<T>(IEnumerable<T> elements, int nodesCount)
+        where T : IElement
     {
         var adjacencyList = BuildAdjacencyList(elements, nodesCount);
 
@@ -31,7 +32,8 @@ public class EdgesPortraitBuilder : IEdgesPortraitBuilder
         };
     }
 
-    private List<SortedSet<int>> BuildAdjacencyList(IEnumerable<IElement> elements, int nodesCount)
+    private List<SortedSet<int>> BuildAdjacencyList<T>(IEnumerable<T> elements, int nodesCount)
+        where T : IElement
     {
         var adjacencyList = new List<SortedSet<int>>(nodesCount);
 
