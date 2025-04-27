@@ -2,7 +2,8 @@
 
 public interface IEdgesPortraitBuilder
 {
-    public EdgesPortrait Build(IEnumerable<IElement> elements, int nodesCount);
+    public EdgesPortrait Build<T>(IEnumerable<T> elements, int nodesCount)
+        where T : IElement;
 }
 
 public class EdgesPortrait

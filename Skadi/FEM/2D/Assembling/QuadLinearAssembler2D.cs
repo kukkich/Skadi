@@ -33,7 +33,7 @@ public class QuadLinearAssembler2D : IStackLocalAssembler<IElement>
         IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider,
         IBasisFunctionsDerivativeProvider2D derivativesProvider,
         INodeDefinedParameter<double> density
-     )
+    )
     {
         _nodes = nodes;
         _areaProvider = areaProvider;
