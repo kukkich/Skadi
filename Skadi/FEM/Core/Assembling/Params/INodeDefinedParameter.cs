@@ -2,5 +2,5 @@
 
 public interface INodeDefinedParameter<out T>
 {
-    public T Get(int nodeIndex);
+    public T Get(int nodeId);
 }
