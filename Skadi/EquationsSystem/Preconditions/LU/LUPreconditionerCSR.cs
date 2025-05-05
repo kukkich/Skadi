@@ -13,7 +13,7 @@ public class LUPreconditionerCSR : IPreconditioner
     }
 
     // Evaluate M⁻¹·v = U⁻¹·(L⁻¹·v)
-    public Vector MultiplyOn(IReadonlyVector<double> vector, Vector? resultMemory = null)
+    public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory = null)
     {
         var n = _decomposed.Size;
         LinAl.ValidateOrAllocateIfNull(vector, ref resultMemory!);
@@ -79,7 +79,7 @@ public class LUPreconditionerCSR : IPreconditioner
         }
 
         // Evaluate L⁻¹·v, where L from M = L*U
-        public Vector MultiplyOn(IReadonlyVector<double> vector, Vector? resultMemory = null)
+        public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory = null)
         {
             var n = _decomposed.Size;
             LinAl.ValidateOrAllocateIfNull(vector, ref resultMemory!);

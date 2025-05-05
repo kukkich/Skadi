@@ -4,5 +4,5 @@ namespace Skadi.Numeric;
 
 public interface ILinearOperator
 {
-    public Vector MultiplyOn(IReadonlyVector<double> vector, Vector? resultMemory=null);
+    public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory = null);
 }

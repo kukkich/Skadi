@@ -13,7 +13,7 @@ public class LDLTPreconditioner : IPreconditioner
     }
     
     // Evaluate M^-1 * v = x, where M = L*D*L^T
-    public Vector MultiplyOn(IReadonlyVector<double> v, Vector? resultMemory = null)
+    public Vector MultiplyOn(ReadOnlySpan<double> v, Vector? resultMemory = null)
     {
         LinAl.ValidateOrAllocateIfNull(v, ref resultMemory);
         
@@ -32,7 +32,7 @@ public class LDLTPreconditioner : IPreconditioner
         return x;
     }
 
-    private Vector ResolveY(IReadonlyVector<double> v, Vector y)
+    private Vector ResolveY(ReadOnlySpan<double> v, Vector y)
     {
         for (var i = 0; i < v.Length; i++)
         {

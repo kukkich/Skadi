@@ -16,7 +16,7 @@ public class LUMatrix
     {
         if (rightSide.Length != _values.GetLength(0))
             throw new ArgumentOutOfRangeException();
-        LinAl.ValidateOrAllocateIfNull(rightSide, ref resultMemory!);
+        LinAl.ValidateOrAllocateIfNull(rightSide.AsReadOnlySpan(), ref resultMemory!);
 
         // TODO удалить вектор y если можно
         // Или сделать его через StackAllocated

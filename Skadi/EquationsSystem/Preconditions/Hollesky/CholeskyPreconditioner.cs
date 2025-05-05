@@ -13,7 +13,7 @@ public class CholeskyPreconditioner : IPreconditioner
     }
     
     // Evaluate M^-1 * v = x, where M = L*L^T
-    public Vector MultiplyOn(IReadonlyVector<double> vector, Vector? resultMemory = null)
+    public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory = null)
     {
         LinAl.ValidateOrAllocateIfNull(vector, ref resultMemory);
         
@@ -26,7 +26,7 @@ public class CholeskyPreconditioner : IPreconditioner
         return x;
     }
 
-    private Vector ResolveY(IReadonlyVector<double> v, Vector y)
+    private Vector ResolveY(ReadOnlySpan<double> v, Vector y)
     {
         for (var i = 0; i < v.Length; i++)
         {

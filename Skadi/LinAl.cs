@@ -99,38 +99,46 @@ public static class LinAl
         return new ImmutableMatrix(a, a.Coefficient * coefficient);
     }
 
-    public static Vector Multiply(CSRMatrix a, IReadonlyVector<double> v, Vector? resultMemory = null)
+    public static Vector Multiply(CSRMatrix a, ReadOnlySpan<double> v, Vector? resultMemory = null)
     {
         ValidateOrAllocateIfNull(v, ref resultMemory!);
         var rowPointers = a.RowPointers;
         var columnIndexes = a.ColumnIndexes;
         var values = a.Values;
-
+        
+        var simdWidth = Vector256<double>.Count;
         for (var row = 0; row < a.Size; row++)
         {
-            var sum = 0.0;
             var rowStart = rowPointers[row];
             var rowEnd = rowPointers[row + 1];
             var length = rowEnd - rowStart;
 
+            var sumVec = Vector256<double>.Zero;
             var i = 0;
-
-            for (; i <= length - 4; i += 4)
+            for (; i <= length - simdWidth; i += simdWidth)
             {
                 var idx = rowStart + i;
-
-                var valVec = Vector256.Create(values[idx], values[idx + 1], values[idx + 2], values[idx + 3]);
-
-                var v0 = v[columnIndexes[idx]];
-                var v1 = v[columnIndexes[idx + 1]];
-                var v2 = v[columnIndexes[idx + 2]];
-                var v3 = v[columnIndexes[idx + 3]];
-                var vecV = Vector256.Create(v0, v1, v2, v3);
-
-                var mul = Avx.Multiply(valVec, vecV);
-                sum += mul[0] + mul[1] + mul[2] + mul[3];
+            
+                var valVec = Vector256.Create
+                (
+                    values[idx], 
+                    values[idx + 1], 
+                    values[idx + 2], 
+                    values[idx + 3]
+                );
+            
+                var vecV = Vector256.Create
+                (
+                    v[columnIndexes[idx]], 
+                    v[columnIndexes[idx + 1]], 
+                    v[columnIndexes[idx + 2]], 
+                    v[columnIndexes[idx + 3]]
+                );
+            
+                sumVec = Avx.Add(sumVec, Avx.Multiply(valVec, vecV));
             }
-
+            var sum = HorizontalSum(sumVec);
+        
             for (; i < length; i++)
             {
                 var idx = rowStart + i;
@@ -354,6 +362,14 @@ public static class LinAl
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void ValidateOrAllocateIfNull(ReadOnlySpan<double> v, ref Vector? u)
+    {
+        if (u is null)
+            u = Vector.Create(v.Length);
+        else AssertSameSize(v, (ReadOnlySpan<double>)u);
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void AssertSameSize<T>(IReadonlyVector<T> v, IReadonlyVector<T> u)
     {
         if (v.Length != u.Length)
@@ -399,6 +415,7 @@ public static class LinAl
             throw new ArgumentException("Both vectors must have the same length.");
         }
     }
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void AsserSameSize(MatrixBase a, ReadOnlyMatrixSpan b)
     {
@@ -420,5 +437,18 @@ public static class LinAl
     {
         if (a == resultMemory) 
             throw new ArgumentOutOfRangeException($"{nameof(resultMemory)}", "can't be equal to one of the arguments");
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static double HorizontalSum(Vector256<double> v)
+    {
+        // Складываем верхнюю и нижнюю половины вектора
+        var sum128 = Sse2.Add(v.GetLower(), v.GetUpper());
+    
+        // Складываем верхнюю и нижнюю половины 128-битного вектора
+        var sum64 = Sse2.Add(sum128, Sse2.Shuffle(sum128, sum128, 0x1));
+    
+        // общая сумма
+        return sum64.GetElement(0);
     }
 }
