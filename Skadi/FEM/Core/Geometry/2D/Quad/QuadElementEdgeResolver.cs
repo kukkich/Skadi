@@ -13,11 +13,15 @@ public class QuadElementEdgeResolver : IElementEdgeResolver
     public Edge[] GetEdgedNodes(IElement element)
     {
         var result = new Edge[4];
-        result[0] = new Edge(element.NodeIds[0], element.NodeIds[1]);
-        result[1] = new Edge(element.NodeIds[1], element.NodeIds[3]);
-        result[2] = new Edge(element.NodeIds[0], element.NodeIds[2]);
-        result[3] = new Edge(element.NodeIds[2], element.NodeIds[3]);
+        // result[0] = new Edge(element.NodeIds[0], element.NodeIds[1]);
+        // result[1] = new Edge(element.NodeIds[1], element.NodeIds[3]);
+        // result[2] = new Edge(element.NodeIds[0], element.NodeIds[2]);
+        // result[3] = new Edge(element.NodeIds[2], element.NodeIds[3]);
 
+        result[0] = new Edge(element.NodeIds[0], element.NodeIds[2]);
+        result[1] = new Edge(element.NodeIds[1], element.NodeIds[3]);
+        result[2] = new Edge(element.NodeIds[0], element.NodeIds[1]);
+        result[3] = new Edge(element.NodeIds[2], element.NodeIds[3]);
         return result;
     }
 

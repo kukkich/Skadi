@@ -1,6 +1,7 @@
 using Skadi.FEM.Core;
 using Skadi.FEM.Core.BasisFunctions;
 using Skadi.FEM.Core.Geometry;
+using Skadi.FEM.Core.Geometry.Edges;
 using Skadi.Geometry._2D;
 using Skadi.Vectors;
 
@@ -14,16 +15,19 @@ public class VectorFEMSolution2D : IVectorFEMSolution<Vector2D>
     private const double Epsilon = 1e-10;
     private readonly IEdgeVectorBasisFunctionsProvider<IEdgeElement, Vector2D> _basisFunctionsProvider;
     private readonly Grid<Vector2D, IEdgeElement> _grid;
+    private readonly IEdgeResolver _edgeResolver;
 
     public VectorFEMSolution2D
     (
         IEdgeVectorBasisFunctionsProvider<IEdgeElement, Vector2D> basisFunctionsProvider,
         Grid<Vector2D, IEdgeElement> grid,
-        IReadonlyVector<double> weights
+        IReadonlyVector<double> weights,
+        IEdgeResolver edgeResolver
     )
     {
         _basisFunctionsProvider = basisFunctionsProvider;
         _grid = grid;
+        _edgeResolver = edgeResolver;
         Weights = weights;
     }
     
@@ -37,11 +41,15 @@ public class VectorFEMSolution2D : IVectorFEMSolution<Vector2D>
         {
             p[i] = _grid.Nodes[element.NodeIds[i]];
         }
-        Span<Vector2D> edgeCenters = stackalloc Vector2D[4];
-        edgeCenters[0] = (p[0] + p[1]) / 2;
-        edgeCenters[1] = (p[0] + p[2]) / 2;
-        edgeCenters[2] = (p[1] + p[3]) / 2;
-        edgeCenters[3] = (p[2] + p[3]) / 2;
+        Span<Vector2D> edgeCenters = stackalloc Vector2D[element.EdgeIds.Count];
+        var j = 0;
+        foreach (var edgeCenter in element.EdgeIds
+                     .Select(edgeId => _edgeResolver.GetEdgeById(edgeId))
+                     .Select(edge => (_grid.Nodes[edge.Begin] + _grid.Nodes[edge.End]) / 2))
+        {
+            edgeCenters[j] = edgeCenter;
+            j++;
+        }
         
         var functions = _basisFunctionsProvider.GetFunctions(element);
         Span<Vector2D> funcValues = stackalloc Vector2D[functions.Length];
@@ -53,7 +61,7 @@ public class VectorFEMSolution2D : IVectorFEMSolution<Vector2D>
         var result = Vector2D.AdditiveIdentity;
         for (var i = 0; i < functions.Length; i++)
         {
-            var weightId = element.NodeIds[i];
+            var weightId = element.EdgeIds[i];
             var weight = Weights[weightId];
             result += funcValues[i] * weight;
         }

@@ -24,7 +24,6 @@ public class EdgeResolver : IEdgeResolver
         var edgesNodes = _elementEdgeResolver.GetEdgedNodes(element);
         var edges = edgesNodes
             .Select(GetEdgeId)
-            .Order()
             .ToArray();
 
         return edges;
