@@ -42,7 +42,8 @@ public class Vector2DRectangleTest
     private ISLAESolver<SymmetricRowSparseMatrix> solver = null!;
     private IRegularBoundaryApplier<SymmetricRowSparseMatrix> boundaryApplier = null!;
     private RegularBoundaryCondition[] boundaries = null!;
-    private static Vector2D UFunc(Vector2D p) => new(p.X + 1, 0);
+    private EdgeResolver edgeResolver = null!;
+    private static Vector2D UFunc(Vector2D p) => new(p.Y + 1, 0);
     
     private static Expression<Func<Vector2D, Vector2D>> U = p => UFunc(p);
     private static Expression<Func<Vector2D, double>> Ux = p => UFunc(p).X;
@@ -52,7 +53,7 @@ public class Vector2DRectangleTest
     private static Expression<Func<Vector2D, Vector2D>> UBottom = p => UFunc(new Vector2D(p.X, Bottom));
     private static Expression<Func<Vector2D, Vector2D>> UTop = p => UFunc(new Vector2D(p.X, Top));
     private Func<Vector2D, Vector2D> ExpectedSolution = U.Compile();
-
+    
     [OneTimeSetUp]
     public void Setup()
     {
@@ -133,7 +134,7 @@ public class Vector2DRectangleTest
             new Gauss2D(GaussConfig.Gauss4(3), NullLogger.Instance),
             new FromArrayMaterialProvider<Material>([new(Lambda, Sigma)]),
             new RectangleVectorBasicFunctionsProvider(grid.Nodes),
-            new FuncDensity<Vector2D, Vector2D>(grid.Nodes, p => new(p.X + 1, 0))
+            new FuncDensity<Vector2D, Vector2D>(grid.Nodes, p => new(p.Y + 1, 0))
         );
 
         matrixPortraitBuilder = new SymmetricMatrixEdgeGridPortraitBuilder();
@@ -145,18 +146,19 @@ public class Vector2DRectangleTest
             NullLogger.Instance
         );
 
+        edgeResolver = new EdgeResolver
+        (
+            edgesPortraitBuilder.Build(grid.Elements, grid.Nodes.TotalPoints),
+            grid.Elements,
+            new QuadElementEdgeResolver()
+        );
         boundaryApplier = new VectorRegularBoundaryApplier<SymmetricRowSparseMatrix>
         (
             new GaussExcluderSymmetricSparse(),
             new ArrayExpressionProvider([Ux, Uy]),
             grid.Nodes,
             new BoundIndexesEvaluator(gridDefinition),
-            new EdgeResolver
-            (
-                edgesPortraitBuilder.Build(grid.Elements, grid.Nodes.TotalPoints),
-                grid.Elements,
-                new QuadElementEdgeResolver()
-            )
+            edgeResolver
         );
     }
 
@@ -196,7 +198,8 @@ public class Vector2DRectangleTest
         (
             new RectangleVectorBasicFunctionsProvider(grid.Nodes),
             grid,
-            weights
+            weights,
+            edgeResolver
         );
 
         Assert.Multiple(() =>
@@ -206,7 +209,8 @@ public class Vector2DRectangleTest
                 var point = grid.Nodes[i];
                 var actual = solution.Calculate(point);
                 var expected = ExpectedSolution(point);
-                Assert.That(actual, Is.EqualTo(expected).Within(1e-12));
+                var diff = actual - expected;
+                Assert.That(diff.Length, Is.LessThanOrEqualTo(1e-13));
             }
         });
     }
