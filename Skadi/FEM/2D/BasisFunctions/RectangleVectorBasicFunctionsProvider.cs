@@ -43,6 +43,26 @@ public class RectangleVectorBasicFunctionsProvider : IEdgeVectorBasisFunctionsPr
                 p => new Vector2D((p.Y - yBot) / hy, 0), 
                 _ => new Vector3D(0, 0, -1d / hy)
             ),
+            // new VectorBasisFunction<Vector2D>
+            // (
+            //     p => new Vector2D((yTop - p.Y) / hy, 0), 
+            //     _ => new Vector3D(0, 0, 1d / hy)
+            // ),
+            // new VectorBasisFunction<Vector2D>
+            // (
+            //     p => new Vector2D(0, (xRight - p.X) / hx), 
+            //     _ => new Vector3D(0, 0, -1d / hx)
+            // ),
+            // new VectorBasisFunction<Vector2D>
+            // (
+            //     p => new Vector2D(0, (p.X - xLeft) / hx), 
+            //     _ => new Vector3D(0, 0, 1d / hx)
+            // ),
+            // new VectorBasisFunction<Vector2D>
+            // (
+            //     p => new Vector2D((p.Y - yBot) / hy, 0), 
+            //     _ => new Vector3D(0, 0, -1d / hy)
+            // ),
         ];
     }
 }
