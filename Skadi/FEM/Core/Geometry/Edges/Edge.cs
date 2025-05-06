@@ -23,4 +23,6 @@ public readonly record struct Edge : IEnumerable<int>
     {
         return GetEnumerator();
     }
+    
+    public override string ToString() => $"{Begin}<->{End}";
 }

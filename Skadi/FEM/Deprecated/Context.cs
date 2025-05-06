@@ -7,6 +7,7 @@ using Skadi.FEM.Materials.HarmonicWithoutChi;
 
 namespace Skadi.FEM.Deprecated;
 
+[Obsolete]
 public class Context<TPoint, TElement, TMatrix> 
     where TElement : IElement
 {

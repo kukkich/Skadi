@@ -71,7 +71,7 @@ public class VectorLinearLocalAssembler : IStackLocalAssembler<IEdgeElement>
                     new Line1D(y[0], y[2])
                 );
                 
-                matrixSpan[i, j] = mass + stiffness;
+                matrixSpan[i, j] = mass;
                 matrixSpan[j, i] = matrixSpan[i, j];
             }
         }
