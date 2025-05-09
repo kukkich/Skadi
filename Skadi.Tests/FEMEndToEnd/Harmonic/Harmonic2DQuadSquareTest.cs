@@ -27,15 +27,11 @@ using Skadi.Matrices;
 using Skadi.Matrices.Sparse;
 using Vector = Skadi.Vectors.Vector;
 
-// ReSharper disable NullableWarningSuppressionIsUsed
-
-// ReSharper disable InconsistentNaming
-
 namespace Skadi.Tests.FEMEndToEnd.Harmonic;
 
-public class Harmonic2DQuadTest
+public class Harmonic2DQuadSquareTest
 {
-    private const double Frequency = Math.PI * 1e-4;
+    private const double Frequency = Math.PI;
     private const double Lambda = -2;
     private const double Sigma = 5;
 
@@ -43,30 +39,26 @@ public class Harmonic2DQuadTest
         ExpectedSolutionSin!(p) * Math.Sin(time * Frequency) + ExpectedSolutionCos!(p) * Math.Cos(time * Frequency);
 
     private static readonly Func<Vector2D, double> ExpectedSolutionSin = p =>
-        Math.Pow(p.X, 2) - Math.Pow(p.Y, 2);
+        p.X * p.X * p.Y * p.Y + p.X * p.X - p.Y * p.Y + p.X * p.Y - 5*p.X - 1;
 
     private static readonly Func<Vector2D, double> ExpectedSolutionCos = p =>
-        -1 * Math.Pow(p.X, 2) * p.Y + Math.Pow(p.Y, 2) + p.X - 1;
+        p.X*p.X*p.Y - 2*p.X*p.X + p.Y*p.Y - 2*p.X*p.Y + 7*p.Y + 5;
 
     private static readonly Func<Vector2D, double> DensitySin = p =>
+        -1 * Lambda * (2 * Math.Pow(p.Y, 2) + 2*Math.Pow(p.X, 2))
         -1 * Frequency * Sigma * ExpectedSolutionCos(p);
 
     private static readonly Func<Vector2D, double> DensityCos = p =>
-        -1 * Lambda * (-2d * p.Y + 2) + Frequency * Sigma * ExpectedSolutionSin(p);
+        -1 * Lambda * (2d * p.Y - 2) + Frequency * Sigma * ExpectedSolutionSin(p);
 
-    private HarmonicQuadLinearAssembler localAssembler = null!;
-    private HarmonicMatrixPortraitBuilder matrixPortraitBuilder = null!;
     private Grid<Vector2D, IElement> grid = null!;
-    private Grid<Vector2D, IElement> testGrid = null!;
-    private IStackInserter<SparseMatrix> inserter = null!;
-    private ISLAESolver<SparseMatrix> solver = null!;
-    private IRegularBoundaryApplier<SparseMatrix> boundaryApplier = null!;
-    private RegularBoundaryCondition[] boundaries = null!;
+    private IPointsCollection<Vector2D> testNodes = null!;
 
     [OneTimeSetUp]
-    public void Setup()
+    public HarmonicQuadLinearSolution Solve()
     {
-        boundaries =
+        #region SetUp
+        RegularBoundaryCondition[] boundaries =
         [
             new()
             {
@@ -114,13 +106,13 @@ public class Harmonic2DQuadTest
                 {new(1, 1), new(5, 1)},
                 {new(1, 6), new(5, 6)},
             },
-            [new UniformSplitter(33)],
-            [new UniformSplitter(33)],
+            [new UniformSplitter(23)],
+            [new UniformSplitter(23)],
             areas,
             []
         );
         grid = new RegularGridBuilder().Build(gridDefinition);
-        testGrid =  new RegularGridBuilder().Build
+        testNodes = new RegularGridBuilder().Build
         (
             new RegularGridDefinition
             (
@@ -129,16 +121,16 @@ public class Harmonic2DQuadTest
                     {new(1, 1), new(5, 1)},
                     {new(1, 6), new(5, 6)},
                 },
-                [new UniformSplitter(2)],
-                [new UniformSplitter(2)],
+                [new UniformSplitter(50)],
+                [new UniformSplitter(50)],
                 areas,
                 []
             )
-        );
+        ).Nodes;
         var constantMoq = new Mock<IConstantProvider<double>>();
         constantMoq.Setup(x => x.Get())
             .Returns(() => Frequency);
-        localAssembler = new HarmonicQuadLinearAssembler
+        var localAssembler = new HarmonicQuadLinearAssembler
         (
             grid.Nodes,
             new AreaProvider<AreaDefinition>(areas),
@@ -150,12 +142,12 @@ public class Harmonic2DQuadTest
             constantMoq.Object
         );
 
-        matrixPortraitBuilder = new HarmonicMatrixPortraitBuilder();
-        inserter = new SparseInserter();
-        solver = new LUSparseThroughProfileConversion();
+        var matrixPortraitBuilder = new HarmonicMatrixPortraitBuilder();
+        var inserter = new SparseInserter();
+        var solver = new LUSparseThroughProfileConversion();
 
         Expression<Func<Vector2D, Complex>> u = p => new Complex(ExpectedSolutionSin(p), ExpectedSolutionCos(p));
-        boundaryApplier = new HarmonicRegularBoundaryApplier<SparseMatrix>
+        var boundaryApplier = new HarmonicRegularBoundaryApplier<SparseMatrix>
         (
             new GaussExcluderSparse(),
             null,
@@ -163,11 +155,9 @@ public class Harmonic2DQuadTest
             grid.Nodes,
             new BoundIndexesEvaluator(gridDefinition)
         );
-    }
+        #endregion
 
-    [Test]
-    public void MatrixIndexesPermutationShouldBeCorrect()
-    {
+        #region Equation
         var equation = new Equation<SparseMatrix>
         (
             matrixPortraitBuilder.Build(grid.Elements, grid.Nodes.TotalPoints),
@@ -195,70 +185,49 @@ public class Harmonic2DQuadTest
         }
 
         var weights = solver.Solve(equation);
+        #endregion
 
-        var solution = new HarmonicQuadLinearSolution
+        return new HarmonicQuadLinearSolution
         (
             new QuadLinearNonScaledFunctions2DProvider(),
             grid,
             weights,
             Frequency
         );
+    }
 
+    [Test]
+    public void SolutionOnTestGridNodesShouldBeCorrect()
+    {
         var timeInterval = new Line1D(0, 2 * Math.PI);
         Assert.Multiple(() =>
         {
+            var maxDiff = -1d;
+            var avgError = 0d;
+            
             foreach (var t in new UniformSplitter(20).EnumerateValues(timeInterval))
             {
-                for (var i = 0; i < testGrid.Nodes.TotalPoints; i++)
+                for (var i = 0; i < testNodes.TotalPoints; i++)
                 {
-                    var point = testGrid.Nodes[i];
-                    var actual = solution.Calculate(point, t);
+                    var point = testNodes[i];
+                    var actual = Solution.Calculate(point, t);
                     var expected = ExpectedSolution(point, t);
-                    Assert.That(actual, Is.EqualTo(expected).Within(3e-2)); // Большая погрешность
+                    var diff = Math.Abs(actual - expected);
+                    avgError += diff*diff;
+                    maxDiff = Math.Max(maxDiff, diff);
+
                 }
             }
+            avgError = Math.Sqrt(avgError / (testNodes.TotalPoints * 20));
+            Assert.That(maxDiff, Is.LessThanOrEqualTo(3e-2)); // Большая погрешность
+            Assert.That(avgError, Is.LessThanOrEqualTo(100)); // Большая погрешность
         });
     }
-    
+
+
     [Test]
     public void SolutionOnNodesShouldBeCorrect()
     {
-        var equation = new Equation<SparseMatrix>
-        (
-            matrixPortraitBuilder.Build(grid.Elements, grid.Nodes.TotalPoints),
-            Vector.Create(grid.Nodes.TotalPoints * 2),
-            Vector.Create(grid.Nodes.TotalPoints * 2)
-        );
-        var matrix = new MatrixSpan(stackalloc double[8 * 8], 8);
-        Span<double> vector = stackalloc double[8];
-        var indexes = new StackIndexPermutation(stackalloc int[8]);
-
-        foreach (var element in grid.Elements)
-        {
-            localAssembler.AssembleMatrix(element, matrix, indexes);
-            var localMatrix = new StackLocalMatrix(matrix, indexes);
-            inserter.InsertMatrix(equation.Matrix, localMatrix);
-
-            localAssembler.AssembleRightSide(element, vector, indexes);
-            var localRightSide = new StackLocalVector(vector, indexes);
-            inserter.InsertVector(equation.RightSide, localRightSide);
-        }
-
-        foreach (var boundary in boundaries)
-        {
-            boundaryApplier.Apply(equation, boundary);
-        }
-
-        var weights = solver.Solve(equation);
-
-        var solution = new HarmonicQuadLinearSolution
-        (
-            new QuadLinearNonScaledFunctions2DProvider(),
-            grid,
-            weights,
-            Frequency
-        );
-
         var timeInterval = new Line1D(0, 2 * Math.PI);
         Assert.Multiple(() =>
         {
@@ -267,7 +236,7 @@ public class Harmonic2DQuadTest
                 for (var i = 0; i < grid.Nodes.TotalPoints; i++)
                 {
                     var point = grid.Nodes[i];
-                    var actual = solution.Calculate(point, t);
+                    var actual = Solution.Calculate(point, t);
                     var expected = ExpectedSolution(point, t);
                     Assert.That(actual, Is.EqualTo(expected).Within(1e-12));
                 }

@@ -95,7 +95,7 @@ public class HarmonicQuadLinearSolution : IHarmonicFiniteElementSolution<Vector2
         }
 
         return us * Math.Sin(Frequency * time) + 
-               uc * Math.Cos(Frequency * time); //Todo тесты
+               uc * Math.Cos(Frequency * time);
     }
 
     private bool ElementHas(IElement element, Vector2D vector)
@@ -112,14 +112,19 @@ public class HarmonicQuadLinearSolution : IHarmonicFiniteElementSolution<Vector2
                IsPointInTriangle(vector, leftTop, rightBottom, rightTop);
 
         bool IsPointInTriangle(Vector2D p, Vector2D a, Vector2D b, Vector2D c)
-        {
+        { 
+            const double epsilon = 1e-10;
+
             // Векторные произведения для всех трёх рёбер треугольника
             var v1 = (b - a).X * (p.Y - a.Y) - (b - a).Y * (p.X - a.X);
             var v2 = (c - b).X * (p.Y - b.Y) - (c - b).Y * (p.X - b.X);
             var v3 = (a - c).X * (p.Y - c.Y) - (a - c).Y * (p.X - c.X);
 
+            
+            // В функции IsPointInTriangle:
+            return (v1 >= -epsilon && v2 >= -epsilon && v3 >= -epsilon) || 
+                    (v1 <= epsilon && v2 <= epsilon && v3 <= epsilon);
             // Проверяем, что все знаки одинаковы
-            return (v1 >= 0 && v2 >= 0 && v3 >= 0) || (v1 <= 0 && v2 <= 0 && v3 <= 0);
         }
     }
 }
