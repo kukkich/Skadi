@@ -33,9 +33,14 @@ using Vector = Skadi.Vectors.Vector;
 
 namespace Skadi.Tests.FEMEndToEnd.Harmonic;
 
+[TestOf(typeof(HarmonicQuadLinearSolution))]
+[TestOf(typeof(HarmonicQuadLinearAssembler))]
+[TestOf(typeof(QuadLinearNonScaledFunctions2DProvider))]
+[TestOf(typeof(HarmonicRegularBoundaryApplier<SparseMatrix>))]
+[TestOf(typeof(HarmonicMatrixPortraitBuilder))]
 public class Harmonic2DQuadNonLinearTest
 {
-    private const double Frequency = Math.PI * 1e-4;
+    private const double Frequency = Math.PI * 1e-1;
     private const double Lambda = -2;
     private const double Sigma = 5;
 
@@ -43,31 +48,48 @@ public class Harmonic2DQuadNonLinearTest
         ExpectedSolutionSin!(p) * Math.Sin(time * Frequency) + ExpectedSolutionCos!(p) * Math.Cos(time * Frequency);
 
     private static readonly Func<Vector2D, double> ExpectedSolutionSin = p =>
-        Math.Pow(p.X, 2) - Math.Pow(p.Y, 2);
+        Math.Exp(p.X) - Math.Exp(p.Y);
 
     private static readonly Func<Vector2D, double> ExpectedSolutionCos = p =>
-        -1 * Math.Pow(p.X, 2) * p.Y + Math.Pow(p.Y, 2) + p.X - 1;
+        Math.Exp(p.X) + Math.Exp(p.Y);
 
     private static readonly Func<Vector2D, double> DensitySin = p =>
+        -1 * Lambda * ExpectedSolutionSin(p)
         -1 * Frequency * Sigma * ExpectedSolutionCos(p);
 
     private static readonly Func<Vector2D, double> DensityCos = p =>
-        -1 * Lambda * (-2d * p.Y + 2) + Frequency * Sigma * ExpectedSolutionSin(p);
+        -1 * Lambda * ExpectedSolutionCos(p) 
+        + Frequency * Sigma * ExpectedSolutionSin(p);
 
-    private HarmonicQuadLinearAssembler localAssembler = null!;
-    private HarmonicMatrixPortraitBuilder matrixPortraitBuilder = null!;
     private Grid<Vector2D, IElement> grid = null!;
     private IPointsCollection<Vector2D> testNodes = null!;
-    private IStackInserter<SparseMatrix> inserter = null!;
-    private ISLAESolver<SparseMatrix> solver = null!;
-    private IRegularBoundaryApplier<SparseMatrix> boundaryApplier = null!;
-    private RegularBoundaryCondition[] boundaries = null!;
-    private HarmonicQuadLinearSolution Solution = null!;
+    private int[] sizesForTest = [1, 2, 4, 8, 16];
     
     [OneTimeSetUp]
-    public void Setup()
+    public void SetUp()
     {
-        boundaries =
+        AreaDefinition[] areas = [new(0, 1, 0, 1, MaterialId: 0)];
+        testNodes = new RegularGridBuilder().Build
+        (
+            new RegularGridDefinition
+            (
+                new Vector2D[,]
+                {
+                    {new(1, 1), new(5, 1)},
+                    {new(1, 6), new(5, 6)},
+                },
+                [new UniformSplitter(77)],
+                [new UniformSplitter(77)],
+                areas,
+                []
+            )
+        ).Nodes;
+    }
+    
+    private HarmonicQuadLinearSolution Solve(int n)
+    {
+        #region SetUp
+        RegularBoundaryCondition[] boundaries =
         [
             new()
             {
@@ -115,31 +137,17 @@ public class Harmonic2DQuadNonLinearTest
                 {new(1, 1), new(5, 1)},
                 {new(1, 6), new(5, 6)},
             },
-            [new UniformSplitter(33)],
-            [new UniformSplitter(33)],
+            [new UniformSplitter(n)],
+            [new UniformSplitter(n)],
             areas,
             []
         );
         grid = new RegularGridBuilder().Build(gridDefinition);
-        testNodes = new RegularGridBuilder().Build
-        (
-            new RegularGridDefinition
-            (
-                new Vector2D[,]
-                {
-                    {new(1, 1), new(5, 1)},
-                    {new(1, 6), new(5, 6)},
-                },
-                [new UniformSplitter(2)],
-                [new UniformSplitter(2)],
-                areas,
-                []
-            )
-        ).Nodes;
+        
         var constantMoq = new Mock<IConstantProvider<double>>();
         constantMoq.Setup(x => x.Get())
             .Returns(() => Frequency);
-        localAssembler = new HarmonicQuadLinearAssembler
+        var localAssembler = new HarmonicQuadLinearAssembler
         (
             grid.Nodes,
             new AreaProvider<AreaDefinition>(areas),
@@ -151,12 +159,12 @@ public class Harmonic2DQuadNonLinearTest
             constantMoq.Object
         );
 
-        matrixPortraitBuilder = new HarmonicMatrixPortraitBuilder();
-        inserter = new SparseInserter();
-        solver = new LUSparseThroughProfileConversion();
+        var matrixPortraitBuilder = new HarmonicMatrixPortraitBuilder();
+        var inserter = new SparseInserter();
+        var solver = new LUSparseThroughProfileConversion();
 
         Expression<Func<Vector2D, Complex>> u = p => new Complex(ExpectedSolutionSin(p), ExpectedSolutionCos(p));
-        boundaryApplier = new HarmonicRegularBoundaryApplier<SparseMatrix>
+        var boundaryApplier = new HarmonicRegularBoundaryApplier<SparseMatrix>
         (
             new GaussExcluderSparse(),
             null,
@@ -164,19 +172,9 @@ public class Harmonic2DQuadNonLinearTest
             grid.Nodes,
             new BoundIndexesEvaluator(gridDefinition)
         );
+        #endregion
 
-        var weights = Solve();
-        Solution = new HarmonicQuadLinearSolution
-        (
-            new QuadLinearNonScaledFunctions2DProvider(),
-            grid,
-            weights,
-            Frequency
-        );
-    }
-
-    private Vector Solve()
-    {
+        #region Equation
         var equation = new Equation<SparseMatrix>
         (
             matrixPortraitBuilder.Build(grid.Elements, grid.Nodes.TotalPoints),
@@ -204,45 +202,77 @@ public class Harmonic2DQuadNonLinearTest
         }
 
         var weights = solver.Solve(equation);
-        return weights;
+        #endregion
+
+        return new HarmonicQuadLinearSolution
+        (
+            new QuadLinearNonScaledFunctions2DProvider(),
+            grid,
+            weights,
+            Frequency
+        );
+    }
+
+    private static double MaxError(HarmonicQuadLinearSolution solution, IPointsCollection<Vector2D> nodes)
+    {
+        var maxDiff = -1d;
+        var avgError = 0d;
+        
+        var timeInterval = new Line1D(0, 2 * Math.PI);
+        foreach (var t in new UniformSplitter(20).EnumerateValues(timeInterval))
+        {
+            for (var i = 0; i < nodes.TotalPoints; i++)
+            {
+                var point = nodes[i];
+                var actual = solution.Calculate(point, t);
+                var expected = ExpectedSolution(point, t);
+                var diff = Math.Abs(actual - expected);
+                avgError += diff*diff;
+                maxDiff = Math.Max(maxDiff, diff);
+            }
+        }
+
+        return maxDiff;
     }
     
     [Test]
-    public void SolutionOnTestGridNodesShouldBeCorrect()
+    public void ErrorShouldDecreaseOnSubDomains()
     {
-        var timeInterval = new Line1D(0, 2 * Math.PI);
+        var solutions = sizesForTest.Select(Solve).ToArray();
+        var errors = solutions.Select(s => MaxError(s, testNodes)).ToArray();
+        
         Assert.Multiple(() =>
         {
-            foreach (var t in new UniformSplitter(20).EnumerateValues(timeInterval))
+            for (var i = 1; i < errors.Length; i++)
             {
-                for (var i = 0; i < testNodes.TotalPoints; i++)
-                {
-                    var point = testNodes[i];
-                    var actual = Solution.Calculate(point, t);
-                    var expected = ExpectedSolution(point, t);
-                    Assert.That(actual, Is.EqualTo(expected).Within(3e-2)); // Большая погрешность
-                }
+                var prevError = errors[i - 1];
+                var error = errors[i];
+                Assert.That(error, Is.LessThan(prevError));
             }
         });
     }
-
     
-
     [Test]
-    public void SolutionOnNodesShouldBeCorrect()
+    public void ErrorShouldTendToDecreaseBy4TimesWhenSplitBy2Times()
     {
-        var timeInterval = new Line1D(0, 2 * Math.PI);
+        const int convergenceOrder = 2;
+        const int errorShouldDecreaseBy = 1 << convergenceOrder;
+        
+        var solutions = sizesForTest.Select(Solve).ToArray();
+        var errors = solutions.Select(s => MaxError(s, testNodes)).ToArray();
+        var errorRatioDeviationFromConvergence = errors
+            .Skip(1)
+            .Zip(errors, (current, previous) => previous / current)
+            .Select(x => Math.Abs(errorShouldDecreaseBy - x))
+            .ToArray();
+        
         Assert.Multiple(() =>
         {
-            foreach (var t in new UniformSplitter(20).EnumerateValues(timeInterval))
+            for (var i = 1; i < errorRatioDeviationFromConvergence.Length; i++)
             {
-                for (var i = 0; i < grid.Nodes.TotalPoints; i++)
-                {
-                    var point = grid.Nodes[i];
-                    var actual = Solution.Calculate(point, t);
-                    var expected = ExpectedSolution(point, t);
-                    Assert.That(actual, Is.EqualTo(expected).Within(1e-12));
-                }
+                var prevDecrease = errorRatioDeviationFromConvergence[i - 1];
+                var decrease = errorRatioDeviationFromConvergence[i];
+                Assert.That(decrease, Is.LessThanOrEqualTo(prevDecrease));
             }
         });
     }

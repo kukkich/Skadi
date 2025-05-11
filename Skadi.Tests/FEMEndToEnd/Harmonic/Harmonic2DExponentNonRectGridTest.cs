@@ -27,6 +27,10 @@ using Skadi.Matrices;
 using Skadi.Matrices.Sparse;
 using Vector = Skadi.Vectors.Vector;
 
+// ReSharper disable NullableWarningSuppressionIsUsed
+
+// ReSharper disable InconsistentNaming
+
 namespace Skadi.Tests.FEMEndToEnd.Harmonic;
 
 [TestOf(typeof(HarmonicQuadLinearSolution))]
@@ -34,9 +38,9 @@ namespace Skadi.Tests.FEMEndToEnd.Harmonic;
 [TestOf(typeof(QuadLinearNonScaledFunctions2DProvider))]
 [TestOf(typeof(HarmonicRegularBoundaryApplier<SparseMatrix>))]
 [TestOf(typeof(HarmonicMatrixPortraitBuilder))]
-public class Harmonic2DQuadSquareTest
+public class Harmonic2DExponentNonRectGridTest
 {
-    private const double Frequency = 1;
+    private const double Frequency = Math.PI * 1e-1;
     private const double Lambda = -2;
     private const double Sigma = 5;
 
@@ -44,17 +48,18 @@ public class Harmonic2DQuadSquareTest
         ExpectedSolutionSin!(p) * Math.Sin(time * Frequency) + ExpectedSolutionCos!(p) * Math.Cos(time * Frequency);
 
     private static readonly Func<Vector2D, double> ExpectedSolutionSin = p =>
-        p.X * p.X * p.Y * p.Y + p.X * p.X - p.Y * p.Y + p.X * p.Y - 5*p.X - 1;
+        Math.Exp(p.X) - Math.Exp(p.Y);
 
     private static readonly Func<Vector2D, double> ExpectedSolutionCos = p =>
-        p.X*p.X*p.Y - 2*p.X*p.X + p.Y*p.Y - 2*p.X*p.Y + 7*p.Y + 5;
+        Math.Exp(p.X) + Math.Exp(p.Y);
 
     private static readonly Func<Vector2D, double> DensitySin = p =>
-        -1 * Lambda * (2 * Math.Pow(p.Y, 2) + 2*Math.Pow(p.X, 2))
+        -1 * Lambda * ExpectedSolutionSin(p)
         -1 * Frequency * Sigma * ExpectedSolutionCos(p);
 
     private static readonly Func<Vector2D, double> DensityCos = p =>
-        -1 * Lambda * (2d * p.Y - 2) + Frequency * Sigma * ExpectedSolutionSin(p);
+        -1 * Lambda * ExpectedSolutionCos(p) 
+        + Frequency * Sigma * ExpectedSolutionSin(p);
 
     private Grid<Vector2D, IElement> grid = null!;
     private IPointsCollection<Vector2D> testNodes = null!;
@@ -63,17 +68,17 @@ public class Harmonic2DQuadSquareTest
     [OneTimeSetUp]
     public void SetUp()
     {
-        AreaDefinition[] areas = [new(0, 1, 0, 1, MaterialId: 0)];
+        AreaDefinition[] areas = [new(0, 2, 0, 1, MaterialId: 0)];
         testNodes = new RegularGridBuilder().Build
         (
             new RegularGridDefinition
             (
                 new Vector2D[,]
                 {
-                    {new(1, 1), new(5, 1)},
-                    {new(1, 6), new(5, 6)},
+                    {new(-1, -1), new(1, 0), new(3, -0.5)},
+                    {new(-2, 0.5), new(-1, 2), new(2, 1.5)},
                 },
-                [new UniformSplitter(77)],
+                [new UniformSplitter(37), new UniformSplitter(37)],
                 [new UniformSplitter(77)],
                 areas,
                 []
@@ -91,7 +96,7 @@ public class Harmonic2DQuadSquareTest
                 ExpressionId = 0,
                 Type = BoundaryConditionType.First,
                 LeftBoundId = 0,
-                RightBoundId = 1,
+                RightBoundId = 2,
                 BottomBoundId = 0,
                 TopBoundId = 0,
             },
@@ -100,7 +105,7 @@ public class Harmonic2DQuadSquareTest
                 ExpressionId = 0,
                 Type = BoundaryConditionType.First,
                 LeftBoundId = 0,
-                RightBoundId = 1,
+                RightBoundId = 2,
                 BottomBoundId = 1,
                 TopBoundId = 1,
             },
@@ -117,23 +122,23 @@ public class Harmonic2DQuadSquareTest
             {
                 ExpressionId = 0,
                 Type = BoundaryConditionType.First,
-                LeftBoundId = 1,
-                RightBoundId = 1,
+                LeftBoundId = 2,
+                RightBoundId = 2,
                 BottomBoundId = 0,
                 TopBoundId = 1,
             },
         ];
 
-        AreaDefinition[] areas = [new(0, 1, 0, 1, MaterialId: 0)];
+        AreaDefinition[] areas = [new(0, 2, 0, 1, MaterialId: 0)];
         var gridDefinition = new RegularGridDefinition
         (
             new Vector2D[,]
             {
-                {new(1, 1), new(5, 1)},
-                {new(1, 6), new(5, 6)},
+                {new(-1, -1), new(1, 0), new(3, -0.5)},
+                {new(-2, 0.5), new(-1, 2), new(2, 1.5)},
             },
-            [new UniformSplitter(n)],
-            [new UniformSplitter(n)],
+            [new UniformSplitter(n), new UniformSplitter(n)],
+            [new UniformSplitter(n * 2)],
             areas,
             []
         );
@@ -243,31 +248,6 @@ public class Harmonic2DQuadSquareTest
                 var prevError = errors[i - 1];
                 var error = errors[i];
                 Assert.That(error, Is.LessThan(prevError));
-            }
-        });
-    }
-    
-    [Test]
-    public void ErrorShouldTendToDecreaseBy4TimesWhenSplitBy2Times()
-    {
-        const int convergenceOrder = 2;
-        const int errorShouldDecreaseBy = 1 << convergenceOrder;
-        
-        var solutions = sizesForTest.Select(Solve).ToArray();
-        var errors = solutions.Select(s => MaxError(s, testNodes)).ToArray();
-        var errorRatioDeviationFromConvergence = errors
-            .Skip(1)
-            .Zip(errors, (current, previous) => previous / current)
-            .Select(x => Math.Abs(errorShouldDecreaseBy - x))
-            .ToArray();
-        
-        Assert.Multiple(() =>
-        {
-            for (var i = 1; i < errorRatioDeviationFromConvergence.Length; i++)
-            {
-                var prevDecrease = errorRatioDeviationFromConvergence[i - 1];
-                var decrease = errorRatioDeviationFromConvergence[i];
-                Assert.That(decrease, Is.LessThanOrEqualTo(prevDecrease));
             }
         });
     }
