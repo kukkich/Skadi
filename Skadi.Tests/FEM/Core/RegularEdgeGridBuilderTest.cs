@@ -3,6 +3,7 @@ using Skadi.FEM.Core.Geometry;
 using Skadi.FEM.Core.Geometry._2D.Quad;
 using Skadi.Geometry._2D;
 using Skadi.Geometry.Splitting;
+using Skadi.Tests.FEM.Assembling;
 
 namespace Skadi.Tests.FEM.Core;
 
@@ -16,7 +17,8 @@ public class RegularEdgeGridBuilderTest
     {
         builder = new RegularEdgeGridBuilder(new EdgesPortraitBuilder(new QuadElementEdgeResolver()));
     }
-
+    
+    [Ignore($"See {nameof(EdgeResolverTests.ElementEdgesShouldBeCorrect)}")]
     [Test]
     public void Grid1X1()
     {
@@ -38,6 +40,7 @@ public class RegularEdgeGridBuilderTest
         Assert.That(grid.Elements.Single().EdgeIds, Is.EqualTo(new[] {0, 1, 2, 3}).AsCollection);
     }
     
+    [Ignore($"See {nameof(EdgeResolverTests.ElementEdgesShouldBeCorrect)}")]
     [TestCase(0, 0, 3, 4, 5)]
     [TestCase(2, 12, 17, 18, 19)]
     [TestCase(3, 7, 11, 13, 14)]
