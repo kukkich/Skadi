@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <Folder Include="FEMEndToEnd\Scalar\" />
-    <Folder Include="FEMEndToEnd\Vectorized\" />
     <Folder Include="FEM\2D\Solution\" />
     <Folder Include="Platform\" />
   </ItemGroup>

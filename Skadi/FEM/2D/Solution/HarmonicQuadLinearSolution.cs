@@ -131,18 +131,16 @@ public class HarmonicQuadLinearSolution : IHarmonicFiniteElementSolution<Vector2
 
         bool IsPointInTriangle(Vector2D p, Vector2D a, Vector2D b, Vector2D c)
         { 
-            const double epsilon = 1e-10;
+            const double tolerance = 1e-10;
 
             // Векторные произведения для всех трёх рёбер треугольника
             var v1 = (b - a).X * (p.Y - a.Y) - (b - a).Y * (p.X - a.X);
             var v2 = (c - b).X * (p.Y - b.Y) - (c - b).Y * (p.X - b.X);
             var v3 = (a - c).X * (p.Y - c.Y) - (a - c).Y * (p.X - c.X);
 
-            
-            // В функции IsPointInTriangle:
-            return (v1 >= -epsilon && v2 >= -epsilon && v3 >= -epsilon) || 
-                    (v1 <= epsilon && v2 <= epsilon && v3 <= epsilon);
             // Проверяем, что все знаки одинаковы
+            return (v1 >= -tolerance && v2 >= -tolerance && v3 >= -tolerance) || 
+                    (v1 <= tolerance && v2 <= tolerance && v3 <= tolerance);
         }
     }
 }

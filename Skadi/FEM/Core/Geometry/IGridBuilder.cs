@@ -1,6 +1,7 @@
 ﻿namespace Skadi.FEM.Core.Geometry;
 
-public interface IGridBuilder<TPoint, in TDefinition>
+public interface IGridBuilder<TPoint, in TDefinition, TElement>
+    where TElement : IElement
 {
-    public Grid<TPoint, IElement> Build(TDefinition definition);
+    public Grid<TPoint, TElement> Build(TDefinition definition);
 }

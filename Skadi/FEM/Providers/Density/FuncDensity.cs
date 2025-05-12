@@ -3,7 +3,8 @@ using Skadi.FEM.Core.Geometry;
 
 namespace Skadi.FEM.Providers.Density;
 
-public class FuncDensity<TPoint, TResult> : INodeDefinedParameter<TResult>
+public class FuncDensity<TPoint, TResult> : INodeDefinedParameter<TResult>,
+    IUniversalParameterProvider<TPoint, TResult>
 {
     private readonly IPointsCollection<TPoint> _nodes;
     private readonly Func<TPoint, TResult> _func;
@@ -14,9 +15,11 @@ public class FuncDensity<TPoint, TResult> : INodeDefinedParameter<TResult>
         _func = func;
     }
     
-    public TResult Get(int nodeIndex)
+    public TResult Get(int nodeId)
     {
-        var node = _nodes[nodeIndex];
+        var node = _nodes[nodeId];
         return _func(node);
     }
+
+    public TResult Get(TPoint node) => _func(node);
 }

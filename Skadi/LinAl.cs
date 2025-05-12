@@ -32,7 +32,6 @@ public static class LinAl
 
         var i = 0;
         var simdWidth = Vector256<double>.Count;
-
         var vCoeffVec = Vector256.Create(vCoefficient);
         var uCoeffVec = Vector256.Create(uCoefficient);
 

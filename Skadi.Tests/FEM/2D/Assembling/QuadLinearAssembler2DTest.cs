@@ -10,12 +10,14 @@ using Skadi.FEM.Materials.LambdaGamma;
 using Skadi.FEM.Materials.Providers;
 using Skadi.FEM.Providers.Density;
 using Skadi.Geometry._2D;
+using Skadi.Geometry._3D;
 using Skadi.Integration;
 using Skadi.Matrices;
 // ReSharper disable InconsistentNaming
 
 namespace Skadi.Tests.FEM._2D.Assembling;
 
+[TestOf(typeof(QuadLinearAssembler2D))]
 public class QuadLinearAssembler2DTest
 {
     private QuadLinearAssembler2D assembler = null!;

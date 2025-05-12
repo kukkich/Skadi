@@ -49,7 +49,7 @@ public readonly record struct Vector2D(double X, double Y) : INumberBase<Vector2
 
     public bool IsParallelTo(Vector2D other, double tolerance = 1e-10)
     {
-        var dp = Math.Abs(Normalize().DotProduct(other.Normalize()));
+        var dp = Math.Abs(Normalize().ScalarProduct(other.Normalize()));
         return Math.Abs(1 - dp) <= tolerance;
     }
     public bool IsParallelTo(Vector2D other, Angle tolerance)
@@ -64,7 +64,7 @@ public readonly record struct Vector2D(double X, double Y) : INumberBase<Vector2
     }
     public bool IsPerpendicularTo(Vector2D other, double tolerance = 1e-10)
     {
-        return Math.Abs(Normalize().DotProduct(other.Normalize())) < tolerance;
+        return Math.Abs(Normalize().ScalarProduct(other.Normalize())) < tolerance;
     }
     public bool IsPerpendicularTo(Vector2D other, Angle tolerance)
     {
@@ -77,7 +77,7 @@ public readonly record struct Vector2D(double X, double Y) : INumberBase<Vector2
         return new Angle(
             Math.Atan2(
                 CrossProduct(other),
-                DotProduct(other)
+                ScalarProduct(other)
             )).Abs();
     }
     public Vector2D Rotate(Angle angle)
@@ -89,7 +89,7 @@ public readonly record struct Vector2D(double X, double Y) : INumberBase<Vector2
         return new Vector2D(x, y);
     }
 
-    public double DotProduct(Vector2D other) => X * other.X + Y * other.Y;
+    public double ScalarProduct(Vector2D other) => X * other.X + Y * other.Y;
     /// <summary>
     /// Performs the 2D 'cross product' as if the 2D vectors were really 3D vectors in the z=0 plane, returning
     /// the scalar magnitude and direction of the resulting z value.
@@ -97,7 +97,8 @@ public readonly record struct Vector2D(double X, double Y) : INumberBase<Vector2
     /// </summary>
     /// <returns>(X * other.Y) - (Y * other.X)</returns>
     public double CrossProduct(Vector2D other) => X * other.Y - Y * other.X;
-    public Vector2D ProjectOn(Vector2D other) => other * (DotProduct(other) / other.DotProduct(other));
+    public Vector2D ComponentMultiply(Vector2D other) => new(X * other.X, Y * other.Y);
+    public Vector2D ProjectOn(Vector2D other) => other * (ScalarProduct(other) / other.ScalarProduct(other));
     public Vector2D Normalize()
     {
         var l = Length;
