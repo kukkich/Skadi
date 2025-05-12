@@ -12,7 +12,6 @@ public class VectorFEMSolution2D : IVectorFEMSolution<Vector2D>
 {
     public IReadonlyVector<double> Weights { get; }
     
-    private const double Epsilon = 1e-10;
     private readonly IEdgeVectorBasisFunctionsProvider<IEdgeElement, Vector2D> _basisFunctionsProvider;
     private readonly Grid<Vector2D, IEdgeElement> _grid;
     private readonly IEdgeResolver _edgeResolver;
@@ -71,6 +70,8 @@ public class VectorFEMSolution2D : IVectorFEMSolution<Vector2D>
     
     private bool ElementHas(IElement element, Vector2D vector)
     {
+        const double tolerance = 1e-10;
+
         var nodes = element.NodeIds
             .Select(nodeId => _grid.Nodes[nodeId])
             .ToArray();
@@ -90,7 +91,8 @@ public class VectorFEMSolution2D : IVectorFEMSolution<Vector2D>
             var v3 = (a - c).X * (p.Y - c.Y) - (a - c).Y * (p.X - c.X);
 
             // Проверяем, что все знаки одинаковы
-            return (v1 >= 0 && v2 >= 0 && v3 >= 0) || (v1 <= 0 && v2 <= 0 && v3 <= 0);
+            return (v1 >= -tolerance && v2 >= -tolerance && v3 >= -tolerance) || 
+                   (v1 <= tolerance && v2 <= tolerance && v3 <= tolerance);
         }
     }
 }

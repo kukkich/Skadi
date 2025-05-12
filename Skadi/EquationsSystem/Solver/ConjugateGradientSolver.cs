@@ -39,7 +39,7 @@ public class ConjugateGradientSolver : Method<ConjugateGradientSolverConfig>, IS
     {
         var fNorm = _equation.RightSide.Norm;
 
-        for (var i = 1; i < Config.MaxIteration && _r.Norm / fNorm >= Config.Precision * Config.Precision; i++)
+        for (var i = 1; i < Config.MaxIteration && _r.Norm / fNorm >= Config.Precision; i++)
         {
             var preconditionedRScalarProduct = Vector.ScalarProduct(
                 _preconditioner.MultiplyOn(_r, _aByZProduct), // could pass any memory
@@ -80,7 +80,7 @@ public class ConjugateGradientSolver : Method<ConjugateGradientSolverConfig>, IS
 
             if (i % 200 == 0)
             {
-                Console.WriteLine($"[{i}]: {_r.Norm / fNorm:E15} / {Config.Precision * Config.Precision:E15}");
+                Console.WriteLine($"[{i}]: {_r.Norm / fNorm:E15} / {Config.Precision:E15}");
             }
         }
     }

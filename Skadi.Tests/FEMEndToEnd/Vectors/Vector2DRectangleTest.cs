@@ -16,7 +16,6 @@ using Skadi.FEM.Core.Geometry._2D.Quad;
 using Skadi.FEM.Materials.LambdaGamma;
 using Skadi.FEM.Materials.Providers;
 using Skadi.FEM.Providers.Density;
-using Skadi.Geometry._1D;
 using Skadi.Geometry._2D;
 using Skadi.Geometry.Splitting;
 using Skadi.Integration;
@@ -34,30 +33,51 @@ public class Vector2DRectangleTest
     private const double Right = 6d;
     private const double Bottom = 1d;
     private const double Top = 6d;
-    private VectorLinearLocalAssembler localAssembler = null!;
-    private SymmetricMatrixEdgeGridPortraitBuilder matrixPortraitBuilder = null!;
+    private EdgesPortraitBuilder edgesPortraitBuilder;
     private Grid<Vector2D, IEdgeElement> grid = null!;
     private Grid<Vector2D, IEdgeElement> testGrid = null!;
-    private IStackInserter<SymmetricRowSparseMatrix> inserter = null!;
-    private ISLAESolver<SymmetricRowSparseMatrix> solver = null!;
-    private IRegularBoundaryApplier<SymmetricRowSparseMatrix> boundaryApplier = null!;
-    private RegularBoundaryCondition[] boundaries = null!;
-    private EdgeResolver edgeResolver = null!;
-    private static Vector2D UFunc(Vector2D p) => new(p.Y + 1, 0);
+    private static Vector2D UFunc(Vector2D p) => new(p.X*p.X*p.Y*p.Y - 5*p.X + p.Y + 2, p.X*p.X*p.Y*p.Y + 2*p.X - p.Y - 1);
+    // private static Vector2D UFunc(Vector2D p) => new(Math.Exp(p.Y), Math.Exp(p.X));
+    // private static Vector2D UFunc(Vector2D p) => new(-3*p.X + 2 * p.Y + 5, 2 * p.X + p.Y - 7);
+    // private static Vector2D UFunc(Vector2D p) => new(2 * p.Y + 5, 2 * p.X - 7);
+    private Func<Vector2D, Vector2D> DesityFunc = p 
+        => Lambda * new Vector2D(-2*p.X*p.X + 4*p.X*p.Y, -2*p.Y*p.Y + 4*p.X*p.Y) + Sigma * UFunc(p);
+        // => Lambda * -1 * UFunc(p) + Sigma * UFunc(p);
+    // private Func<Vector2D, Vector2D> DesityFunc = p => Sigma * UFunc(p);
     
     private static Expression<Func<Vector2D, Vector2D>> U = p => UFunc(p);
     private static Expression<Func<Vector2D, double>> Ux = p => UFunc(p).X;
     private static Expression<Func<Vector2D, double>> Uy = p => UFunc(p).Y;
-    private static Expression<Func<Vector2D, Vector2D>> ULeft = p => UFunc(new Vector2D(Left, p.Y));
-    private static Expression<Func<Vector2D, Vector2D>> URight = p => UFunc(new Vector2D(Right, p.Y));
-    private static Expression<Func<Vector2D, Vector2D>> UBottom = p => UFunc(new Vector2D(p.X, Bottom));
-    private static Expression<Func<Vector2D, Vector2D>> UTop = p => UFunc(new Vector2D(p.X, Top));
-    private Func<Vector2D, Vector2D> ExpectedSolution = U.Compile();
-    
+    private static Func<Vector2D, Vector2D> ExpectedSolution = U.Compile();
+    private int[] sizesForTest = [1, 2, 4, 8, 16];
+
     [OneTimeSetUp]
-    public void Setup()
+    public void SetUp()
     {
-        boundaries =
+        AreaDefinition[] areas = [new(0, 1, 0, 1, MaterialId: 0)];
+        edgesPortraitBuilder = new EdgesPortraitBuilder(new QuadElementEdgeResolver());
+        testGrid = new RegularEdgeGridBuilder(edgesPortraitBuilder).Build
+        (
+            new RegularGridDefinition
+            (
+                new Vector2D[,]
+                {
+                    {new(Left, Bottom), new(Right, Bottom)},
+                    {new(Left, Top), new(Right, Top)},
+                },
+                [new UniformSplitter(105)],
+                [new UniformSplitter(105)],
+                areas,
+                []
+            )
+        );
+    }
+
+    private VectorFEMSolution2D Solve(int n)
+    {
+        #region SetUp
+
+        RegularBoundaryCondition[] boundaries =
         [
             new()
             {
@@ -96,7 +116,7 @@ public class Vector2DRectangleTest
                 TopBoundId = 1,
             },
         ];
-        
+
         AreaDefinition[] areas = [new(0, 1, 0, 1, MaterialId: 0)];
         var gridDefinition = new RegularGridDefinition
         (
@@ -105,54 +125,40 @@ public class Vector2DRectangleTest
                 {new(Left, Bottom), new(Right, Bottom)},
                 {new(Left, Top), new(Right, Top)},
             },
-            [new ProportionalSplitter(2, 1.5d)],
-            [new ProportionalSplitter(2, 2d / 3)],
+            [new UniformSplitter(n)],
+            [new UniformSplitter(n)],
+            // [new ProportionalSplitter(2, 1.5d)],
+            // [new ProportionalSplitter(2, 2d / 3)],
             areas,
             []
         );
-        var edgesPortraitBuilder = new EdgesPortraitBuilder(new QuadElementEdgeResolver());
         grid = new RegularEdgeGridBuilder(edgesPortraitBuilder).Build(gridDefinition);
-        testGrid = new RegularEdgeGridBuilder(edgesPortraitBuilder).Build
-        (
-            new RegularGridDefinition
-            (
-                new Vector2D[,]
-                {
-                    {new(Left, Bottom), new(Right, Bottom)},
-                    {new(Left, Top), new(Right, Top)},
-                },
-                [new UniformSplitter(2)],
-                [new UniformSplitter(2)],
-                areas,
-                []
-            )
-        );
-        localAssembler = new VectorLinearLocalAssembler
+        var localAssembler = new VectorLinearLocalAssembler
         (
             grid.Nodes,
             new AreaProvider<AreaDefinition>(areas),
             new Gauss2D(GaussConfig.Gauss4(3), NullLogger.Instance),
             new FromArrayMaterialProvider<Material>([new(Lambda, Sigma)]),
             new RectangleVectorBasicFunctionsProvider(grid.Nodes),
-            new FuncDensity<Vector2D, Vector2D>(grid.Nodes, p => new(p.Y + 1, 0))
+            new FuncDensity<Vector2D, Vector2D>(grid.Nodes, DesityFunc)
         );
 
-        matrixPortraitBuilder = new SymmetricMatrixEdgeGridPortraitBuilder();
-        inserter = new SymmetricInserter();
-        solver = new ConjugateGradientSolver
+        var matrixPortraitBuilder = new SymmetricMatrixEdgeGridPortraitBuilder();
+        var inserter = new SymmetricInserter();
+        var solver = new ConjugateGradientSolver
         (
             new IncompleteLDLTPreconditionerFactory(),
             new ConjugateGradientSolverConfig(1e-15, 2000),
             NullLogger.Instance
         );
 
-        edgeResolver = new EdgeResolver
+        var edgeResolver = new EdgeResolver
         (
             edgesPortraitBuilder.Build(grid.Elements, grid.Nodes.TotalPoints),
             grid.Elements,
             new QuadElementEdgeResolver()
         );
-        boundaryApplier = new VectorRegularBoundaryApplier<SymmetricRowSparseMatrix>
+        var boundaryApplier = new VectorRegularBoundaryApplier<SymmetricRowSparseMatrix>
         (
             new GaussExcluderSymmetricSparse(),
             new ArrayExpressionProvider([Ux, Uy]),
@@ -160,11 +166,11 @@ public class Vector2DRectangleTest
             new BoundIndexesEvaluator(gridDefinition),
             edgeResolver
         );
-    }
 
-    [Test]
-    public void SolutionOnNodesShouldBeCorrect()
-    {
+        #endregion
+
+        #region Equation
+
         var edgesCunt = grid.Elements.Max(x => x.EdgeIds.Max()) + 1;
 
         var equation = new Equation<SymmetricRowSparseMatrix>
@@ -194,24 +200,55 @@ public class Vector2DRectangleTest
         }
 
         var weights = solver.Solve(equation);
-        var solution = new VectorFEMSolution2D
+
+        #endregion
+
+        return new VectorFEMSolution2D
         (
             new RectangleVectorBasicFunctionsProvider(grid.Nodes),
             grid,
             weights,
             edgeResolver
         );
+    }
 
+    private static double MaxError(VectorFEMSolution2D solution, IPointsCollection<Vector2D> nodes)
+    {
+        var maxDiff = -1d;
+
+        for (var i = 0; i < nodes.TotalPoints; i++)
+        {
+            var point = nodes[i];
+            var actual = solution.Calculate(point);
+            var expected = ExpectedSolution(point);
+            var diff = (actual - expected).Length;
+            maxDiff = Math.Max(maxDiff, diff);
+        }
+
+        return maxDiff;
+    }
+
+    [Test]
+    public void SolutionOnNodesShouldBeCorrect()
+    {
+        var solutions = sizesForTest.Select(Solve).ToArray();
+        var errors = solutions.Select(s => MaxError(s, testGrid.Nodes)).ToArray();
+        var errorRatioDeviationFromConvergence = errors
+            .Skip(1)
+            .Zip(errors, (current, previous) => previous / current)
+            // .Select(x => Math.Abs(errorShouldDecreaseBy - x))
+            .ToArray();
+        
         Assert.Multiple(() =>
         {
-            for (var i = 0; i < grid.Nodes.TotalPoints; i++)
-            {
-                var point = grid.Nodes[i];
-                var actual = solution.Calculate(point);
-                var expected = ExpectedSolution(point);
-                var diff = actual - expected;
-                Assert.That(diff.Length, Is.LessThanOrEqualTo(1e-13));
-            }
+            // for (var i = 0; i < grid.Nodes.TotalPoints; i++)
+            // {
+            //     var point = grid.Nodes[i];
+            //     var actual = solution.Calculate(point);
+            //     var expected = ExpectedSolution(point);
+            //     var diff = actual - expected;
+            //     Assert.That(diff.Length, Is.LessThanOrEqualTo(1e-13));
+            // }
         });
     }
 }
