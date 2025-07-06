@@ -2,7 +2,7 @@
 
 namespace Skadi.Geometry.Splitting;
 
-public class ProportionalSplitter : ICurveSplitter
+public readonly record struct ProportionalSplitter : ICurveSplitter
 {
     public int Steps { get; }
     public double DischargeRatio { get; }

@@ -2,15 +2,8 @@
 
 namespace Skadi.Geometry.Splitting;
 
-public class UniformSplitter : ICurveSplitter
+public readonly record struct UniformSplitter(int Steps) : ICurveSplitter
 {
-    public int Steps { get; }
-
-    public UniformSplitter(int steps)
-    {
-        Steps = steps;
-    }
-
     public IEnumerable<TPoint> EnumerateValues<TPoint>(IParametricCurve<TPoint> parametricCurve)
     {
         var step = 1d / Steps;
