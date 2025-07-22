@@ -15,4 +15,9 @@ public readonly record struct Line2D(Vector2D Start, Vector2D End) : IParametric
     {
         return (end - start).Length;
     }
+
+    public Line2D Move(Vector2D vector)
+    {
+        return new Line2D(Start + vector, End + vector);
+    }
 }
