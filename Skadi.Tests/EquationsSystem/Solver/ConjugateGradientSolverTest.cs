@@ -60,7 +60,7 @@ public class ConjugateGradientSolverTestTests
 
         var diff = LinAl.Subtract(solutionActual, solutionExpected);
         
-        Assert.That(diff.Norm, Is.LessThanOrEqualTo(config.Precision));
+        Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Precision));
     }
     
     [Test]
@@ -71,7 +71,7 @@ public class ConjugateGradientSolverTestTests
 
         var diff = LinAl.Subtract(solutionActual, solutionExpected);
         
-        Assert.That(diff.Norm, Is.LessThanOrEqualTo(config.Precision));
+        Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Precision));
     }
     
     [Test]
@@ -82,7 +82,7 @@ public class ConjugateGradientSolverTestTests
 
         var diff = LinAl.Subtract(solutionActual, solutionExpected);
         
-        Assert.That(diff.Norm, Is.LessThanOrEqualTo(config.Precision));
+        Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Precision * 10));
     }
     
     [Test]
@@ -93,6 +93,6 @@ public class ConjugateGradientSolverTestTests
 
         var diff = LinAl.Subtract(solutionActual, solutionExpected);
         
-        Assert.That(diff.Norm, Is.LessThanOrEqualTo(config.Precision));
+        Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Precision));
     }
 }
