@@ -1,5 +1,5 @@
-using Skadi.Matrices;
-using Skadi.Matrices.Sparse;
+using Skadi.LinearAlgebra.Matrices;
+using Skadi.LinearAlgebra.Matrices.Sparse;
 
 // ReSharper disable InconsistentNaming
 

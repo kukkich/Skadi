@@ -1,4 +1,5 @@
-using Skadi.Vectors;
+using Skadi.LinearAlgebra;
+using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.EquationsSystem.Preconditions.Null;
 

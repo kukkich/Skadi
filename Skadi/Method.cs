@@ -2,14 +2,9 @@
 
 namespace Skadi;
 
-public abstract class Method<TConfig> 
+//Todo replace with composition
+public abstract class Method<TConfig>(TConfig config, ILogger logger)
 {
-    protected TConfig Config { get; }
-    protected ILogger Logger { get; }
-
-    protected Method(TConfig config, ILogger logger)
-    {
-        Config = config;
-        Logger = logger;
-    }
+    protected TConfig Config { get; } = config;
+    protected ILogger Logger { get; } = logger;
 }

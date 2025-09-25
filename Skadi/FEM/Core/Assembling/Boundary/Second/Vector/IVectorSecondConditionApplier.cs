@@ -1,3 +1,5 @@
+using Skadi.EquationsSystem;
+
 namespace Skadi.FEM.Core.Assembling.Boundary.Second.Vector;
 
 public interface IVectorSecondConditionApplier<TMatrix>

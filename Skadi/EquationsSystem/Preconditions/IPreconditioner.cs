@@ -1,6 +1,6 @@
-﻿using Skadi.Matrices.Sparse;
-using Skadi.Numeric;
-using Skadi.Vectors;
+﻿using Skadi.LinearAlgebra;
+using Skadi.LinearAlgebra.Matrices.Sparse;
+using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.EquationsSystem.Preconditions;
 

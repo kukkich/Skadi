@@ -1,6 +1,6 @@
-﻿using Skadi.Matrices.Converters;
-using Skadi.Matrices.Sparse;
-using Skadi.Vectors;
+﻿using Skadi.LinearAlgebra.Matrices.Converters;
+using Skadi.LinearAlgebra.Matrices.Sparse;
+using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.EquationsSystem.Solver;
 

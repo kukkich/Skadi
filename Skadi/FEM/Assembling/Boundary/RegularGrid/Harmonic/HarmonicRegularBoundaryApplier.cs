@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Numerics;
+using Skadi.EquationsSystem;
 using Skadi.FEM.Core.Assembling.Boundary;
 using Skadi.FEM.Core.Assembling.Boundary.First;
 using Skadi.FEM.Core.Assembling.Boundary.Second;

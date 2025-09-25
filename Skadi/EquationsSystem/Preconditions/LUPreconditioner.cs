@@ -1,4 +1,4 @@
-﻿using Skadi.Matrices.Sparse;
+﻿using Skadi.LinearAlgebra.Matrices.Sparse;
 
 namespace Skadi.EquationsSystem.Preconditions;
 

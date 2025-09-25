@@ -1,4 +1,5 @@
 using Skadi.Geometry.Shapes.Primitives;
+using Skadi.LinearAlgebra;
 
 namespace Skadi.Geometry._2D.Shapes;
 

@@ -2,7 +2,7 @@ using Skadi.FEM.Core;
 using Skadi.FEM.Core.BasisFunctions;
 using Skadi.FEM.Core.Geometry;
 using Skadi.Geometry._2D;
-using Skadi.Vectors;
+using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.FEM._2D.Solution;
 
@@ -35,6 +35,7 @@ public class HarmonicQuadLinearSolution : IHarmonicFiniteElementSolution<Vector2
         if (element is null)
             throw new Exception();
         
+        // Todo инверсия (x, y) -> (ksi, eta) дублируется как минимум в QuadLinearSolution. Нужно вынести
         Span<double> x = stackalloc double[4];
         Span<double> y = stackalloc double[4];
         for (var i = 0; i < 4; i++)
@@ -129,6 +130,8 @@ public class HarmonicQuadLinearSolution : IHarmonicFiniteElementSolution<Vector2
         return IsPointInTriangle(vector, leftBottom, rightBottom, leftTop) ||
                IsPointInTriangle(vector, leftTop, rightBottom, rightTop);
 
+        // Todo дублируется. Найти дубликаты, вынести в static логику геометрии
+        
         bool IsPointInTriangle(Vector2D p, Vector2D a, Vector2D b, Vector2D c)
         { 
             const double tolerance = 1e-10;

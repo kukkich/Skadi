@@ -2,6 +2,8 @@ using System.Linq.Expressions;
 using System.Numerics;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using Skadi.Algorithms.Integration;
+using Skadi.EquationsSystem;
 using Skadi.EquationsSystem.Solver;
 using Skadi.FEM._2D.Assembling;
 using Skadi.FEM._2D.BasisFunctions;
@@ -22,10 +24,9 @@ using Skadi.FEM.Providers.Density;
 using Skadi.Geometry._1D;
 using Skadi.Geometry._2D;
 using Skadi.Geometry.Splitting;
-using Skadi.Integration;
-using Skadi.Matrices;
-using Skadi.Matrices.Sparse;
-using Vector = Skadi.Vectors.Vector;
+using Skadi.LinearAlgebra.Matrices;
+using Skadi.LinearAlgebra.Matrices.Sparse;
+using Vector = Skadi.LinearAlgebra.Vectors.Vector;
 
 // ReSharper disable NullableWarningSuppressionIsUsed
 

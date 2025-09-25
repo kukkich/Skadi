@@ -2,7 +2,7 @@
 using Skadi.FEM.Core.Assembling.TemplateMatrices;
 using Skadi.FEM.Core.Geometry;
 using Skadi.Geometry._2D;
-using Skadi.Matrices;
+using Skadi.LinearAlgebra.Matrices;
 
 namespace Skadi.FEM._2D.Assembling;
 

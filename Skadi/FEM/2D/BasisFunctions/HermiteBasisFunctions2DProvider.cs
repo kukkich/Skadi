@@ -1,15 +1,12 @@
 ﻿using Skadi.FEM.Core.BasisFunctions;
 using Skadi.FEM.Core.Geometry;
 using Skadi.Geometry._2D;
-using Skadi.Matrices;
-using Skadi.Splines;
 
 namespace Skadi.FEM._2D.BasisFunctions;
 
-//Наверн надо абстрактный класс ещё сделать, потому что контексты разные могут быть
-public class HermiteBasisFunctions2DProvider : IBasisFunctionsProvider<IElement, Vector2D>
+public class HermiteBasisFunctions2DProvider(IPointsCollection<Vector2D> nodes)
+    : IBasisFunctionsProvider<IElement, Vector2D>
 {
-    private readonly SplineContext<Vector2D, IElement, Matrix> _context;
     private static readonly IBasisFunction<Vector2D>[] BasisFunctions2D;
     private static readonly Func<double, double>[] XBasisFunctions1D;
     private static readonly Func<double, double>[] YBasisFunctions1D;
@@ -21,14 +18,9 @@ public class HermiteBasisFunctions2DProvider : IBasisFunctionsProvider<IElement,
         YBasisFunctions1D = new Func<double, double>[4];
     }
 
-    public HermiteBasisFunctions2DProvider(SplineContext<Vector2D, IElement, Matrix> context)
-    {
-        _context = context;
-    }
-
     public IBasisFunction<Vector2D>[] GetFunctions(IElement element)
     {
-        var firstNodeOfElement = _context.Grid.Nodes[element.NodeIds[0]];
+        var firstNodeOfElement = nodes[element.NodeIds[0]];
         var (width, lenght) = GetSizes(element);
         var xBasisFunctions1D = BuildHermiteBasisFunctions1D(firstNodeOfElement.X, width, XBasisFunctions1D);
         var yBasisFunctions1D = BuildHermiteBasisFunctions1D(firstNodeOfElement.Y, lenght, YBasisFunctions1D);

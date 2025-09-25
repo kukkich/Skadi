@@ -7,10 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Algorithms\InverseTask\" />
     <Folder Include="FEM\Assembling\Boundary\" />
     <Folder Include="FEM\Core\Assembling\Boundary\Third\" />
-    <Folder Include="FEM\Deprecated\Core\Assembling\Boundary\" />
-    <Folder Include="Matrices\Sparse\Storages\" />
   </ItemGroup>
 
   <ItemGroup>

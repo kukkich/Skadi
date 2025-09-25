@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
+using Skadi.Algorithms.Integration;
 using Skadi.Geometry._1D;
 using Skadi.Geometry._2D;
-using Skadi.Integration;
 
 namespace Skadi.Tests.Integration;
 

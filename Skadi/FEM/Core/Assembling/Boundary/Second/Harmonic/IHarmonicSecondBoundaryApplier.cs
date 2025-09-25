@@ -1,4 +1,6 @@
-﻿namespace Skadi.FEM.Core.Assembling.Boundary.Second.Harmonic;
+﻿using Skadi.EquationsSystem;
+
+namespace Skadi.FEM.Core.Assembling.Boundary.Second.Harmonic;
 
 public interface IHarmonicSecondBoundaryApplier<TMatrix>
 {

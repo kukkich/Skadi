@@ -1,5 +1,6 @@
-using Skadi.Matrices.Sparse;
-using Skadi.Matrices.Sparse.Decompositions;
+using Skadi.LinearAlgebra.Matrices.Sparse;
+using Skadi.LinearAlgebra.Matrices.Sparse.Decompositions;
+
 // ReSharper disable InconsistentNaming
 
 namespace Skadi.Tests.Matrices.Sparse.Decompositions;
