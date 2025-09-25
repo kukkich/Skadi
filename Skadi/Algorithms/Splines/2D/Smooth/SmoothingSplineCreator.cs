@@ -75,8 +75,9 @@ public class SmoothingSplineCreator : ISplineCreator<Vector2D, IElement>
 
     private SplineEquationAssembler2D CreateAssembler(SplineContext<Vector2D, IElement, Matrix> context, double alpha)
     {
-        _basisFunctionsProvider = new HermiteBasisFunctions2DProvider(context);
-        return new SplineEquationAssembler2D(
+        _basisFunctionsProvider = new HermiteBasisFunctions2DProvider(context.Grid.Nodes);
+        return new SplineEquationAssembler2D
+        (
             context.Grid.Nodes,
             new SplineLocalAssembler2D(_basisFunctionsProvider),
             new HermiteLocalAssembler(context.Grid.Nodes, alpha),
