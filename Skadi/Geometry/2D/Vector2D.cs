@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Numerics;
 using Skadi.LinearAlgebra;
 using Skadi.LinearAlgebra.Matrices;
@@ -8,12 +6,18 @@ using Vector = Skadi.LinearAlgebra.Vectors.Vector;
 
 namespace Skadi.Geometry._2D;
 
-public readonly record struct Vector2D(double X, double Y) : INumberBase<Vector2D>,
+public readonly record struct Vector2D(double X, double Y) : 
+    IAdditionOperators<Vector2D, Vector2D, Vector2D>,
+    IAdditiveIdentity<Vector2D, Vector2D>,
+    IDivisionOperators<Vector2D, double, Vector2D>,
+    IEqualityOperators<Vector2D, Vector2D, bool>,
+    ISubtractionOperators<Vector2D, Vector2D, Vector2D>,
     IMultiplyOperators<Vector2D, double, Vector2D>
 {
     public static Vector2D Zero => new(0, 0);
     public static Vector2D XAxis => new(1, 0);
     public static Vector2D YAxis => new(0, 1);
+    public static Vector2D AdditiveIdentity => Zero;
 
     public double Length => Math.Sqrt(X * X + Y * Y);
     public Vector2D Orthogonal => new(-Y, X);
@@ -140,123 +144,11 @@ public readonly record struct Vector2D(double X, double Y) : INumberBase<Vector2
     public string ToString(string? format, IFormatProvider? formatProvider) => $"<{X};{Y}>";
     public override string ToString() => $"<{X};{Y}>";
 
-    public static Vector2D AdditiveIdentity => Zero;
-
-    public static bool IsCanonical(Vector2D value) => true;
-    public static bool IsComplexNumber(Vector2D value) => false;
-    public static bool IsEvenInteger(Vector2D value) => false;
     public static bool IsFinite(Vector2D value) => double.IsFinite(value.X) && double.IsFinite(value.Y);
-    public static bool IsImaginaryNumber(Vector2D value) => false;
     public static bool IsInfinity(Vector2D value) => double.IsInfinity(value.X) || double.IsInfinity(value.Y);
-    public static bool IsInteger(Vector2D value) => false;
     public static bool IsNaN(Vector2D value) => double.IsNaN(value.X) || double.IsNaN(value.Y);
-    public static bool IsNegative(Vector2D value) => false;
-    public static bool IsNegativeInfinity(Vector2D value) => false;
     public static bool IsNormal(Vector2D value) => value.Length == 1;
-    public static bool IsOddInteger(Vector2D value) => false;
-    public static bool IsPositive(Vector2D value) => false;
-    public static bool IsPositiveInfinity(Vector2D value) => false;
-    public static bool IsRealNumber(Vector2D value) => false;
-    public static bool IsSubnormal(Vector2D value) => false;
     public static bool IsZero(Vector2D value) => value == default;
-    public static Vector2D MaxMagnitude(Vector2D x, Vector2D y) => MaxMagnitudeNumber(x, y);
-    public static Vector2D MaxMagnitudeNumber(Vector2D x, Vector2D y) => x.Length > y.Length ? x : y;
-    public static Vector2D MinMagnitude(Vector2D x, Vector2D y) => MinMagnitudeNumber(x, y);
-    public static Vector2D MinMagnitudeNumber(Vector2D x, Vector2D y) => x.Length < y.Length ? x : y;
-
-    #region Formatting
-    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static Vector2D Parse(string s, IFormatProvider? provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out Vector2D result)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static Vector2D Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, out Vector2D result)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static bool TryParse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? provider, out Vector2D result)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static bool TryParse([NotNullWhen(true)] string? s, NumberStyles style, IFormatProvider? provider, out Vector2D result)
-    {
-        throw new NotImplementedException();
-    }
-
-    public static Vector2D Parse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? provider)
-    {
-        throw new NotImplementedException();
-    }
-    public static Vector2D Parse(string s, NumberStyles style, IFormatProvider? provider)
-    {
-        throw new NotImplementedException();
-    }
-    #endregion
-
-    #region Converters
-    public static bool TryConvertFromChecked<TOther>(TOther value, out Vector2D result) where TOther : INumberBase<TOther>
-    {
-        if (value is Vector2D other)
-        {
-            result = other;
-            return true;
-        }
-        result = default;
-        return false;
-    }
-    public static bool TryConvertFromSaturating<TOther>(TOther value, out Vector2D result) where TOther : INumberBase<TOther>
-    {
-        return TryConvertFromChecked(value, out result);
-    }
-    public static bool TryConvertFromTruncating<TOther>(TOther value, out Vector2D result) where TOther : INumberBase<TOther>
-    {
-        return TryConvertFromChecked(value, out result);
-    }
-    public static bool TryConvertToChecked<TOther>(Vector2D value, [MaybeNullWhen(false)] out TOther result) where TOther : INumberBase<TOther>
-    {
-        if (typeof(TOther) == typeof(Vector2D))
-        {
-            result = (TOther)(object)value;
-            return true;
-        }
-        result = TOther.Zero;
-        return false;
-    }
-    public static bool TryConvertToSaturating<TOther>(Vector2D value, [MaybeNullWhen(false)] out TOther result) where TOther : INumberBase<TOther>
-    {
-        return TryConvertToChecked(value, out result);
-    }
-    public static bool TryConvertToTruncating<TOther>(Vector2D value, [MaybeNullWhen(false)] out TOther result) where TOther : INumberBase<TOther>
-    {
-        return TryConvertToChecked(value, out result);
-    }
-    #endregion
-
-    #region NotSupported
-    public static Vector2D One => throw new NotSupportedException(); // INumberBase
-    public static int Radix => throw new NotSupportedException(); // INumberBase
-    public static Vector2D operator --(Vector2D value) => throw new NotSupportedException(); // IDecrementOperators
-    public static Vector2D operator /(Vector2D left, Vector2D right) => throw new NotSupportedException(); // IDivisionOperators<TSelf, TSelf, TSelf>,
-    public static Vector2D operator ++(Vector2D value) => throw new NotSupportedException(); // IIncrementOperators<TSelf>
-    public static Vector2D MultiplicativeIdentity => throw new NotSupportedException(); // IMultiplicativeIdentity
-    public static Vector2D operator *(Vector2D left, Vector2D right) => throw new NotSupportedException(); // IMultiplyOperators<TSelf, TOther, TResult>
-    public static Vector2D Abs(Vector2D value) => throw new NotSupportedException(); // INumberBase
-    #endregion
+    public static Vector2D MaxMagnitude(Vector2D x, Vector2D y) => x.Length > y.Length ? x : y;
+    public static Vector2D MinMagnitude(Vector2D x, Vector2D y) =>x.Length < y.Length ? x : y;
 }
