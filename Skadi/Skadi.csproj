@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Algorithms\InverseTask\" />
     <Folder Include="FEM\Assembling\Boundary\" />
-    <Folder Include="FEM\Assembling\PortraitBuilders\" />
     <Folder Include="FEM\Core\Assembling\Boundary\Third\" />
   </ItemGroup>
 
