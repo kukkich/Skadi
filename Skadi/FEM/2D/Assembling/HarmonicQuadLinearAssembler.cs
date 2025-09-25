@@ -16,55 +16,36 @@ using Material = Skadi.FEM.Materials.HarmonicWithoutChi.Material;
 
 namespace Skadi.FEM._2D.Assembling;
 
-public class HarmonicQuadLinearAssembler : IStackLocalAssembler<IElement>
+public class HarmonicQuadLinearAssembler(
+    IPointsCollection<Vector2D> nodes,
+    IAreaProvider<AreaDefinition> areaProvider,
+    IIntegrator2D integrator,
+    IMaterialProvider<Material> materialProvider,
+    IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider,
+    IBasisFunctionsDerivativeProvider2D derivativesProvider,
+    INodeDefinedParameter<Complex> density,
+    IConstantProvider<double> frequency
+    ) : IStackLocalAssembler<IElement>
 {
     private const int NodesCount = 4;
-    private double Omega => _frequency.Get();
-    private readonly IPointsCollection<Vector2D> _nodes;
-    private readonly IAreaProvider<AreaDefinition> _areaProvider;
-    private readonly IIntegrator2D _integrator;
-    private readonly IMaterialProvider<Material> _materialProvider;
-    private readonly IBasisFunctionsProvider<IElement, Vector2D> _basisFunctionsProvider;
-    private readonly IBasisFunctionsDerivativeProvider2D _derivativesProvider;
-    private readonly INodeDefinedParameter<Complex> _density;
-    private readonly IConstantProvider<double> _frequency;
-
-    public HarmonicQuadLinearAssembler(
-        IPointsCollection<Vector2D> nodes,
-        IAreaProvider<AreaDefinition> areaProvider,
-        IIntegrator2D integrator,
-        IMaterialProvider<Material> materialProvider,
-        IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider,
-        IBasisFunctionsDerivativeProvider2D derivativesProvider,
-        INodeDefinedParameter<Complex> density,
-        IConstantProvider<double> frequency)
-    {
-        _nodes = nodes;
-        _areaProvider = areaProvider;
-        _integrator = integrator;
-        _materialProvider = materialProvider;
-        _basisFunctionsProvider = basisFunctionsProvider;
-        _derivativesProvider = derivativesProvider;
-        _density = density;
-        _frequency = frequency;
-    }
+    private double Omega => frequency.Get();
 
     public void AssembleMatrix(IElement element, MatrixSpan matrixSpan, StackIndexPermutation indexes)
     {
         var areaId = element.AreaId;
-        var area = _areaProvider.GetArea(areaId);
-        var material = _materialProvider.GetById(area.MaterialId);
+        var area = areaProvider.GetArea(areaId);
+        var material = materialProvider.GetById(area.MaterialId);
 
-        var functions = _basisFunctionsProvider.GetFunctions(element);
-        var dfDx = _derivativesProvider.GetDerivativeByX(element);
-        var dfDy = _derivativesProvider.GetDerivativeByY(element);
+        var functions = basisFunctionsProvider.GetFunctions(element);
+        var dfDx = derivativesProvider.GetDerivativeByX(element);
+        var dfDy = derivativesProvider.GetDerivativeByY(element);
         var jacobian = GetJacobian(element);
 
         Span<double> x = stackalloc double[NodesCount];
         Span<double> y = stackalloc double[NodesCount];
         for (var i = 0; i < NodesCount; i++)
         {
-            var node = _nodes[element.NodeIds[i]];
+            var node = nodes[element.NodeIds[i]];
             x[i] = node.X;
             y[i] = node.Y;
             indexes.Permutation[2 * i] = element.NodeIds[i] * 2;
@@ -85,12 +66,12 @@ public class HarmonicQuadLinearAssembler : IStackLocalAssembler<IElement>
         {
             for (var j = 0; j < NodesCount; j++)
             {
-                var mass = material.Sigma * Omega * _integrator.Calculate(
+                var mass = material.Sigma * Omega * integrator.Calculate(
                     p => functions[i].Evaluate(p) * functions[j].Evaluate(p) * jacobian(p),
                     Line1D.Unit,
                     Line1D.Unit
                 );
-                var stiffness = material.Lambda * double.Sign(alpha0) * _integrator.Calculate(
+                var stiffness = material.Lambda * double.Sign(alpha0) * integrator.Calculate(
                     p => 1d / jacobian(p) *
                          (
                              (dfDx[i].Evaluate(p) * (b6 * p.X + b3) - dfDy[i].Evaluate(p) * (b6 * p.Y + b4)) *
@@ -117,7 +98,7 @@ public class HarmonicQuadLinearAssembler : IStackLocalAssembler<IElement>
     {
         vector.Nullify();
 
-        var functions = _basisFunctionsProvider.GetFunctions(element);
+        var functions = basisFunctionsProvider.GetFunctions(element);
         var jacobian = GetJacobian(element);
 
         var mass = new MatrixSpan(stackalloc double[NodesCount * NodesCount], NodesCount);
@@ -129,10 +110,10 @@ public class HarmonicQuadLinearAssembler : IStackLocalAssembler<IElement>
         Span<double> y = stackalloc double[NodesCount];
         for (var i = 0; i < 4; i++)
         {
-            var node = _nodes[element.NodeIds[i]];
+            var node = nodes[element.NodeIds[i]];
             x[i] = node.X;
             y[i] = node.Y;
-            var f = _density.Get(element.NodeIds[i]);
+            var f = density.Get(element.NodeIds[i]);
             fS[i] = f.Real;
             fC[i] = f.Imaginary;
             indexes.Permutation[2 * i] = element.NodeIds[i] * 2;
@@ -143,7 +124,7 @@ public class HarmonicQuadLinearAssembler : IStackLocalAssembler<IElement>
         {
             for (var j = i; j < element.NodeIds.Count; j++)
             {
-                mass[i, j] = _integrator.Calculate(
+                mass[i, j] = integrator.Calculate(
                     p => functions[i].Evaluate(p) * functions[j].Evaluate(p) * jacobian(p),
                     Line1D.Unit,
                     Line1D.Unit
@@ -168,7 +149,7 @@ public class HarmonicQuadLinearAssembler : IStackLocalAssembler<IElement>
         Span<double> y = stackalloc double[NodesCount];
         for (var i = 0; i < NodesCount; i++)
         {
-            var node = _nodes[element.NodeIds[i]];
+            var node = nodes[element.NodeIds[i]];
             x[i] = node.X;
             y[i] = node.Y;
         }

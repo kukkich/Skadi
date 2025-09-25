@@ -11,13 +11,13 @@ public abstract class SplineEquationAssembler<TPoint>
     protected readonly IPointsCollection<TPoint> Nodes;
     private readonly ISplineStackLocalAssembler<IElement, TPoint> _splineLocalAssembler;
     private readonly IStackLocalAssembler<IElement> _localAssembler;
-    private readonly IStackInserter<Matrix> _inserter;
+    private readonly IInserter<Matrix> _inserter;
     
     public SplineEquationAssembler(
         IPointsCollection<TPoint> nodes,
         ISplineStackLocalAssembler<IElement, TPoint> splineLocalAssembler,
         IStackLocalAssembler<IElement> localAssembler,
-        IStackInserter<Matrix> inserter
+        IInserter<Matrix> inserter
     )
     {
         Nodes = nodes;
