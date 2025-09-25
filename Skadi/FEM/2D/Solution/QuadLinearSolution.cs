@@ -9,6 +9,7 @@ namespace Skadi.FEM._2D.Solution;
 public class QuadLinearSolution : IFiniteElementSolution<Vector2D>
 {
     public IReadonlyVector<double> Weights { get; }
+    private const double RelativeEpsilon = 1e-10;
 
     private const double Epsilon = 1e-10;
     private readonly IBasisFunctionsProvider<IElement, Vector2D> _basisFunctionsProvider;
@@ -68,7 +69,25 @@ public class QuadLinearSolution : IFiniteElementSolution<Vector2D>
         }
         else
         {
-            throw new NotImplementedException();
+            var a = b5 * alpha2;
+            var b = alpha2 * b2 + alpha1 * b1 + b5*w;
+            var c = alpha1 * (x[0] - point.X) + b2 * w;
+            var d = b * b - 4 * a * c;
+            var originEta1 = (-b + Math.Sqrt(d)) / (2 * a); 
+            var originEta2 = (-b - Math.Sqrt(d)) / (2 * a);
+            var originKsi1 = (alpha2 * originEta1 + w) / alpha1;
+            var originKsi2 = (alpha2 * originEta2 + w) / alpha1;
+
+            (ksi, eta) = a switch
+            {
+                _ when originEta1 is >= -RelativeEpsilon and <= 1 + RelativeEpsilon &&
+                       originKsi1 is >= -RelativeEpsilon and <= 1 + RelativeEpsilon
+                    => (originKsi1, originEta1),
+                _ when originEta2 is >= -RelativeEpsilon and <= 1 + RelativeEpsilon &&
+                       originKsi2 is >= -RelativeEpsilon and <= 1 + RelativeEpsilon
+                    => (originKsi2, originKsi2),
+                _ => throw new Exception("Can't determine original position from unit square")
+            };
         }
 
         var pointInTemplate = new Vector2D(ksi, eta);
