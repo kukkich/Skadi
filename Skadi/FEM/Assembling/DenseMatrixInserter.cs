@@ -4,7 +4,7 @@ using Skadi.Vectors;
 
 namespace Skadi.FEM.Assembling;
 
-public class DenseMatrixInserter : IStackInserter<Matrix>
+public class DenseMatrixInserter : IInserter<Matrix>
 {
     public void InsertVector(Vector vector, StackLocalVector localVector)
     {

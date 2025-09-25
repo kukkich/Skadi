@@ -13,7 +13,7 @@ public class SplineEquationAssembler1D : SplineEquationAssembler<double>
         IPointsCollection<double> nodes, 
         ISplineStackLocalAssembler<IElement, double> splineLocalAssembler, 
         IStackLocalAssembler<IElement> localAssembler, 
-        IStackInserter<Matrix> inserter) 
+        IInserter<Matrix> inserter) 
         : base(nodes, splineLocalAssembler, localAssembler, inserter)
     { }
 

@@ -14,14 +14,14 @@ public class EquationAssembler
 
     private readonly Context<Vector2D, IElement, SparseMatrix> _context;
     private readonly IStackLocalAssembler<IElement> _localAssembler;
-    private readonly IStackInserter<SparseMatrix> _inserter;
+    private readonly IInserter<SparseMatrix> _inserter;
     private readonly IFirstBoundaryApplier<SparseMatrix> _firstBoundaryApplier;
     private readonly IHarmonicSecondBoundaryApplier<SparseMatrix> _harmonicSecondBoundaryApplier;
 
     public EquationAssembler(
         Context<Vector2D, IElement, SparseMatrix> context,
         IStackLocalAssembler<IElement> localAssembler,
-        IStackInserter<SparseMatrix> inserter,
+        IInserter<SparseMatrix> inserter,
         IFirstBoundaryApplier<SparseMatrix> firstBoundaryApplier,
         IHarmonicSecondBoundaryApplier<SparseMatrix> harmonicSecondBoundaryApplier
     )

@@ -14,7 +14,7 @@ public class SplineEquationAssembler2D : SplineEquationAssembler<Vector2D>
         IPointsCollection<Vector2D> nodes, 
         ISplineStackLocalAssembler<IElement, Vector2D> splineLocalAssembler, 
         IStackLocalAssembler<IElement> localAssembler, 
-        IStackInserter<Matrix> inserter
+        IInserter<Matrix> inserter
     ) : base(nodes, splineLocalAssembler, localAssembler, inserter)
     { }
 

@@ -4,7 +4,7 @@ using Skadi.Vectors;
 
 namespace Skadi.FEM.Assembling;
 
-public class SparseInserter : IStackInserter<SparseMatrix>
+public class SparseInserter : IInserter<SparseMatrix>
 {
     public void InsertVector(Vector vector, StackLocalVector localVector)
     {

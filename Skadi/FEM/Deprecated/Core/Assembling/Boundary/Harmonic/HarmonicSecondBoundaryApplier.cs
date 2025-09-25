@@ -11,9 +11,9 @@ namespace Skadi.FEM.Deprecated.Core.Assembling.Boundary.Harmonic;
 public class HarmonicSecondBoundaryApplier : IHarmonicSecondBoundaryApplier<SparseMatrix>
 {
     private readonly Context<Vector2D, IElement, SparseMatrix> _context;
-    private readonly IStackInserter<SparseMatrix> _inserter;
+    private readonly IInserter<SparseMatrix> _inserter;
 
-    public HarmonicSecondBoundaryApplier(Context<Vector2D, IElement, SparseMatrix> context, IStackInserter<SparseMatrix> inserter)
+    public HarmonicSecondBoundaryApplier(Context<Vector2D, IElement, SparseMatrix> context, IInserter<SparseMatrix> inserter)
     {
         _context = context;
         _inserter = inserter;
