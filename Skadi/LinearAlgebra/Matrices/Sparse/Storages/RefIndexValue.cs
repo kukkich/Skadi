@@ -1,4 +1,4 @@
-﻿namespace Skadi.Matrices.Sparse.Storages;
+﻿namespace Skadi.LinearAlgebra.Matrices.Sparse.Storages;
 
 public readonly ref struct RefIndexValue
 {

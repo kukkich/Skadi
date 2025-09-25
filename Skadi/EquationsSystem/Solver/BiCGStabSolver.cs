@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Skadi.EquationsSystem.Preconditions;
-using Skadi.Numeric;
-using Skadi.Vectors;
+using Skadi.LinearAlgebra;
+using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.EquationsSystem.Solver;
 

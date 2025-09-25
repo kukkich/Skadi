@@ -1,6 +1,6 @@
-﻿using Skadi.Matrices.Sparse.Storages;
+﻿using Skadi.LinearAlgebra.Matrices.Sparse.Storages;
 
-namespace Skadi.Matrices.Sparse;
+namespace Skadi.LinearAlgebra.Matrices.Sparse;
 
 public class SymmetricRowSparseMatrix
 {

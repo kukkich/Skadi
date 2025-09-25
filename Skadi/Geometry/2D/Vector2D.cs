@@ -1,9 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
-using Skadi.Matrices;
-using Skadi.Vectors;
-using Vector = Skadi.Vectors.Vector;
+using Skadi.LinearAlgebra;
+using Skadi.LinearAlgebra.Matrices;
+using Skadi.LinearAlgebra.Vectors;
+using Vector = Skadi.LinearAlgebra.Vectors.Vector;
 
 namespace Skadi.Geometry._2D;
 

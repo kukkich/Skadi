@@ -1,8 +1,7 @@
-using Skadi.Matrices.Sparse.Storages;
-using Skadi.Numeric;
-using Skadi.Vectors;
+using Skadi.LinearAlgebra.Matrices.Sparse.Storages;
+using Skadi.LinearAlgebra.Vectors;
 
-namespace Skadi.Matrices.Sparse;
+namespace Skadi.LinearAlgebra.Matrices.Sparse;
 
 public class CSRMatrix : ILinearOperator
 {

@@ -1,6 +1,6 @@
-﻿using Skadi.Matrices.Sparse.Storages;
+﻿using Skadi.LinearAlgebra.Matrices.Sparse.Storages;
 
-namespace Skadi.Vectors;
+namespace Skadi.LinearAlgebra.Vectors;
 
 public interface IReadonlyVector<T> : IEnumerable<IndexValue<T>>
 {

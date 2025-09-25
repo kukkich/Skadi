@@ -1,6 +1,6 @@
-﻿using Skadi.Vectors;
+﻿using Skadi.LinearAlgebra.Vectors;
 
-namespace Skadi.Matrices.Transformation;
+namespace Skadi.LinearAlgebra.Matrices.Transformation;
 
 public interface IMatrixTransformation
 {

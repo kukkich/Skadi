@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Skadi.Geometry._1D;
 using Skadi.Geometry._2D;
 
-namespace Skadi.Integration;
+namespace Skadi.Algorithms.Integration;
 
 public class Gauss2D : Method<GaussConfig>, IIntegrator2D
 {

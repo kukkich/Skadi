@@ -1,8 +1,6 @@
-﻿using Skadi.FEM.Core;
-using Skadi.FEM.Core.Geometry;
-using Skadi.Geometry._2D;
+﻿using Skadi.FEM.Core.Geometry;
 
-namespace Skadi.Splines;
+namespace Skadi.Algorithms.Splines;
 
 public interface ISplineCreator<TPoint, TElement> : IAllocationRequired<Grid<TPoint, TElement>> 
     where TElement : IElement

@@ -1,4 +1,5 @@
-﻿using Skadi.Matrices.Sparse;
+﻿using Skadi.EquationsSystem;
+using Skadi.LinearAlgebra.Matrices.Sparse;
 
 namespace Skadi.FEM.Core.Assembling.Boundary.First;
 

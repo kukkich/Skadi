@@ -1,4 +1,4 @@
-namespace Skadi.Matrices.Sparse.Decompositions;
+namespace Skadi.LinearAlgebra.Matrices.Sparse.Decompositions;
 
 public static class IncompleteLDLT
 {

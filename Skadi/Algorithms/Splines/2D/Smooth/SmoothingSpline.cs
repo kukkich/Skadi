@@ -1,10 +1,9 @@
-﻿using Skadi.FEM.Core;
-using Skadi.FEM.Core.BasisFunctions;
+﻿using Skadi.FEM.Core.BasisFunctions;
 using Skadi.FEM.Core.Geometry;
 using Skadi.Geometry._2D;
-using Skadi.Vectors;
+using Skadi.LinearAlgebra.Vectors;
 
-namespace Skadi.Splines._2D.Smooth;
+namespace Skadi.Algorithms.Splines._2D.Smooth;
 
 public class SmoothingSpline : ISpline<Vector2D>
 {

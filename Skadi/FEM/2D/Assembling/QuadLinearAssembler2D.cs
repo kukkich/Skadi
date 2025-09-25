@@ -1,4 +1,5 @@
-﻿using Skadi.FEM.Core.Assembling;
+﻿using Skadi.Algorithms.Integration;
+using Skadi.FEM.Core.Assembling;
 using Skadi.FEM.Core.Assembling.Params;
 using Skadi.FEM.Core.BasisFunctions;
 using Skadi.FEM.Core.BasisFunctions._2D;
@@ -7,9 +8,9 @@ using Skadi.FEM.Core.Geometry._2D.Quad;
 using Skadi.FEM.Materials.LambdaGamma;
 using Skadi.Geometry._1D;
 using Skadi.Geometry._2D;
-using Skadi.Integration;
-using Skadi.Matrices;
-using Skadi.Vectors;
+using Skadi.LinearAlgebra;
+using Skadi.LinearAlgebra.Matrices;
+using Skadi.LinearAlgebra.Vectors;
 
 // ReSharper disable AccessToModifiedClosure
 

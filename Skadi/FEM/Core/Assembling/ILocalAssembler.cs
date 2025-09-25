@@ -1,5 +1,5 @@
 ﻿using Skadi.FEM.Core.Geometry;
-using Skadi.Matrices;
+using Skadi.LinearAlgebra.Matrices;
 
 namespace Skadi.FEM.Core.Assembling;
 

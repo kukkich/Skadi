@@ -1,6 +1,6 @@
-﻿using Skadi.Matrices.Sparse;
+﻿using Skadi.LinearAlgebra.Matrices.Sparse;
 
-namespace Skadi.Matrices.Converters;
+namespace Skadi.LinearAlgebra.Matrices.Converters;
 
 public static class MatrixConverter
 {

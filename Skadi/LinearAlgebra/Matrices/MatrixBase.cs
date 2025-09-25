@@ -1,6 +1,6 @@
-﻿using Skadi.Matrices.Transformation;
+﻿using Skadi.LinearAlgebra.Matrices.Transformation;
 
-namespace Skadi.Matrices;
+namespace Skadi.LinearAlgebra.Matrices;
 
 // TODO LU разложение
 // TODO обратную, чтобы умножать A^-1 * v = w

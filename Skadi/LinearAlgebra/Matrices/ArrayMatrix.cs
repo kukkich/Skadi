@@ -1,4 +1,4 @@
-﻿namespace Skadi.Matrices;
+﻿namespace Skadi.LinearAlgebra.Matrices;
 
 public abstract class ArrayMatrix : MatrixBase
 {

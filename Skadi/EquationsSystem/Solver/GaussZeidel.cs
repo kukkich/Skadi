@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using Skadi.Matrices;
-using Skadi.Vectors;
+using Skadi.LinearAlgebra;
+using Skadi.LinearAlgebra.Matrices;
+using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.EquationsSystem.Solver;
 

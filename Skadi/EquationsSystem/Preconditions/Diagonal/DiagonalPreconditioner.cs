@@ -1,4 +1,4 @@
-﻿using Skadi.Vectors;
+﻿using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.EquationsSystem.Preconditions.Diagonal;
 

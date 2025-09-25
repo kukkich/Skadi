@@ -1,7 +1,7 @@
 ﻿using Skadi.FEM.Core.Assembling;
-using Skadi.Matrices;
+using Skadi.LinearAlgebra.Matrices;
 
-namespace Skadi.Splines;
+namespace Skadi.Algorithms.Splines;
 
 public interface ISplineStackLocalAssembler<in TElement, TPoint>
 {

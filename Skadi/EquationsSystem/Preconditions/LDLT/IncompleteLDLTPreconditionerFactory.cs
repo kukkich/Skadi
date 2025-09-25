@@ -1,6 +1,6 @@
 using Skadi.EquationsSystem.Preconditions.Hollesky;
-using Skadi.Matrices.Sparse;
-using Skadi.Matrices.Sparse.Decompositions;
+using Skadi.LinearAlgebra.Matrices.Sparse;
+using Skadi.LinearAlgebra.Matrices.Sparse.Decompositions;
 
 namespace Skadi.EquationsSystem.Preconditions.LDLT;
 

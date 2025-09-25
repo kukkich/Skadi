@@ -1,9 +1,8 @@
-﻿using Skadi.FEM.Core;
-using Skadi.FEM.Core.Assembling;
+﻿using Skadi.FEM.Core.Assembling;
 using Skadi.FEM.Core.Geometry;
-using Skadi.Matrices;
+using Skadi.LinearAlgebra.Matrices;
 
-namespace Skadi.Splines._1D;
+namespace Skadi.Algorithms.Splines._1D;
 
 public class SplineEquationAssembler1D : SplineEquationAssembler<double>
 {

@@ -3,7 +3,7 @@ using Skadi.FEM.Core.BasisFunctions;
 using Skadi.FEM.Core.Geometry;
 using Skadi.FEM.Core.Geometry.Edges;
 using Skadi.Geometry._2D;
-using Skadi.Vectors;
+using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.FEM._2D.Solution;
 

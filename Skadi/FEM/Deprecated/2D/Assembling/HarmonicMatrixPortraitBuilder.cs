@@ -1,6 +1,6 @@
 ﻿using Skadi.FEM.Core.Assembling;
 using Skadi.FEM.Core.Geometry;
-using Skadi.Matrices.Sparse;
+using Skadi.LinearAlgebra.Matrices.Sparse;
 
 namespace Skadi.FEM.Deprecated._2D.Assembling;
 

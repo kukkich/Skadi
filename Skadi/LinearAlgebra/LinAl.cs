@@ -2,12 +2,12 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
-using Skadi.Matrices;
-using Skadi.Matrices.Sparse;
-using Skadi.Vectors;
-using Vector = Skadi.Vectors.Vector;
+using Skadi.LinearAlgebra.Matrices;
+using Skadi.LinearAlgebra.Matrices.Sparse;
+using Skadi.LinearAlgebra.Vectors;
+using Vector = Skadi.LinearAlgebra.Vectors.Vector;
 
-namespace Skadi;
+namespace Skadi.LinearAlgebra;
 
 public static class LinAl
 {

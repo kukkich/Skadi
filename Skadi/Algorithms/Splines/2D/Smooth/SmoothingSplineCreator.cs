@@ -1,14 +1,14 @@
-﻿using Skadi.FEM.Core;
-using Skadi.Geometry._2D;
+﻿using Skadi.EquationsSystem;
 using Skadi.EquationsSystem.Solver;
 using Skadi.FEM._2D.Assembling;
 using Skadi.FEM._2D.BasisFunctions;
 using Skadi.FEM.Assembling;
 using Skadi.FEM.Core.Geometry;
-using Skadi.Matrices;
-using Skadi.Vectors;
+using Skadi.Geometry._2D;
+using Skadi.LinearAlgebra.Matrices;
+using Skadi.LinearAlgebra.Vectors;
 
-namespace Skadi.Splines._2D.Smooth;
+namespace Skadi.Algorithms.Splines._2D.Smooth;
 
 public class SmoothingSplineCreator : ISplineCreator<Vector2D, IElement>
 {

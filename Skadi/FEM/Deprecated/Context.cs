@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Skadi.EquationsSystem;
 using Skadi.FEM.Core.Assembling.Boundary.First;
 using Skadi.FEM.Core.Assembling.Params;
 using Skadi.FEM.Core.Geometry;

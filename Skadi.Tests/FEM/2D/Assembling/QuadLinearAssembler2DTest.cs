@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
+using Skadi.Algorithms.Integration;
 using Skadi.FEM._2D.Assembling;
 using Skadi.FEM._2D.BasisFunctions;
 using Skadi.FEM.Assembling;
@@ -11,8 +12,8 @@ using Skadi.FEM.Materials.Providers;
 using Skadi.FEM.Providers.Density;
 using Skadi.Geometry._2D;
 using Skadi.Geometry._3D;
-using Skadi.Integration;
-using Skadi.Matrices;
+using Skadi.LinearAlgebra.Matrices;
+
 // ReSharper disable InconsistentNaming
 
 namespace Skadi.Tests.FEM._2D.Assembling;

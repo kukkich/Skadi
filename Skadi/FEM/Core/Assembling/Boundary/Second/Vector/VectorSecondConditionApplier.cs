@@ -1,8 +1,10 @@
+using Skadi.EquationsSystem;
 using Skadi.FEM.Core.Geometry;
 using Skadi.FEM.Core.Geometry.Edges;
 using Skadi.Geometry._2D;
 using Skadi.Geometry._2D.Shapes;
-using Skadi.Matrices;
+using Skadi.LinearAlgebra;
+using Skadi.LinearAlgebra.Matrices;
 
 namespace Skadi.FEM.Core.Assembling.Boundary.Second.Vector;
 

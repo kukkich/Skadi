@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace Skadi.Matrices;
+namespace Skadi.LinearAlgebra.Matrices;
 
 public readonly ref struct ReadOnlyMatrixSpan
 {

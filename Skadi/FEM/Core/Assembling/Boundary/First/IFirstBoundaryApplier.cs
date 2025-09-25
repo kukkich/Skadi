@@ -1,4 +1,6 @@
-﻿namespace Skadi.FEM.Core.Assembling.Boundary.First;
+﻿using Skadi.EquationsSystem;
+
+namespace Skadi.FEM.Core.Assembling.Boundary.First;
 
 public interface IFirstBoundaryApplier<TMatrix>
 {

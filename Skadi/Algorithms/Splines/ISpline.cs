@@ -1,4 +1,4 @@
-﻿namespace Skadi.Splines;
+﻿namespace Skadi.Algorithms.Splines;
 
 public interface ISpline<in TPoint>
 {

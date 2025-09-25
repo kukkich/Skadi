@@ -1,8 +1,10 @@
 using Microsoft.Extensions.Logging.Abstractions;
+using Skadi.EquationsSystem;
 using Skadi.EquationsSystem.Preconditions;
 using Skadi.EquationsSystem.Solver;
-using Skadi.Matrices.Sparse;
-using Skadi.Vectors;
+using Skadi.LinearAlgebra;
+using Skadi.LinearAlgebra.Matrices.Sparse;
+using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.Tests.EquationsSystem.Solver;
 

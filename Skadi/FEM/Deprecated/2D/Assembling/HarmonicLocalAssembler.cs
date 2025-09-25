@@ -2,8 +2,9 @@
 using Skadi.FEM.Core.Geometry;
 using Skadi.FEM.Deprecated.Core.Harmonic_OLD;
 using Skadi.Geometry._2D;
-using Skadi.Matrices;
-using Skadi.Matrices.Sparse;
+using Skadi.LinearAlgebra;
+using Skadi.LinearAlgebra.Matrices;
+using Skadi.LinearAlgebra.Matrices.Sparse;
 
 namespace Skadi.FEM.Deprecated._2D.Assembling;
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
-using Skadi.Matrices.Sparse.Storages;
+using Skadi.LinearAlgebra.Matrices.Sparse.Storages;
 
-namespace Skadi.Vectors;
+namespace Skadi.LinearAlgebra.Vectors;
 
 public sealed class Vector : IVector<double>
 {

@@ -1,9 +1,8 @@
-﻿using Skadi.FEM.Core;
-using Skadi.FEM.Core.Assembling;
+﻿using Skadi.FEM.Core.Assembling;
 using Skadi.FEM.Core.BasisFunctions;
 using Skadi.FEM.Core.Geometry;
 
-namespace Skadi.Splines._1D.CubicLagrange;
+namespace Skadi.Algorithms.Splines._1D.CubicLagrange;
 
 public class SplineLocalAssembler1D : SplineLocalAssembler<double>
 {

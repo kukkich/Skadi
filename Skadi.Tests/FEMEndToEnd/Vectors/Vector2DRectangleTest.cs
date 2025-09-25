@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.Extensions.Logging.Abstractions;
+using Skadi.Algorithms.Integration;
+using Skadi.EquationsSystem;
 using Skadi.EquationsSystem.Preconditions.LDLT;
 using Skadi.EquationsSystem.Solver;
 using Skadi.FEM._2D.Assembling;
@@ -18,10 +20,9 @@ using Skadi.FEM.Materials.Providers;
 using Skadi.FEM.Providers.Density;
 using Skadi.Geometry._2D;
 using Skadi.Geometry.Splitting;
-using Skadi.Integration;
-using Skadi.Matrices;
-using Skadi.Matrices.Sparse;
-using Skadi.Vectors;
+using Skadi.LinearAlgebra.Matrices;
+using Skadi.LinearAlgebra.Matrices.Sparse;
+using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.Tests.FEMEndToEnd.Vectors;
 

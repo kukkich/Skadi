@@ -1,10 +1,9 @@
-﻿using Skadi.FEM.Core;
-using Skadi.FEM.Core.Assembling;
+﻿using Skadi.FEM.Core.Assembling;
 using Skadi.FEM.Core.BasisFunctions;
 using Skadi.FEM.Core.Geometry;
 using Skadi.Geometry._2D;
 
-namespace Skadi.Splines._2D.Smooth;
+namespace Skadi.Algorithms.Splines._2D.Smooth;
 
 public class SplineLocalAssembler2D : SplineLocalAssembler<Vector2D>
 {

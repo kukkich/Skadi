@@ -1,4 +1,4 @@
-﻿namespace Skadi.Matrices.Sparse;
+﻿namespace Skadi.LinearAlgebra.Matrices.Sparse;
 
 public class SparseMatrix
 {

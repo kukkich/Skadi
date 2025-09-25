@@ -1,7 +1,7 @@
-﻿using Skadi.FEM.Core;
+﻿using Skadi.EquationsSystem;
 using Skadi.FEM.Core.Geometry;
 
-namespace Skadi.Splines;
+namespace Skadi.Algorithms.Splines;
 
 public class SplineContext<TPoint, TElement, TMatrix> 
     where TElement : IElement

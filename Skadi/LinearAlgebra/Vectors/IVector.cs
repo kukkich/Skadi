@@ -1,4 +1,4 @@
-﻿namespace Skadi.Vectors;
+﻿namespace Skadi.LinearAlgebra.Vectors;
 
 public interface IVector<T> : IReadonlyVector<T>
 {

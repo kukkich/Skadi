@@ -1,10 +1,9 @@
-﻿using Skadi.FEM.Core;
-using Skadi.FEM.Core.Assembling;
+﻿using Skadi.FEM.Core.Assembling;
 using Skadi.FEM.Core.Geometry;
 using Skadi.Geometry._2D;
-using Skadi.Matrices;
+using Skadi.LinearAlgebra.Matrices;
 
-namespace Skadi.Splines._2D;
+namespace Skadi.Algorithms.Splines._2D;
 
 public class SplineEquationAssembler2D : SplineEquationAssembler<Vector2D>
 {

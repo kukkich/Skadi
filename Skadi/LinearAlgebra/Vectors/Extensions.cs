@@ -1,4 +1,4 @@
-﻿namespace Skadi.Vectors;
+﻿namespace Skadi.LinearAlgebra.Vectors;
 
 public static class Extensions
 {

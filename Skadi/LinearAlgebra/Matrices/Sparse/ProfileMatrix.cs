@@ -1,6 +1,6 @@
-﻿using Skadi.Vectors;
+﻿using Skadi.LinearAlgebra.Vectors;
 
-namespace Skadi.Matrices.Sparse;
+namespace Skadi.LinearAlgebra.Matrices.Sparse;
 
 public class ProfileMatrix
 {

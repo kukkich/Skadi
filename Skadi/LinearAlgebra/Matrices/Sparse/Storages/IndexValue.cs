@@ -1,3 +1,3 @@
-﻿namespace Skadi.Matrices.Sparse.Storages;
+﻿namespace Skadi.LinearAlgebra.Matrices.Sparse.Storages;
 
 public readonly record struct IndexValue<T>(T Value, int Index);

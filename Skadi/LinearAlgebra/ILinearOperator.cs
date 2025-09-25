@@ -1,6 +1,6 @@
-using Skadi.Vectors;
+using Skadi.LinearAlgebra.Vectors;
 
-namespace Skadi.Numeric;
+namespace Skadi.LinearAlgebra;
 
 public interface ILinearOperator
 {

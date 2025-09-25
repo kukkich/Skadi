@@ -1,13 +1,13 @@
-﻿using Skadi.FEM.Core;
+﻿using Skadi.EquationsSystem;
 using Skadi.EquationsSystem.Solver;
 using Skadi.FEM._1D.Assembling;
 using Skadi.FEM._1D.BasisFunctions;
 using Skadi.FEM.Assembling;
 using Skadi.FEM.Core.Geometry;
-using Skadi.Matrices;
-using Skadi.Vectors;
+using Skadi.LinearAlgebra.Matrices;
+using Skadi.LinearAlgebra.Vectors;
 
-namespace Skadi.Splines._1D.CubicLagrange;
+namespace Skadi.Algorithms.Splines._1D.CubicLagrange;
 
 public class LagrangeSplineCreator : ISplineCreator<double, IElement>
 {

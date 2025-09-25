@@ -2,7 +2,7 @@
 using Skadi.Geometry.Shapes;
 using Skadi.Geometry.Shapes.Primitives;
 
-namespace Skadi.Splines._1D;
+namespace Skadi.Algorithms.Splines._1D;
 
 public class SplineParametricCurve : IParametricCurve<Vector2D>
 {

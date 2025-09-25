@@ -1,6 +1,6 @@
 ﻿using Skadi.FEM.Core.Geometry;
 using Skadi.Geometry._2D;
-using Skadi.Vectors;
+using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.FEM.Deprecated.Core.Harmonic_OLD.Solution;
 
