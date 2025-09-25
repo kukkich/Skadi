@@ -1,3 +1,3 @@
 ﻿namespace Skadi;
 
-public class Empty { }
+public struct Empty;
