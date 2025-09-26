@@ -1,17 +1,10 @@
 ﻿using Skadi.FEM.Core.Geometry;
 using Skadi.FEM.Core.Geometry.Edges;
 
-namespace Skadi.FEM.Assembling;
+namespace Skadi.FEM.Assembling.Edges;
 
-public class EdgesPortraitBuilder : IEdgesPortraitBuilder
+public class EdgesPortraitBuilder(IElementEdgeResolver edgeResolver) : IEdgesPortraitBuilder
 {
-    private readonly IElementEdgeResolver _edgeResolver;
-
-    public EdgesPortraitBuilder(IElementEdgeResolver edgeResolver)
-    {
-        _edgeResolver = edgeResolver;
-    }
-    
     public EdgesPortrait Build<T>(IEnumerable<T> elements, int nodesCount)
         where T : IElement
     {
@@ -22,7 +15,7 @@ public class EdgesPortraitBuilder : IEdgesPortraitBuilder
             .Select(nodeSet => amount += nodeSet.Count)
             .ToList();
         rowsIndexes.Insert(0, 0);
-        
+
         var columnsIndexes = adjacencyList.SelectMany(nodeList => nodeList).ToArray();
 
         return new EdgesPortrait
@@ -50,7 +43,8 @@ public class EdgesPortraitBuilder : IEdgesPortraitBuilder
             {
                 foreach (var nodeIndex in nodesIndexes)
                 {
-                    if (currentNode > nodeIndex && _edgeResolver.HasEdgeWithNode(element, new Edge(currentNode, nodeIndex)))
+                    if (currentNode > nodeIndex &&
+                        edgeResolver.HasEdgeWithNode(element, new Edge(currentNode, nodeIndex)))
                         adjacencyList[currentNode].Add(nodeIndex);
                 }
             }

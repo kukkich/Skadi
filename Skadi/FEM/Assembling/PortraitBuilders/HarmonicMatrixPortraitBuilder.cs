@@ -2,7 +2,7 @@
 using Skadi.FEM.Core.Geometry;
 using Skadi.LinearAlgebra.Matrices.Sparse;
 
-namespace Skadi.FEM.Deprecated._2D.Assembling;
+namespace Skadi.FEM.Assembling.PortraitBuilders;
 
 // Пишется для гармонической 2D с линейными элементами
 public class HarmonicMatrixPortraitBuilder : IMatrixPortraitBuilder<SparseMatrix, IElement>

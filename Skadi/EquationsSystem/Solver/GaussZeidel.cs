@@ -5,7 +5,8 @@ using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.EquationsSystem.Solver;
 
-public class GaussZeidelSolver : Method<GaussZeidelConfig>, IAllocationRequired<int>
+public class GaussZeidelSolver(GaussZeidelConfig config, ILogger<GaussZeidelSolver> logger)
+    : Method<GaussZeidelConfig>(config, logger), IAllocationRequired<int>
 {
     private int Dimension => _currentSolution.Length;
 
@@ -14,11 +15,6 @@ public class GaussZeidelSolver : Method<GaussZeidelConfig>, IAllocationRequired<
     private IReadOnlyMatrix _matrix;
     private IReadonlyVector<double> _rightSide;
     private double _rightSideNorm;
-
-    public GaussZeidelSolver(GaussZeidelConfig config, ILogger<GaussZeidelSolver> logger)
-        : base(config, logger)
-    {
-    }
 
     public void Allocate(int dimensionSize)
     {

@@ -3,7 +3,7 @@ using Skadi.LinearAlgebra.Matrices.Sparse.Storages;
 
 namespace Skadi.LinearAlgebra.Vectors;
 
-public sealed class Vector : IVector<double>
+public sealed class Vector(params double[] values) : IVector<double>
 {
     public static Vector Create(int length, double defaultValue = 0)
     {
@@ -26,7 +26,7 @@ public sealed class Vector : IVector<double>
     public int Length => _values.Length;
     public double Norm => Math.Sqrt(ScalarProduct(this, this));
 
-    private readonly double[] _values;
+    private readonly double[] _values = values;
 
     public Vector Copy()
     {
@@ -56,14 +56,8 @@ public sealed class Vector : IVector<double>
         return new Vector(memory);
     }
 
-    public Vector(params double[] values)
+    public Vector(IEnumerable<double> values) : this(values.ToArray())
     {
-        _values = values;
-    }
-    
-    public Vector(IEnumerable<double> values)
-    {
-        _values = values.ToArray();
     }
 
     public static double ScalarProduct(IReadonlyVector<double> v, IReadonlyVector<double> u)

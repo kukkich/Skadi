@@ -5,19 +5,14 @@ using Skadi.LinearAlgebra.Matrices;
 
 namespace Skadi.Algorithms.Splines;
 
-public abstract class SplineLocalAssembler<TPoint> : ISplineStackLocalAssembler<IElement, TPoint>
+public abstract class SplineLocalAssembler<TPoint>(IBasisFunctionsProvider<IElement, TPoint> basisFunctionsProvider)
+    : ISplineStackLocalAssembler<IElement, TPoint>
 {
-    private readonly IBasisFunctionsProvider<IElement, TPoint> _basisFunctionsProvider;
     private IBasisFunction<TPoint>[] _basisFunctions;
-
-    public SplineLocalAssembler(IBasisFunctionsProvider<IElement, TPoint> basisFunctionsProvider)
-    {
-        _basisFunctionsProvider = basisFunctionsProvider;
-    }
 
     public void AssembleBasisFunctions(IElement element)
     {
-        _basisFunctions = _basisFunctionsProvider.GetFunctions(element);
+        _basisFunctions = basisFunctionsProvider.GetFunctions(element);
     }
 
     public void AssembleMatrix(IElement element, TPoint point, double weight, MatrixSpan matrixSpan, StackIndexPermutation indexes)

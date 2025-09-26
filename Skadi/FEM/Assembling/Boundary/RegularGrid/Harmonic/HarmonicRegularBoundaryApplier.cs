@@ -3,11 +3,9 @@ using System.Numerics;
 using Skadi.EquationsSystem;
 using Skadi.FEM.Core.Assembling.Boundary;
 using Skadi.FEM.Core.Assembling.Boundary.First;
-using Skadi.FEM.Core.Assembling.Boundary.Second;
 using Skadi.FEM.Core.Assembling.Boundary.Second.Harmonic;
 using Skadi.FEM.Core.Assembling.Params;
 using Skadi.FEM.Core.Geometry;
-using Skadi.FEM.Core.Geometry.Edges;
 using Skadi.Geometry._2D;
 
 namespace Skadi.FEM.Assembling.Boundary.RegularGrid.Harmonic;

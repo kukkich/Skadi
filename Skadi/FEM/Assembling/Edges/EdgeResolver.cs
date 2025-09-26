@@ -1,27 +1,22 @@
 ﻿using Skadi.FEM.Core.Geometry;
 using Skadi.FEM.Core.Geometry.Edges;
 
-namespace Skadi.FEM.Assembling;
+namespace Skadi.FEM.Assembling.Edges;
 
-public class EdgeResolver : IEdgeResolver
+public class EdgeResolver
+(
+    EdgesPortrait portrait,
+    IReadOnlyList<IElement> elements,
+    IElementEdgeResolver elementEdgeResolver
+) : IEdgeResolver
 {
-    private readonly IReadOnlyList<IElement> _elements;
-    private readonly IElementEdgeResolver _elementEdgeResolver;
-    private readonly int[] _columnIndexes;
-    private readonly int[] _rowIndexes;
+    private readonly int[] _columnIndexes = portrait.ColumnIndexes;
+    private readonly int[] _rowIndexes = portrait.RowIndexes;
 
-    public EdgeResolver(EdgesPortrait portrait, IReadOnlyList<IElement> elements, IElementEdgeResolver elementEdgeResolver)
-    {
-        _elements = elements;
-        _elementEdgeResolver = elementEdgeResolver;
-        _columnIndexes = portrait.ColumnIndexes;
-        _rowIndexes = portrait.RowIndexes;
-    }
-    
     public int[] GetEdgeIdsByElement(int elementId)
     {
-        var element = _elements[elementId];
-        var edgesNodes = _elementEdgeResolver.GetEdgedNodes(element);
+        var element = elements[elementId];
+        var edgesNodes = elementEdgeResolver.GetEdgedNodes(element);
         var edges = edgesNodes
             .Select(GetEdgeId)
             .ToArray();
@@ -110,9 +105,9 @@ public class EdgeResolver : IEdgeResolver
         var edge = GetEdgeById(edgeId);
         var result = new List<int>(2);
 
-        for (var i = 0; i < _elements.Count; i++)
+        for (var i = 0; i < elements.Count; i++)
         {
-            var element = _elements[i];
+            var element = elements[i];
             if (!(element.NodeIds.Contains(edge.Begin) && element.NodeIds.Contains(edge.Begin)))
             {
                 continue;

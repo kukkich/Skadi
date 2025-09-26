@@ -9,30 +9,15 @@ using Skadi.Geometry._2D;
 
 namespace Skadi.FEM.Assembling.Boundary.RegularGrid.Vectors;
 
-public class VectorRegularBoundaryApplier<TMatrix> : IRegularBoundaryApplier<TMatrix>
+public class VectorRegularBoundaryApplier<TMatrix>
+(
+    IFirstBoundaryApplier<TMatrix> firstBoundaryApplier,
+    IExpressionProvider expressionProvider,
+    IPointsCollection<Vector2D> nodes,
+    IBoundIndexesEvaluator boundIndexesEvaluator,
+    IEdgeResolver edgeResolver
+) : IRegularBoundaryApplier<TMatrix>
 {
-    private readonly IFirstBoundaryApplier<TMatrix> _firstBoundaryApplier;
-    private readonly IExpressionProvider _expressionProvider;
-    private readonly IPointsCollection<Vector2D> _nodes;
-    private readonly IBoundIndexesEvaluator _boundIndexesEvaluator;
-    private readonly IEdgeResolver _edgeResolver;
-
-    public VectorRegularBoundaryApplier
-    (
-        IFirstBoundaryApplier<TMatrix> firstBoundaryApplier,
-        IExpressionProvider expressionProvider,
-        IPointsCollection<Vector2D> nodes,
-        IBoundIndexesEvaluator boundIndexesEvaluator,
-        IEdgeResolver edgeResolver
-    )
-    {
-        _firstBoundaryApplier = firstBoundaryApplier;
-        _expressionProvider = expressionProvider;
-        _nodes = nodes;
-        _boundIndexesEvaluator = boundIndexesEvaluator;
-        _edgeResolver = edgeResolver;
-    }
-
     public void Apply(Equation<TMatrix> equation, RegularBoundaryCondition condition)
     {
         if (condition.Type is BoundaryConditionType.None)
@@ -42,24 +27,24 @@ public class VectorRegularBoundaryApplier<TMatrix> : IRegularBoundaryApplier<TMa
 
         if (condition.Type is BoundaryConditionType.First)
         {
-            var expression = (Expression<Func<Vector2D, double>>) _expressionProvider.GetExpression(condition.ExpressionId);
+            var expression = (Expression<Func<Vector2D, double>>) expressionProvider.GetExpression(condition.ExpressionId);
             var func = expression.Compile();
             
-            foreach (var edge in _boundIndexesEvaluator.EnumerateEdges(condition))
+            foreach (var edge in boundIndexesEvaluator.EnumerateEdges(condition))
             {
-                var edgeId = _edgeResolver.GetEdgeId(edge);
-                var value = func((_nodes[edge.Begin] + _nodes[edge.End])/ 2);
-                _firstBoundaryApplier.Apply(equation, new FirstCondition(edgeId, value));
+                var edgeId = edgeResolver.GetEdgeId(edge);
+                var value = func((nodes[edge.Begin] + nodes[edge.End])/ 2);
+                firstBoundaryApplier.Apply(equation, new FirstCondition(edgeId, value));
             }
         }
         else if (condition.Type == BoundaryConditionType.Second)
         {
             throw new NotImplementedException();
-            var expression = (Expression<Func<Vector2D, double>>) _expressionProvider.GetExpression(condition.ExpressionId);
+            var expression = (Expression<Func<Vector2D, double>>) expressionProvider.GetExpression(condition.ExpressionId);
             var func = expression.Compile();
-            foreach (var edge in _boundIndexesEvaluator.EnumerateEdges(condition))
+            foreach (var edge in boundIndexesEvaluator.EnumerateEdges(condition))
             {
-                var thetta = func((_nodes[edge.Begin] + _nodes[edge.End])/ 2);
+                var thetta = func((nodes[edge.Begin] + nodes[edge.End])/ 2);
             }
         }
         else if (condition.Type == BoundaryConditionType.Third)

@@ -6,26 +6,19 @@ using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.EquationsSystem.Solver;
 
-public class ConjugateGradientSolver : Method<ConjugateGradientSolverConfig>, ISLAESolver<SymmetricRowSparseMatrix>
+public class ConjugateGradientSolver
+(
+    IPreconditionerFactory<SymmetricRowSparseMatrix> preconditionerFactory,
+    ConjugateGradientSolverConfig config,
+    ILogger logger
+) : Method<ConjugateGradientSolverConfig>(config, logger), ISLAESolver<SymmetricRowSparseMatrix>
 {
-    private readonly IPreconditionerFactory<SymmetricRowSparseMatrix> _preconditionerFactory;
-
     private IPreconditioner _preconditioner = null!;
     private Equation<SymmetricRowSparseMatrix> _equation = null!;
     private Vector _r = null!;
     private Vector _z = null!;
     private Vector _rNext = null!;
     private Vector _aByZProduct = null!;
-
-    public ConjugateGradientSolver
-    (
-        IPreconditionerFactory<SymmetricRowSparseMatrix> preconditionerFactory,
-        ConjugateGradientSolverConfig config,
-        ILogger logger
-    ) : base(config, logger)
-    {
-        _preconditionerFactory = preconditionerFactory;
-    }
 
     public Vector Solve(Equation<SymmetricRowSparseMatrix> equation)
     {
@@ -88,7 +81,7 @@ public class ConjugateGradientSolver : Method<ConjugateGradientSolverConfig>, IS
 
     private void InitializeStartValues(Equation<SymmetricRowSparseMatrix> equation)
     {
-        _preconditioner = _preconditionerFactory.CreatePreconditioner(equation.Matrix);
+        _preconditioner = preconditionerFactory.CreatePreconditioner(equation.Matrix);
 
         _equation = equation;
         var AxProduct = LinAl.Multiply(equation.Matrix, equation.Solution);

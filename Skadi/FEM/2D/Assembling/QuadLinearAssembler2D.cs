@@ -16,51 +16,33 @@ using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.FEM._2D.Assembling;
 
-public class QuadLinearAssembler2D : IStackLocalAssembler<IElement>
+public class QuadLinearAssembler2D
+(
+    IPointsCollection<Vector2D> nodes,
+    IAreaProvider<AreaDefinition> areaProvider,
+    IIntegrator2D integrator,
+    IMaterialProvider<Material> materialProvider,
+    IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider,
+    IBasisFunctionsDerivativeProvider2D derivativesProvider,
+    INodeDefinedParameter<double> density
+) : IStackLocalAssembler<IElement>
 {
-    private readonly IPointsCollection<Vector2D> _nodes;
-    private readonly IAreaProvider<AreaDefinition> _areaProvider;
-    private readonly IIntegrator2D _integrator;
-    private readonly IMaterialProvider<Material> _materialProvider;
-    private readonly IBasisFunctionsProvider<IElement, Vector2D> _basisFunctionsProvider;
-    private readonly IBasisFunctionsDerivativeProvider2D _derivativesProvider;
-    private readonly INodeDefinedParameter<double> _density;
-
-    public QuadLinearAssembler2D(
-        IPointsCollection<Vector2D> nodes,
-        IAreaProvider<AreaDefinition> areaProvider,
-        IIntegrator2D integrator,
-        IMaterialProvider<Material> materialProvider,
-        IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider,
-        IBasisFunctionsDerivativeProvider2D derivativesProvider,
-        INodeDefinedParameter<double> density
-    )
-    {
-        _nodes = nodes;
-        _areaProvider = areaProvider;
-        _integrator = integrator;
-        _materialProvider = materialProvider;
-        _basisFunctionsProvider = basisFunctionsProvider;
-        _derivativesProvider = derivativesProvider;
-        _density = density;
-    }
-
     public void AssembleMatrix(IElement element, MatrixSpan matrixSpan, StackIndexPermutation indexes)
     {
         var areaId = element.AreaId;
-        var area = _areaProvider.GetArea(areaId);
-        var material = _materialProvider.GetById(area.MaterialId);
+        var area = areaProvider.GetArea(areaId);
+        var material = materialProvider.GetById(area.MaterialId);
         
-        var functions = _basisFunctionsProvider.GetFunctions(element);
-        var dfDx = _derivativesProvider.GetDerivativeByX(element);
-        var dfDy = _derivativesProvider.GetDerivativeByY(element);
+        var functions = basisFunctionsProvider.GetFunctions(element);
+        var dfDx = derivativesProvider.GetDerivativeByX(element);
+        var dfDy = derivativesProvider.GetDerivativeByY(element);
         var jacobian = GetJacobian(element);
 
         Span<double> x = stackalloc double[4];
         Span<double> y = stackalloc double[4];
         for (var i = 0; i < 4; i++)
         {
-            var node = _nodes[element.NodeIds[i]];
+            var node = nodes[element.NodeIds[i]];
             x[i] = node.X;
             y[i] = node.Y;
             indexes.Permutation[i] = element.NodeIds[i];
@@ -78,12 +60,12 @@ public class QuadLinearAssembler2D : IStackLocalAssembler<IElement>
         {
             for (var j = i; j < element.NodeIds.Count; j++)
             {
-                var mass = material.Gamma * _integrator.Calculate(
+                var mass = material.Gamma * integrator.Calculate(
                     p => functions[i].Evaluate(p) * functions[j].Evaluate(p) * jacobian(p),
                     Line1D.Unit,
                     Line1D.Unit
                 );
-                var stiffness = material.Lambda * double.Sign(alpha0) * _integrator.Calculate(
+                var stiffness = material.Lambda * double.Sign(alpha0) * integrator.Calculate(
                     p => 1d / jacobian(p) *
                          (
                              (dfDx[i].Evaluate(p) * (b6 * p.X + b3) - dfDy[i].Evaluate(p) * (b6 * p.Y + b4)) *
@@ -106,7 +88,7 @@ public class QuadLinearAssembler2D : IStackLocalAssembler<IElement>
     {
         vector.Nullify();
         
-        var functions = _basisFunctionsProvider.GetFunctions(element);
+        var functions = basisFunctionsProvider.GetFunctions(element);
         var jacobian = GetJacobian(element);
         
         var mass = new MatrixSpan(stackalloc double[vector.Length * vector.Length], vector.Length);
@@ -115,10 +97,10 @@ public class QuadLinearAssembler2D : IStackLocalAssembler<IElement>
         Span<double> y = stackalloc double[4];
         for (var i = 0; i < 4; i++)
         {
-            var node = _nodes[element.NodeIds[i]];
+            var node = nodes[element.NodeIds[i]];
             x[i] = node.X;
             y[i] = node.Y;
-            f[i] = _density.Get(element.NodeIds[i]);
+            f[i] = density.Get(element.NodeIds[i]);
             indexes.Permutation[i] = element.NodeIds[i];
         }
 
@@ -126,7 +108,7 @@ public class QuadLinearAssembler2D : IStackLocalAssembler<IElement>
         {
             for (var j = i; j < element.NodeIds.Count; j++)
             {
-                mass[i, j] = _integrator.Calculate(
+                mass[i, j] = integrator.Calculate(
                     p => functions[i].Evaluate(p) * functions[j].Evaluate(p) * jacobian(p),
                     Line1D.Unit,
                     Line1D.Unit
@@ -145,7 +127,7 @@ public class QuadLinearAssembler2D : IStackLocalAssembler<IElement>
         Span<double> y = stackalloc double[4];
         for (var i = 0; i < 4; i++)
         {
-            var node = _nodes[element.NodeIds[i]];
+            var node = nodes[element.NodeIds[i]];
             x[i] = node.X;
             y[i] = node.Y;
         }

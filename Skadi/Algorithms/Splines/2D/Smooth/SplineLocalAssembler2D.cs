@@ -5,13 +5,9 @@ using Skadi.Geometry._2D;
 
 namespace Skadi.Algorithms.Splines._2D.Smooth;
 
-public class SplineLocalAssembler2D : SplineLocalAssembler<Vector2D>
+public class SplineLocalAssembler2D(IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider)
+    : SplineLocalAssembler<Vector2D>(basisFunctionsProvider)
 {
-    public SplineLocalAssembler2D(IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider)
-        : base(basisFunctionsProvider)
-    {
-    }
-
     protected override void FillIndexes(IElement element, StackIndexPermutation indexes)
     {
         var nodes = element.NodeIds.Count;

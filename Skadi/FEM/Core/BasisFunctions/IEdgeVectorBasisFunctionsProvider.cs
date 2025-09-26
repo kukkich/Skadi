@@ -1,5 +1,4 @@
 using Skadi.FEM.Core.Geometry;
-using Skadi.Geometry._3D;
 
 namespace Skadi.FEM.Core.BasisFunctions;
 

@@ -4,15 +4,8 @@ using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.EquationsSystem.Preconditions.Hollesky;
 
-public class CholeskyPreconditioner : IPreconditioner
+public class CholeskyPreconditioner(SymmetricRowSparseMatrix decomposedMatrix) : IPreconditioner
 {
-    private readonly SymmetricRowSparseMatrix _decomposedMatrix;
-
-    public CholeskyPreconditioner(SymmetricRowSparseMatrix decomposedMatrix)
-    {
-        _decomposedMatrix = decomposedMatrix;
-    }
-    
     // Evaluate M^-1 * v = x, where M = L*L^T
     public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory = null)
     {
@@ -34,32 +27,31 @@ public class CholeskyPreconditioner : IPreconditioner
             y[i] = v[i];
         }
         
-        for (var i = 0; i < _decomposedMatrix.Size; i++)
+        for (var i = 0; i < decomposedMatrix.Size; i++)
         {
             var sum = 0d;
-            foreach (var entry in _decomposedMatrix[i])
+            foreach (var entry in decomposedMatrix[i])
             {
                 sum += entry.Value * y[entry.ColumnIndex];
             }
 
-            y[i] = (v[i] - sum) / _decomposedMatrix.Diagonal[i];
+            y[i] = (v[i] - sum) / decomposedMatrix.Diagonal[i];
         }
         return y;
     }
 
     private Vector ResolveX(Vector y)
     {
-        var x = y;
-        for (var i = _decomposedMatrix.Size - 1; i >= 0; i--)
+        for (var i = decomposedMatrix.Size - 1; i >= 0; i--)
         {
-            x[i] /= _decomposedMatrix.Diagonal[i];
+            y[i] /= decomposedMatrix.Diagonal[i];
             
-            foreach (var entry in _decomposedMatrix[i])
+            foreach (var entry in decomposedMatrix[i])
             {
-                x[entry.ColumnIndex] -= entry.Value * x[i];
+                y[entry.ColumnIndex] -= entry.Value * y[i];
             }
         }
 
-        return x;
+        return y;
     }
 }

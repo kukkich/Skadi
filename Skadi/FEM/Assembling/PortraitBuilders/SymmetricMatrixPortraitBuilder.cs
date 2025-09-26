@@ -2,7 +2,7 @@
 using Skadi.FEM.Core.Geometry;
 using Skadi.LinearAlgebra.Matrices.Sparse;
 
-namespace Skadi.FEM.Assembling;
+namespace Skadi.FEM.Assembling.PortraitBuilders;
 
 public class SymmetricMatrixPortraitBuilder : IMatrixPortraitBuilder<SymmetricRowSparseMatrix, IElement>
 {

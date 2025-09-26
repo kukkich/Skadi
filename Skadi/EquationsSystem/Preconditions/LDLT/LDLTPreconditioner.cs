@@ -4,15 +4,8 @@ using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.EquationsSystem.Preconditions.LDLT;
 
-public class LDLTPreconditioner : IPreconditioner
+public class LDLTPreconditioner(SymmetricRowSparseMatrix decomposedMatrix) : IPreconditioner
 {
-    private readonly SymmetricRowSparseMatrix _decomposedMatrix;
-
-    public LDLTPreconditioner(SymmetricRowSparseMatrix decomposedMatrix)
-    {
-        _decomposedMatrix = decomposedMatrix;
-    }
-    
     // Evaluate M^-1 * v = x, where M = L*D*L^T
     public Vector MultiplyOn(ReadOnlySpan<double> v, Vector? resultMemory = null)
     {
@@ -24,7 +17,7 @@ public class LDLTPreconditioner : IPreconditioner
 
         for (var i = 0; i < y.Length; i++)
         {
-            y[i] /= _decomposedMatrix.Diagonal[i];
+            y[i] /= decomposedMatrix.Diagonal[i];
         }
         
         // L^T * x = y
@@ -40,10 +33,10 @@ public class LDLTPreconditioner : IPreconditioner
             y[i] = v[i];
         }
         
-        for (var i = 0; i < _decomposedMatrix.Size; i++)
+        for (var i = 0; i < decomposedMatrix.Size; i++)
         {
             var sum = 0d;
-            foreach (var entry in _decomposedMatrix[i])
+            foreach (var entry in decomposedMatrix[i])
             {
                 sum += entry.Value * y[entry.ColumnIndex];
             }
@@ -55,15 +48,14 @@ public class LDLTPreconditioner : IPreconditioner
 
     private Vector ResolveX(Vector y)
     {
-        var x = y;
-        for (var i = _decomposedMatrix.Size - 1; i >= 0; i--)
+        for (var i = decomposedMatrix.Size - 1; i >= 0; i--)
         {
-            foreach (var entry in _decomposedMatrix[i])
+            foreach (var entry in decomposedMatrix[i])
             {
-                x[entry.ColumnIndex] -= entry.Value * x[i];
+                y[entry.ColumnIndex] -= entry.Value * y[i];
             }
         }
 
-        return x;
+        return y;
     }
 }

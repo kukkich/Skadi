@@ -10,6 +10,8 @@ using Skadi.FEM._2D.Solution;
 using Skadi.FEM.Assembling;
 using Skadi.FEM.Assembling.Boundary.RegularGrid;
 using Skadi.FEM.Assembling.Boundary.RegularGrid.Vectors;
+using Skadi.FEM.Assembling.Edges;
+using Skadi.FEM.Assembling.PortraitBuilders;
 using Skadi.FEM.Core.Assembling;
 using Skadi.FEM.Core.Assembling.Boundary;
 using Skadi.FEM.Core.Assembling.Boundary.First;

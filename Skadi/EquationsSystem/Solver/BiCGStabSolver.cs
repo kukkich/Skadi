@@ -5,27 +5,21 @@ using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.EquationsSystem.Solver;
 
-public class BiCGStabSolver<T> : Method<ConjugateGradientSolverConfig>, ISLAESolver<T> 
+public class BiCGStabSolver<T>
+(
+    IExtendedPreconditionerFactory<T> preconditionerFactory,
+    ConjugateGradientSolverConfig config,
+    ILogger logger
+) : Method<ConjugateGradientSolverConfig>(config, logger), ISLAESolver<T>
     where T : ILinearOperator
 {
-    private readonly IExtendedPreconditionerFactory<T> _preconditionerFactory;
     private IPreconditioner _preconditioner = null!;
     private IPreconditionerPart _preconditionerPart = null!;
-    
-    public BiCGStabSolver
-    (
-        IExtendedPreconditionerFactory<T> preconditionerFactory,
-        ConjugateGradientSolverConfig config, 
-        ILogger logger
-    ) : base(config, logger)
-    {
-        _preconditionerFactory = preconditionerFactory;
-    }
 
     // notations from https://en.wikipedia.org/wiki/Biconjugate_gradient_stabilized_method
     public Vector Solve(Equation<T> equation)
     {
-        (_preconditioner, _preconditionerPart) = _preconditionerFactory.Create(equation.Matrix);
+        (_preconditioner, _preconditionerPart) = preconditionerFactory.Create(equation.Matrix);
 
         var b = equation.RightSide;
         var x = equation.Solution;

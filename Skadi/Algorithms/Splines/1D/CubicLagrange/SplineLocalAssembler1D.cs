@@ -4,13 +4,9 @@ using Skadi.FEM.Core.Geometry;
 
 namespace Skadi.Algorithms.Splines._1D.CubicLagrange;
 
-public class SplineLocalAssembler1D : SplineLocalAssembler<double>
+public class SplineLocalAssembler1D(IBasisFunctionsProvider<IElement, double> basisFunctionsProvider)
+    : SplineLocalAssembler<double>(basisFunctionsProvider)
 {
-    public SplineLocalAssembler1D(IBasisFunctionsProvider<IElement, double> basisFunctionsProvider) 
-        : base(basisFunctionsProvider)
-    {
-    }
-
     protected override void FillIndexes(IElement element, StackIndexPermutation indexes)
     {
         var leftNodeId = element.NodeIds[0];

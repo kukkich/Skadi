@@ -2,18 +2,12 @@
 
 namespace Skadi.Expressions;
 
-public class ParameterExpressionReplacer: ExpressionVisitor
+public class ParameterExpressionReplacer(params (string Name, Expression Replacement)[] replacements)
+    : ExpressionVisitor
 {
-    private readonly (string Name, Expression Replacement)[] _replacements;
-
-    public ParameterExpressionReplacer(params (string Name, Expression Replacement)[] replacements)
-    {
-        _replacements = replacements;
-    }
-
     protected override Expression VisitParameter(ParameterExpression node)
     {
-        foreach (var (name, replacement) in _replacements)
+        foreach (var (name, replacement) in replacements)
         {
             if (node.Name == name)
             {

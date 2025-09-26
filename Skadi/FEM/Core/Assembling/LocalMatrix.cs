@@ -2,15 +2,9 @@
 
 namespace Skadi.FEM.Core.Assembling;
 
-public readonly ref struct StackLocalMatrix
+public readonly ref struct StackLocalMatrix(MatrixSpan matrixSpan, StackIndexPermutation indexPermutation)
 {
     public double this[int x, int y] => MatrixSpan[x, y];
-    public StackIndexPermutation IndexPermutation { get; }
-    public MatrixSpan MatrixSpan { get; }
-
-    public StackLocalMatrix(MatrixSpan matrixSpan, StackIndexPermutation indexPermutation)
-    {
-        MatrixSpan = matrixSpan;
-        IndexPermutation = indexPermutation;
-    }
+    public StackIndexPermutation IndexPermutation { get; } = indexPermutation;
+    public MatrixSpan MatrixSpan { get; } = matrixSpan;
 }

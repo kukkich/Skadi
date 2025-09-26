@@ -9,19 +9,13 @@ using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.Algorithms.Splines._1D.CubicLagrange;
 
-public class LagrangeSplineCreator : ISplineCreator<double, IElement>
+public class LagrangeSplineCreator(GaussZeidelSolver slaeSolver) : ISplineCreator<double, IElement>
 {
     private const int InnerNodes = 2;
     private bool _allocated;
-    private readonly GaussZeidelSolver _slaeSolver;
     private Grid<double, IElement> _grid;
     private Equation<Matrix> _equation;
 
-    public LagrangeSplineCreator(GaussZeidelSolver slaeSolver)
-    {
-        _slaeSolver = slaeSolver;
-    }
-    
     public void Allocate(Grid<double, IElement> grid)
     {
         if (_allocated)
@@ -36,7 +30,7 @@ public class LagrangeSplineCreator : ISplineCreator<double, IElement>
             RightSide: Vector.Create(equationSize),
             Solution: Vector.Create(equationSize)
         );
-        _slaeSolver.Allocate(equationSize);
+        slaeSolver.Allocate(equationSize);
         _allocated = true;
     }
 
@@ -51,7 +45,7 @@ public class LagrangeSplineCreator : ISplineCreator<double, IElement>
             new DenseMatrixInserter()
         );
         equationAssembler.BuildEquation(_equation, functionValues, _grid.Elements);
-        var solution = _slaeSolver.Solve(_equation.Matrix, _equation.RightSide);
+        var solution = slaeSolver.Solve(_equation.Matrix, _equation.RightSide);
 
         return new LagrangeSpline(localFunctionsProvider, _grid, solution);
     }

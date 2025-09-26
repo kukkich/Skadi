@@ -5,19 +5,13 @@ using Skadi.Geometry._3D;
 
 namespace Skadi.FEM._2D.BasisFunctions;
 
-public class RectangleVectorBasicFunctionsProvider : IEdgeVectorBasisFunctionsProvider<IEdgeElement, Vector2D>
+public class RectangleVectorBasicFunctionsProvider(IPointsCollection<Vector2D> nodes)
+    : IEdgeVectorBasisFunctionsProvider<IEdgeElement, Vector2D>
 {
-    private readonly IPointsCollection<Vector2D> _nodes;
-
-    public RectangleVectorBasicFunctionsProvider(IPointsCollection<Vector2D> nodes)
-    {
-        _nodes = nodes;
-    }
-
     public IVectorBasicFunction<Vector2D>[] GetFunctions(IEdgeElement element)
     {
-        var (xLeft, yBot) = _nodes[element.NodeIds[0]];
-        var (xRight, yTop) = _nodes[element.NodeIds[3]];
+        var (xLeft, yBot) = nodes[element.NodeIds[0]];
+        var (xRight, yTop) = nodes[element.NodeIds[3]];
         var hx = xRight - xLeft;
         var hy = yTop - yBot;
 

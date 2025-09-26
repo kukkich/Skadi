@@ -1,14 +1,7 @@
 ﻿namespace Skadi.FEM.Core.Geometry;
 
-public class IrregularPointsCollection<TPoint> : IPointsCollection<TPoint>
+public class IrregularPointsCollection<TPoint>(TPoint[] points) : IPointsCollection<TPoint>
 {
-    public int TotalPoints => _points.Length;
-    public TPoint this[int index] => _points[index];
-    
-    private readonly TPoint[] _points;
-    
-    public IrregularPointsCollection(TPoint[] points)
-    {
-        _points = points;
-    }
+    public int TotalPoints => points.Length;
+    public TPoint this[int index] => points[index];
 }

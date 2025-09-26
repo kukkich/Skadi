@@ -1,10 +1,10 @@
 ﻿namespace Skadi.LinearAlgebra.Matrices.Sparse.Storages;
 
-public readonly ref struct SparseMatrixRow
+public readonly ref struct SparseMatrixRow(ReadOnlySpan<int> columnIndexes, Span<double> values, int index)
 {
-    public int Index { get; }
+    public int Index { get; } = index;
     public int Length => _values.Length;
-    public ReadOnlySpan<int> ColumnIndexes { get; }
+    public ReadOnlySpan<int> ColumnIndexes { get; } = columnIndexes;
 
     public ref double this[int column]
     {
@@ -19,7 +19,7 @@ public readonly ref struct SparseMatrixRow
     
     public bool TryGetValue(int column, out double value)
     {
-        value = default;
+        value = 0;
         if (!HasColumn(column, out var valueIndex))
             return false;
         
@@ -48,14 +48,7 @@ public readonly ref struct SparseMatrixRow
         return columnIndex >= 0;
     }
 
-    private readonly Span<double> _values;
-
-    public SparseMatrixRow(ReadOnlySpan<int> columnIndexes, Span<double> values, int index)
-    {
-        Index = index;
-        ColumnIndexes = columnIndexes;
-        _values = values;
-    }
+    private readonly Span<double> _values = values;
 
     public Enumerator GetEnumerator() => new(ColumnIndexes, _values);
 
@@ -75,7 +68,7 @@ public readonly ref struct SparseMatrixRow
 
         public bool MoveNext()
         {
-            int index = _index + 1;
+            var index = _index + 1;
             if (index >= _values.Length) return false;
             _index = index;
             return true;
