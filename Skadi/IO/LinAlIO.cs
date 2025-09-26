@@ -7,7 +7,7 @@ namespace Skadi.IO;
 
 public static class LinAlIO
 {
-    public static void Write(MatrixBase matrix, string path)
+    public static void Write(IReadOnlyMatrix matrix, string path)
     {
         if (string.IsNullOrEmpty(path))
         {

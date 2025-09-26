@@ -1,24 +1,12 @@
 ﻿namespace Skadi.LinearAlgebra.Matrices;
 
-public class Matrix : ArrayMatrix
+public class Matrix(double[,] values) : IReadOnlyMatrix
 {
-    public new double this[int row, int column]
+    public double this[int row, int column]
     {
-        set => Values[row, column] = value; 
-        get => base[row, column];
+        set => values[row, column] = value; 
+        get => values[row, column];
     }
-
-    public override ImmutableMatrix AsImmutable()
-    {
-        return new ImmutableMatrix(Values);
-    }
-
-    public override Matrix AsMutable()
-    {
-        return this;
-    }
-
-    public Matrix(double[,] values) 
-        : base(values) 
-    { }
+    public int Rows => values.GetLength(0);
+    public int Columns => values.GetLength(1);
 }

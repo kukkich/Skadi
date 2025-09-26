@@ -11,7 +11,7 @@ public class GaussZeidelSolver : Method<GaussZeidelConfig>, IAllocationRequired<
 
     private Vector _discrepancyVector;
     private Vector _currentSolution;
-    private MatrixBase _matrix;
+    private IReadOnlyMatrix _matrix;
     private IReadonlyVector<double> _rightSide;
     private double _rightSideNorm;
 
@@ -26,7 +26,7 @@ public class GaussZeidelSolver : Method<GaussZeidelConfig>, IAllocationRequired<
         _currentSolution = Vector.Create(dimensionSize);
     }
 
-    public Vector Solve(MatrixBase matrix, IReadonlyVector<double> rightSide)
+    public Vector Solve(IReadOnlyMatrix matrix, IReadonlyVector<double> rightSide)
     {
         _matrix = matrix;
         _rightSide = rightSide;

@@ -16,7 +16,6 @@ public class MatrixVectorMultiplicationBenchmark
 {
     private Vector _vector;
     private Matrix _matrix;
-    private MatrixBase _matrixBase;
     private Vector _resultVector;
 
     private double[] _stackMatrix;
@@ -40,18 +39,15 @@ public class MatrixVectorMultiplicationBenchmark
         _resultStackVector = Vector.Create(Size);
 
         var matrix = new double[Size, Size];
-        var matrixBase = new double[Size, Size];
         for (var i = 0; i < Size; i++)
         {
             for (var j = 0; j < Size; j++)
             {
                 matrix[i, j] = MatrixFactory();
-                matrixBase[i, j] = MatrixFactory();
             }
         }
 
         _matrix = new Matrix(matrix);
-        _matrixBase = new Matrix(matrixBase);
 
         return;
 
@@ -64,12 +60,6 @@ public class MatrixVectorMultiplicationBenchmark
     public Vector ExplicitMultiplication()
     {
         return LinAl.Multiply(_matrix, _vector, _resultVector);
-    }
-
-    [Benchmark]
-    public Vector ExplicitBaseMatrixMultiplication()
-    {
-        return LinAl.Multiply(_matrixBase, _vector, _resultVector);
     }
 
     [Benchmark]
