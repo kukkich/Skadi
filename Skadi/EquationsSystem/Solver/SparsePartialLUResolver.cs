@@ -4,6 +4,7 @@ using Skadi.LinearAlgebra.Vectors;
 namespace Skadi.EquationsSystem.Solver;
 
 //Todo придумать название для методов более ясное
+//Todo доработать CalcX, выделяется память каждый раз
 public class SparsePartialLUResolver
 {
     public Vector CalcY(SparseMatrix sparseMatrix, Vector b)
@@ -35,19 +36,5 @@ public class SparsePartialLUResolver
         }
 
         return x;
-    }
-
-    //Todo доработать если возможно и заменить метод CalcX на этот
-    public void CalcXWithoutMemory(SparseMatrix sparseMatrix, Vector y)
-    {
-        var x = y;
-
-        for (var i = sparseMatrix.RowsCount - 1; i >= 0; i--)
-        {
-            for (var j = sparseMatrix.RowsIndexes[i + 1] - 1; j >= sparseMatrix.RowsIndexes[i]; j--)
-            {
-                x[sparseMatrix.ColumnsIndexes[j]] -= sparseMatrix.UpperValues[j] * x[i];
-            }
-        }
     }
 }
