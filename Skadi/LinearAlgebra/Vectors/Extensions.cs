@@ -15,7 +15,7 @@ public static class Extensions
         return false;
     }
 
-    public static void Nullify(this IVector<double> vector)
+    public static void Nullify(this Vector vector)
     {
         for (var i = 0; i < vector.Length; i++)
         {

@@ -3,7 +3,7 @@ using Skadi.LinearAlgebra.Matrices.Sparse.Storages;
 
 namespace Skadi.LinearAlgebra.Vectors;
 
-public sealed class Vector(params double[] values) : IVector<double>
+public sealed class Vector(params double[] values) : IReadonlyVector<double>
 {
     public static Vector Create(int length, double defaultValue = 0)
     {
@@ -34,7 +34,7 @@ public sealed class Vector(params double[] values) : IVector<double>
         return CopyTo(values);
     }
 
-    public TVector CopyTo<TVector>(TVector memory) where TVector : IVector<double>
+    public Vector CopyTo(Vector memory)
     {
         if (memory == null || memory.Length != Length)
             throw new ArgumentException();
