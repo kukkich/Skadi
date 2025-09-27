@@ -250,7 +250,7 @@ public class Vector2DRectangleTest
             //     var actual = solution.Calculate(point);
             //     var expected = ExpectedSolution(point);
             //     var diff = actual - expected;
-            //     Assert.That(diff.Length, Is.LessThanOrEqualTo(1e-13));
+            //     Assert.That(diff.Count, Is.LessThanOrEqualTo(1e-13));
             // }
         });
     }

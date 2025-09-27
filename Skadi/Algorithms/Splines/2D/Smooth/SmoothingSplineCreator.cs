@@ -40,7 +40,7 @@ public class SmoothingSplineCreator(GaussZeidelSolver slaeSolver) : ISplineCreat
 
         var solution = slaeSolver.Solve(_context.Equation.Matrix, _context.Equation.RightSide);
 
-        for (var i = 0; i < _context.Equation.Solution.Length; i++)
+        for (var i = 0; i < _context.Equation.Solution.Count; i++)
         {
             _context.Equation.Solution[i] = solution[i];
         }

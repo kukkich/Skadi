@@ -15,7 +15,7 @@ public class LDLTPreconditioner(SymmetricRowSparseMatrix decomposedMatrix) : IPr
         // v = M * r = L*(D * [L^T * x]) = L * (D * z) = L * y
         var y = ResolveY(v, resultMemory!);
 
-        for (var i = 0; i < y.Length; i++)
+        for (var i = 0; i < y.Count; i++)
         {
             y[i] /= decomposedMatrix.Diagonal[i];
         }

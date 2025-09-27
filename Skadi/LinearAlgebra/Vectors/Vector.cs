@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using Skadi.LinearAlgebra.Matrices.Sparse.Storages;
 
 namespace Skadi.LinearAlgebra.Vectors;
 
@@ -23,23 +22,23 @@ public sealed class Vector(params double[] values) : IReadonlyVector<double>
         get => _values[x];
         set => _values[x] = value;
     }
-    public int Length => _values.Length;
+    public int Count => _values.Length;
     public double Norm => Math.Sqrt(ScalarProduct(this, this));
 
     private readonly double[] _values = values;
 
     public Vector Copy()
     {
-        var values = new double[Length];
+        var values = new double[Count];
         return CopyTo(values);
     }
 
     public Vector CopyTo(Vector memory)
     {
-        if (memory == null || memory.Length != Length)
+        if (memory == null || memory.Count != Count)
             throw new ArgumentException();
 
-        for (var i = 0; i < Length; i++)
+        for (var i = 0; i < Count; i++)
             memory[i] = this[i];
 
         return memory;
@@ -47,10 +46,10 @@ public sealed class Vector(params double[] values) : IReadonlyVector<double>
 
     public Vector CopyTo(double[] memory)
     {
-        if (memory == null || memory.Length != Length)
+        if (memory == null || memory.Length != Count)
             throw new ArgumentException();
 
-        for (var i = 0; i < Length; i++)
+        for (var i = 0; i < Count; i++)
             memory[i] = this[i];
 
         return new Vector(memory);
@@ -62,15 +61,10 @@ public sealed class Vector(params double[] values) : IReadonlyVector<double>
 
     public static double ScalarProduct(IReadonlyVector<double> v, IReadonlyVector<double> u)
     {
-        if (v.Length != u.Length)
+        if (v.Count != u.Count)
             throw new ArgumentOutOfRangeException($"{nameof(v)} and {nameof(u)} must have the same length");
 
-        var sum = 0d;
-
-        for (var i = 0; i < v.Length; i++)
-            sum += u[i] * v[i];
-
-        return sum;
+        return v.Select((t, i) => u[i] * t).Sum();
     }
 
     public double ScalarProduct(IReadonlyVector<double> v)
@@ -85,10 +79,10 @@ public sealed class Vector(params double[] values) : IReadonlyVector<double>
     public Span<double> AsSpan() => this;
     public ReadOnlySpan<double> AsReadOnlySpan() => this;
     
-    public IEnumerator<IndexValue<double>> GetEnumerator()
+    public IEnumerator<double> GetEnumerator()
     {
-        for (var i = 0; i < Length; i++)
-            yield return new IndexValue<double>(this[i], i);
+        for (var i = 0; i < Count; i++)
+            yield return this[i];
     }
 
     IEnumerator IEnumerable.GetEnumerator()

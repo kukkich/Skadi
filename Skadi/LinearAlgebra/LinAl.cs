@@ -28,7 +28,7 @@ public static class LinAl
     {
         AssertSameSize(v, u);
         ValidateOrAllocateIfNull(v, ref resultMemory!);
-        var length = v.Length;
+        var length = v.Count;
 
         var i = 0;
         var simdWidth = Vector256<double>.Count;
@@ -63,7 +63,7 @@ public static class LinAl
     {
         ValidateOrAllocateIfNull(v, ref resultMemory!);
 
-        for (var i = 0; i < v.Length; i++)
+        for (var i = 0; i < v.Count; i++)
             resultMemory[i] = coefficient * v[i];
 
         return resultMemory;
@@ -169,10 +169,10 @@ public static class LinAl
         ValidateOrAllocateIfNull(x, ref resultMemory!);
         AssertSameSize(matrix, x);
 
-        for (var i = 0; i < x.Length; i++)
+        for (var i = 0; i < x.Count; i++)
             resultMemory[i] = x[i] * matrix.Diagonal[i];
 
-        for (var i = 0; i < x.Length; i++)
+        for (var i = 0; i < x.Count; i++)
         {
             foreach (var indexValue in matrix[i])
             {
@@ -187,8 +187,8 @@ public static class LinAl
     {
         ValidateOrAllocateIfNull(v, ref resultMemory!);
 
-        for (var i = 0; i < v.Length; i++)
-            for (var j = 0; j < v.Length; j++)
+        for (var i = 0; i < v.Count; i++)
+            for (var j = 0; j < v.Count; j++)
                 resultMemory[i] += a[i, j] * v[j];
 
         return resultMemory;
@@ -197,8 +197,8 @@ public static class LinAl
     {
         ValidateOrAllocateIfNull(v, ref resultMemory!);
 
-        for (var i = 0; i < v.Length; i++)
-        for (var j = 0; j < v.Length; j++)
+        for (var i = 0; i < v.Count; i++)
+        for (var j = 0; j < v.Count; j++)
             resultMemory[i] += a[i, j] * v[j];
 
         return resultMemory;
@@ -348,7 +348,7 @@ public static class LinAl
     public static void ValidateOrAllocateIfNull(IReadonlyVector<double> v, ref Vector? u)
     {
         if (u is null)
-            u = Vector.Create(v.Length);
+            u = Vector.Create(v.Count);
         else AssertSameSize(v, u);
     }
     
@@ -363,13 +363,13 @@ public static class LinAl
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void AssertSameSize<T>(IReadonlyVector<T> v, IReadonlyVector<T> u)
     {
-        if (v.Length != u.Length)
+        if (v.Count != u.Count)
             throw new ArgumentOutOfRangeException($"{nameof(v)} and {nameof(u)}", "must have the same length");
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void AssertSameSize(SymmetricRowSparseMatrix matrix, IReadonlyVector<double> x)
     {
-        if (matrix.Size != x.Length)
+        if (matrix.Size != x.Count)
         {
             throw new ArgumentOutOfRangeException($"{nameof(matrix.Size)} and {nameof(x)}", "must have the same length");
         }

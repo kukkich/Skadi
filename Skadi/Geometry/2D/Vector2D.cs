@@ -36,7 +36,7 @@ public readonly record struct Vector2D(double X, double Y) :
     }
     public static Vector2D OfVector(IReadonlyVector<double> vector)
     {
-        if (vector.Length != 2)
+        if (vector.Count != 2)
         {
             throw new ArgumentException("The vector length must be 2 in order to convert it to a Vector2D");
         }

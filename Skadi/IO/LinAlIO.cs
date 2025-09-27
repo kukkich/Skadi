@@ -47,10 +47,10 @@ public static class LinAlIO
             using var writer = new StreamWriter(path);
             if (specifyLength)
             {
-                writer.WriteLine(v.Length);
+                writer.WriteLine(v.Count);
             }
 
-            for (var i = 0; i < v.Length; i++)
+            for (var i = 0; i < v.Count; i++)
             {
                 writer.WriteLine(v[i]);
             }

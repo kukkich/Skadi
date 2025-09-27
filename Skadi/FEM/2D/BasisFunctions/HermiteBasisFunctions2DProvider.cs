@@ -62,6 +62,6 @@ public class HermiteBasisFunctions2DProvider(IPointsCollection<Vector2D> nodes)
 
     private (double Width, double Length) GetSizes(IElement element)
     {
-        throw new NotImplementedException("Замена для element.Width и element.Length");
+        throw new NotImplementedException("Замена для element.Width и element.Count");
     }
 }

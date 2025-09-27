@@ -8,7 +8,7 @@ namespace Skadi.EquationsSystem.Solver;
 public class GaussZeidelSolver(GaussZeidelConfig config, ILogger<GaussZeidelSolver> logger)
     : Method<GaussZeidelConfig>(config, logger), IAllocationRequired<int>
 {
-    private int Dimension => _currentSolution.Length;
+    private int Dimension => _currentSolution.Count;
 
     private Vector _discrepancyVector;
     private Vector _currentSolution;

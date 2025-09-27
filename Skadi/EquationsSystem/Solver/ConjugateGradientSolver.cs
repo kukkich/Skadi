@@ -91,8 +91,8 @@ public class ConjugateGradientSolver
         );
         _z = _preconditioner.MultiplyOn(_r);
 
-        _rNext = Vector.Create(equation.RightSide.Length);
-        _aByZProduct = Vector.Create(equation.RightSide.Length);
+        _rNext = Vector.Create(equation.RightSide.Count);
+        _aByZProduct = Vector.Create(equation.RightSide.Count);
     }
 }
 

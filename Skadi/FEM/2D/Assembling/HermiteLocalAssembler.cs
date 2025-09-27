@@ -61,6 +61,6 @@ public class HermiteLocalAssembler(IPointsCollection<Vector2D> nodes, double alp
     
     private (double Width, double Length) GetSizes(IElement element)
     {
-        throw new NotImplementedException("Замена для element.Width и element.Length");
+        throw new NotImplementedException("Замена для element.Width и element.Count");
     }
 }
