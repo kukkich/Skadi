@@ -1,23 +1,17 @@
-﻿namespace Skadi.LinearAlgebra.Vectors;
+﻿using Skadi.LinearAlgebra.Matrices.Sparse.Storages;
+
+namespace Skadi.LinearAlgebra.Vectors;
 
 public static class Extensions
 {
     public static bool IsAnyNaN(this IReadonlyVector<double> vector)
     {
-        for (var i = 0; i < vector.Length; i++)
-        {
-            if (double.IsNaN(vector[i]))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return vector.Any(double.IsNaN);
     }
 
-    public static void Nullify(this IVector<double> vector)
+    public static void Nullify(this Vector vector)
     {
-        for (var i = 0; i < vector.Length; i++)
+        for (var i = 0; i < vector.Count; i++)
         {
             vector[i] = 0;
         }
@@ -39,11 +33,8 @@ public static class EnumerableVectorExtensions
         return new Vector(source.ToArray());
     }
     
-    public static IEnumerable<T> WithNoIndexes<T>(this IReadonlyVector<T> source)
+    public static IEnumerable<IndexValue<T>> WithIndexes<T>(this IReadonlyVector<T> source)
     {
-        for (var i = 0; i < source.Length; i++)
-        {
-            yield return source[i];
-        }
+        return source.Select((t, i) => new IndexValue<T>(t, i));
     }
 }

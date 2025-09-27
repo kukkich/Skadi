@@ -8,8 +8,8 @@ public class DiagonalPreconditioner : IPreconditioner
 
     public DiagonalPreconditioner(Vector diagonal)
     {
-        _inverseDiagonal = Vector.Create(diagonal.Length);
-        for (var i = 0; i < diagonal.Length; i++)
+        _inverseDiagonal = Vector.Create(diagonal.Count);
+        for (var i = 0; i < diagonal.Count; i++)
             _inverseDiagonal[i] = 1d / diagonal[i];
     }
 
@@ -20,8 +20,8 @@ public class DiagonalPreconditioner : IPreconditioner
 
     public Vector MultiplyOn(ReadOnlySpan<double> x, Vector? resultMemory = null)
     {
-        if (_inverseDiagonal.Length != x.Length)
-            throw new ArgumentOutOfRangeException($"{nameof(x)} must have length {_inverseDiagonal.Length}");
+        if (_inverseDiagonal.Count != x.Length)
+            throw new ArgumentOutOfRangeException($"{nameof(x)} must have length {_inverseDiagonal.Count}");
 
         resultMemory ??= new Vector(new double[x.Length]);
 

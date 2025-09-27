@@ -1,4 +1,4 @@
-using Skadi.FEM.Assembling;
+using Skadi.FEM.Assembling.Edges;
 using Skadi.FEM.Core.Geometry.Edges;
 using Skadi.Geometry._2D;
 

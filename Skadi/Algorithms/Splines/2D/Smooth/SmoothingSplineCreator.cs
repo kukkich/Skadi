@@ -10,18 +10,12 @@ using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.Algorithms.Splines._2D.Smooth;
 
-public class SmoothingSplineCreator : ISplineCreator<Vector2D, IElement>
+public class SmoothingSplineCreator(GaussZeidelSolver slaeSolver) : ISplineCreator<Vector2D, IElement>
 {
     private HermiteBasisFunctions2DProvider _basisFunctionsProvider;
     private SplineContext<Vector2D, IElement, Matrix> _context;
-    private readonly GaussZeidelSolver _slaeSolver;
     private SplineEquationAssembler<Vector2D> _equationAssembler;
     private bool _allocated;
-
-    public SmoothingSplineCreator(GaussZeidelSolver slaeSolver)
-    {
-        _slaeSolver = slaeSolver;
-    }
 
     public void Allocate(Grid<Vector2D, IElement> grid)
     {
@@ -30,7 +24,7 @@ public class SmoothingSplineCreator : ISplineCreator<Vector2D, IElement>
             return;
         }
         _context = CreateContext(grid);
-        _slaeSolver.Allocate(grid.Nodes.TotalPoints * 4);
+        slaeSolver.Allocate(grid.Nodes.TotalPoints * 4);
         _allocated = true;
     }
 
@@ -44,9 +38,9 @@ public class SmoothingSplineCreator : ISplineCreator<Vector2D, IElement>
 
         _equationAssembler.BuildEquation(_context.Equation, _context.FunctionValues, _context.Grid.Elements, _context.Weights);
 
-        var solution = _slaeSolver.Solve(_context.Equation.Matrix, _context.Equation.RightSide);
+        var solution = slaeSolver.Solve(_context.Equation.Matrix, _context.Equation.RightSide);
 
-        for (var i = 0; i < _context.Equation.Solution.Length; i++)
+        for (var i = 0; i < _context.Equation.Solution.Count; i++)
         {
             _context.Equation.Solution[i] = solution[i];
         }

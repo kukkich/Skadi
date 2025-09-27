@@ -8,49 +8,37 @@ using Skadi.LinearAlgebra.Vectors;
 namespace Skadi.FEM._2D.Solution;
 
 // ReSharper disable once InconsistentNaming
-public class VectorFEMSolution2D : IVectorFEMSolution<Vector2D>
+public class VectorFEMSolution2D
+(
+    IEdgeVectorBasisFunctionsProvider<IEdgeElement, Vector2D> basisFunctionsProvider,
+    Grid<Vector2D, IEdgeElement> grid,
+    IReadonlyVector<double> weights,
+    IEdgeResolver edgeResolver
+) : IVectorFEMSolution<Vector2D>
 {
-    public IReadonlyVector<double> Weights { get; }
-    
-    private readonly IEdgeVectorBasisFunctionsProvider<IEdgeElement, Vector2D> _basisFunctionsProvider;
-    private readonly Grid<Vector2D, IEdgeElement> _grid;
-    private readonly IEdgeResolver _edgeResolver;
+    public IReadonlyVector<double> Weights { get; } = weights;
 
-    public VectorFEMSolution2D
-    (
-        IEdgeVectorBasisFunctionsProvider<IEdgeElement, Vector2D> basisFunctionsProvider,
-        Grid<Vector2D, IEdgeElement> grid,
-        IReadonlyVector<double> weights,
-        IEdgeResolver edgeResolver
-    )
-    {
-        _basisFunctionsProvider = basisFunctionsProvider;
-        _grid = grid;
-        _edgeResolver = edgeResolver;
-        Weights = weights;
-    }
-    
     public Vector2D Calculate(Vector2D point)
     {
-        var element = _grid.Elements
+        var element = grid.Elements
             .First(x => ElementHas(x, point));
 
         Span<Vector2D> p = stackalloc Vector2D[4];
         for (var i = 0; i < 4; i++)
         {
-            p[i] = _grid.Nodes[element.NodeIds[i]];
+            p[i] = grid.Nodes[element.NodeIds[i]];
         }
         Span<Vector2D> edgeCenters = stackalloc Vector2D[element.EdgeIds.Count];
         var j = 0;
         foreach (var edgeCenter in element.EdgeIds
-                     .Select(edgeId => _edgeResolver.GetEdgeById(edgeId))
-                     .Select(edge => (_grid.Nodes[edge.Begin] + _grid.Nodes[edge.End]) / 2))
+                     .Select(edgeId => edgeResolver.GetEdgeById(edgeId))
+                     .Select(edge => (grid.Nodes[edge.Begin] + grid.Nodes[edge.End]) / 2))
         {
             edgeCenters[j] = edgeCenter;
             j++;
         }
         
-        var functions = _basisFunctionsProvider.GetFunctions(element);
+        var functions = basisFunctionsProvider.GetFunctions(element);
         Span<Vector2D> funcValues = stackalloc Vector2D[functions.Length];
         for (var i = 0; i < functions.Length; i++)
         {
@@ -73,7 +61,7 @@ public class VectorFEMSolution2D : IVectorFEMSolution<Vector2D>
         const double tolerance = 1e-10;
 
         var nodes = element.NodeIds
-            .Select(nodeId => _grid.Nodes[nodeId])
+            .Select(nodeId => grid.Nodes[nodeId])
             .ToArray();
         var leftBottom = nodes[0];
         var rightBottom = nodes[1];

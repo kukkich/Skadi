@@ -1,32 +1,10 @@
-﻿using Skadi.LinearAlgebra.Vectors;
+﻿namespace Skadi.FEM.Core.Assembling;
 
-namespace Skadi.FEM.Core.Assembling;
-
-public readonly ref struct LocalVector
+public readonly ref struct StackLocalVector(Span<double> vector, StackIndexPermutation permutation)
 {
     public double this[int x] => _vector[x];
-    public IndexPermutation IndexPermutation { get; }
-
-    private readonly Vector _vector;
-
-    public LocalVector(Vector vector, IndexPermutation permutation)
-    {
-        IndexPermutation = permutation;
-        _vector = vector;
-    }
-}
-
-public readonly ref struct StackLocalVector
-{
-    public double this[int x] => _vector[x];
-    public StackIndexPermutation IndexPermutation { get; }
+    public StackIndexPermutation IndexPermutation { get; } = permutation;
     public int Length => _vector.Length;
 
-    private readonly Span<double> _vector;
-
-    public StackLocalVector(Span<double> vector, StackIndexPermutation permutation)
-    {
-        IndexPermutation = permutation;
-        _vector = vector;
-    }
+    private readonly Span<double> _vector = vector;
 }

@@ -10,6 +10,8 @@ using Skadi.FEM._2D.Solution;
 using Skadi.FEM.Assembling;
 using Skadi.FEM.Assembling.Boundary.RegularGrid;
 using Skadi.FEM.Assembling.Boundary.RegularGrid.Vectors;
+using Skadi.FEM.Assembling.Edges;
+using Skadi.FEM.Assembling.PortraitBuilders;
 using Skadi.FEM.Core.Assembling;
 using Skadi.FEM.Core.Assembling.Boundary;
 using Skadi.FEM.Core.Assembling.Boundary.First;
@@ -248,7 +250,7 @@ public class Vector2DRectangleTest
             //     var actual = solution.Calculate(point);
             //     var expected = ExpectedSolution(point);
             //     var diff = actual - expected;
-            //     Assert.That(diff.Length, Is.LessThanOrEqualTo(1e-13));
+            //     Assert.That(diff.Count, Is.LessThanOrEqualTo(1e-13));
             // }
         });
     }

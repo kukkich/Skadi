@@ -5,11 +5,8 @@ using Skadi.LinearAlgebra.Matrices;
 
 namespace Skadi.FEM._1D.Assembling;
 
-public class LagrangeCubicAssembler1D : IStackLocalAssembler<IElement>
+public class LagrangeCubicAssembler1D(IPointsCollection<double> nodes, double alpha) : IStackLocalAssembler<IElement>
 {
-    private readonly IPointsCollection<double> _nodes;
-    private readonly double _alpha;
-
     private static readonly double[] StiffnessMatrixValues =
     [
         148, -189, 54, -13,
@@ -18,20 +15,14 @@ public class LagrangeCubicAssembler1D : IStackLocalAssembler<IElement>
         -13, 54, -189, 148
     ];
     private static ReadOnlyMatrixSpan StiffnessMatrix => new(StiffnessMatrixValues, 4);
-    
-    public LagrangeCubicAssembler1D(IPointsCollection<double> nodes, double alpha)
-    {
-        _nodes = nodes;
-        _alpha = alpha;
-    }
 
     public void AssembleMatrix(IElement element, MatrixSpan matrixSpan, StackIndexPermutation indexes)
     {
-        var left = _nodes[element.NodeIds[0]];
-        var right = _nodes[element.NodeIds[1]];
+        var left = nodes[element.NodeIds[0]];
+        var right = nodes[element.NodeIds[1]];
         var length = right - left;
         
-        var k = _alpha / (40d * length);
+        var k = alpha / (40d * length);
         
         LinAl.Multiply(k, StiffnessMatrix, matrixSpan);
 

@@ -6,31 +6,22 @@ using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.FEM._2D.Solution;
 
-public class HarmonicQuadLinearSolution : IHarmonicFiniteElementSolution<Vector2D>
+public class HarmonicQuadLinearSolution
+(
+    IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider,
+    Grid<Vector2D, IElement> grid,
+    IReadonlyVector<double> weights,
+    double frequency
+) : IHarmonicFiniteElementSolution<Vector2D>
 {
-    public double Frequency { get; }
-    public IReadonlyVector<double> Weights { get; }
-    
-    private const double RelativeEpsilon = 1e-10;
-    private readonly Grid<Vector2D, IElement> _grid;
-    private readonly IBasisFunctionsProvider<IElement, Vector2D> _basisFunctionsProvider;
+    public double Frequency { get; } = frequency;
+    public IReadonlyVector<double> Weights { get; } = weights;
 
-    public HarmonicQuadLinearSolution(
-        IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider,
-        Grid<Vector2D, IElement> grid,
-        IReadonlyVector<double> weights,
-        double frequency
-    )
-    {
-        _basisFunctionsProvider = basisFunctionsProvider;
-        _grid = grid;
-        Weights = weights;
-        Frequency = frequency;
-    }
+    private const double RelativeEpsilon = 1e-10;
 
     public double Calculate(Vector2D point, double time)
     {
-        var element = _grid.Elements
+        var element = grid.Elements
             .FirstOrDefault(x => ElementHas(x, point));
         if (element is null)
             throw new Exception();
@@ -40,7 +31,7 @@ public class HarmonicQuadLinearSolution : IHarmonicFiniteElementSolution<Vector2
         Span<double> y = stackalloc double[4];
         for (var i = 0; i < 4; i++)
         {
-            var node = _grid.Nodes[element.NodeIds[i]];
+            var node = grid.Nodes[element.NodeIds[i]];
             x[i] = node.X;
             y[i] = node.Y;
         }
@@ -97,7 +88,7 @@ public class HarmonicQuadLinearSolution : IHarmonicFiniteElementSolution<Vector2
         }
 
         var pointInTemplate = new Vector2D(ksi, eta);
-        var functions = _basisFunctionsProvider.GetFunctions(element);
+        var functions = basisFunctionsProvider.GetFunctions(element);
         Span<double> funcValues = stackalloc double[functions.Length];
         for (var i = 0; i < functions.Length; i++)
         {
@@ -120,7 +111,7 @@ public class HarmonicQuadLinearSolution : IHarmonicFiniteElementSolution<Vector2
     private bool ElementHas(IElement element, Vector2D vector)
     {
         var nodes = element.NodeIds
-            .Select(nodeId => _grid.Nodes[nodeId])
+            .Select(nodeId => grid.Nodes[nodeId])
             .ToArray();
         var leftBottom = nodes[0];
         var rightBottom = nodes[1];

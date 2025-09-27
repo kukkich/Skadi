@@ -4,19 +4,12 @@ using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.EquationsSystem.Preconditions.LU;
 
-public class LUPreconditionerCSR : IPreconditioner
+public class LUPreconditionerCSR(CSRMatrix decomposed) : IPreconditioner
 {
-    private readonly CSRMatrix _decomposed;
-
-    public LUPreconditionerCSR(CSRMatrix decomposed)
-    {
-        _decomposed = decomposed;
-    }
-
     // Evaluate M⁻¹·v = U⁻¹·(L⁻¹·v)
     public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory = null)
     {
-        var n = _decomposed.Size;
+        var n = decomposed.Size;
         LinAl.ValidateOrAllocateIfNull(vector, ref resultMemory!);
         
         var y = new double[n];
@@ -26,7 +19,7 @@ public class LUPreconditionerCSR : IPreconditioner
         for (var i = 0; i < n; i++)
         {
             var sum = vector[i];
-            foreach (var (col, value) in _decomposed[i])
+            foreach (var (col, value) in decomposed[i])
             {
                 if (col >= i)
                 {
@@ -45,7 +38,7 @@ public class LUPreconditionerCSR : IPreconditioner
         {
             var sum = y[i];
             double diag = 0;
-            foreach (var (col, value) in _decomposed[i])
+            foreach (var (col, value) in decomposed[i])
             {
                 if (col == i)
                 {
@@ -68,26 +61,19 @@ public class LUPreconditionerCSR : IPreconditioner
         return resultMemory;
     }
 
-    public IPreconditionerPart GetPart() => new LUPreconditionerCSRPart(_decomposed);
+    public IPreconditionerPart GetPart() => new LUPreconditionerCSRPart(decomposed);
 
-    public class LUPreconditionerCSRPart : IPreconditionerPart
+    public class LUPreconditionerCSRPart(CSRMatrix decomposed) : IPreconditionerPart
     {
-        private readonly CSRMatrix _decomposed;
-
-        public LUPreconditionerCSRPart(CSRMatrix decomposed)
-        {
-            _decomposed = decomposed;
-        }
-
         // Evaluate L⁻¹·v, where L from M = L*U
         public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory = null)
         {
-            var n = _decomposed.Size;
+            var n = decomposed.Size;
             LinAl.ValidateOrAllocateIfNull(vector, ref resultMemory!);
             
-            var rowPointers = _decomposed.RowPointers;
-            var cols = _decomposed.ColumnIndexes;
-            var vals = _decomposed.Values;
+            var rowPointers = decomposed.RowPointers;
+            var cols = decomposed.ColumnIndexes;
+            var vals = decomposed.Values;
             
             for (var i = 0; i < n; i++)
             {

@@ -2,14 +2,7 @@
 
 namespace Skadi.FEM.Assembling;
 
-public class AreaProvider<TArea> : IAreaProvider<TArea>
+public class AreaProvider<TArea>(TArea[] areas) : IAreaProvider<TArea>
 {
-    private readonly TArea[] _areas;
-
-    public AreaProvider(TArea[] areas)
-    {
-        _areas = areas;
-    }
-
-    public TArea GetArea(int areaId) => _areas[areaId];
+    public TArea GetArea(int areaId) => areas[areaId];
 }

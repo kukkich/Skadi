@@ -28,7 +28,7 @@ public static class LinAl
     {
         AssertSameSize(v, u);
         ValidateOrAllocateIfNull(v, ref resultMemory!);
-        var length = v.Length;
+        var length = v.Count;
 
         var i = 0;
         var simdWidth = Vector256<double>.Count;
@@ -63,14 +63,14 @@ public static class LinAl
     {
         ValidateOrAllocateIfNull(v, ref resultMemory!);
 
-        for (var i = 0; i < v.Length; i++)
+        for (var i = 0; i < v.Count; i++)
             resultMemory[i] = coefficient * v[i];
 
         return resultMemory;
     }
-    public static Matrix Multiply(double coefficient, MatrixBase a, Matrix? resultMemory = null)
+    public static Matrix Multiply(double coefficient, IReadOnlyMatrix a, Matrix? resultMemory = null)
     {
-        resultMemory = ValidateOrAllocateIfNull(a, resultMemory).AsMutable();
+        resultMemory = ValidateOrAllocateIfNull(a, resultMemory);
 
         for (var i = 0; i < a.Rows; i++)
             for (var j = 0; j < a.Columns; j++)
@@ -87,15 +87,6 @@ public static class LinAl
             resultMemory[i, j] = a[i, j] * coefficient;
 
         return resultMemory;
-    }
-
-    public static ImmutableMatrix Multiply(double coefficient, ImmutableMatrix a)
-    {
-        return new ImmutableMatrix(a, a.Coefficient * coefficient);
-    }
-    public static ImmutableMatrix Multiply(ImmutableMatrix a, double coefficient)
-    {
-        return new ImmutableMatrix(a, a.Coefficient * coefficient);
     }
 
     public static Vector Multiply(CSRMatrix a, ReadOnlySpan<double> v, Vector? resultMemory = null)
@@ -178,10 +169,10 @@ public static class LinAl
         ValidateOrAllocateIfNull(x, ref resultMemory!);
         AssertSameSize(matrix, x);
 
-        for (var i = 0; i < x.Length; i++)
+        for (var i = 0; i < x.Count; i++)
             resultMemory[i] = x[i] * matrix.Diagonal[i];
 
-        for (var i = 0; i < x.Length; i++)
+        for (var i = 0; i < x.Count; i++)
         {
             foreach (var indexValue in matrix[i])
             {
@@ -192,12 +183,12 @@ public static class LinAl
 
         return resultMemory;
     }
-    public static Vector Multiply(MatrixBase a, IReadonlyVector<double> v, Vector? resultMemory = null)
+    public static Vector Multiply(IReadOnlyMatrix a, IReadonlyVector<double> v, Vector? resultMemory = null)
     {
         ValidateOrAllocateIfNull(v, ref resultMemory!);
 
-        for (var i = 0; i < v.Length; i++)
-            for (var j = 0; j < v.Length; j++)
+        for (var i = 0; i < v.Count; i++)
+            for (var j = 0; j < v.Count; j++)
                 resultMemory[i] += a[i, j] * v[j];
 
         return resultMemory;
@@ -206,8 +197,8 @@ public static class LinAl
     {
         ValidateOrAllocateIfNull(v, ref resultMemory!);
 
-        for (var i = 0; i < v.Length; i++)
-        for (var j = 0; j < v.Length; j++)
+        for (var i = 0; i < v.Count; i++)
+        for (var j = 0; j < v.Count; j++)
             resultMemory[i] += a[i, j] * v[j];
 
         return resultMemory;
@@ -248,7 +239,7 @@ public static class LinAl
             result += u[i] * v[i];
         return result;
     }
-    public static Span<double> Multiply(MatrixBase a, ReadOnlySpan<double> v, Span<double> resultMemory)
+    public static Span<double> Multiply(IReadOnlyMatrix a, ReadOnlySpan<double> v, Span<double> resultMemory)
     {
         AssertSameSize(a, v);
         AssertSameSize(v, (ReadOnlySpan<double>)resultMemory);
@@ -259,12 +250,13 @@ public static class LinAl
 
         return resultMemory;
     }
-    public static Matrix Multiply(MatrixBase a, MatrixBase b, Matrix? resultMemory = null)
+    
+    public static Matrix Multiply(IReadOnlyMatrix a, IReadOnlyMatrix b, Matrix? resultMemory = null)
     {
         AssertSameSize(a, b);
         AssertDifferentObjects(a, resultMemory);
         AssertDifferentObjects(b, resultMemory);
-        resultMemory = ValidateOrAllocateIfNullForMultiplying(a, b, resultMemory).AsMutable();
+        resultMemory = ValidateOrAllocateIfNullForMultiplying(a, b, resultMemory);
 
         for (var aRow = 0; aRow < a.Rows; aRow++)
         {
@@ -281,10 +273,10 @@ public static class LinAl
         return resultMemory;
     }
 
-    public static MatrixBase Sum(MatrixBase a, MatrixBase b, Matrix? resultMemory = null)
+    public static IReadOnlyMatrix Sum(IReadOnlyMatrix a, IReadOnlyMatrix b, Matrix? resultMemory = null)
     {
         AssertCanBeMultiplied(a, b);
-        resultMemory = ValidateOrAllocateIfNull(a, resultMemory).AsMutable();
+        resultMemory = ValidateOrAllocateIfNull(a, resultMemory);
 
         for (var i = 0; i < a.Rows; i++)
             for (var j = 0; j < a.Rows; j++)
@@ -292,7 +284,7 @@ public static class LinAl
 
         return resultMemory;
     }
-    public static MatrixSpan Sum(MatrixBase a, MatrixBase b, MatrixSpan resultMemory)
+    public static MatrixSpan Sum(IReadOnlyMatrix a, IReadOnlyMatrix b, MatrixSpan resultMemory)
     {
         AssertCanBeMultiplied(a, b);
         AsserSameSize(a, resultMemory);
@@ -315,7 +307,7 @@ public static class LinAl
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static MatrixBase ValidateOrAllocateIfNull(MatrixBase a, MatrixBase? b)
+    private static Matrix ValidateOrAllocateIfNull(IReadOnlyMatrix a, Matrix? b)
     {
         if (b is null)
             b = new Matrix(new double[a.Rows, a.Columns]);
@@ -325,7 +317,7 @@ public static class LinAl
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void AssertSameSize(MatrixBase a, MatrixBase b)
+    public static void AssertSameSize(IReadOnlyMatrix a, IReadOnlyMatrix b)
     {
         if (a.Rows != b.Rows)
             throw new ArgumentOutOfRangeException($"{nameof(a)} and {nameof(b)}", "must have the same rows");
@@ -334,7 +326,7 @@ public static class LinAl
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static MatrixBase ValidateOrAllocateIfNullForMultiplying(MatrixBase a, MatrixBase b, MatrixBase? c)
+    private static Matrix ValidateOrAllocateIfNullForMultiplying(IReadOnlyMatrix a, IReadOnlyMatrix b, Matrix? c)
     {
         AssertCanBeMultiplied(a, b);
         if (c is null)
@@ -346,7 +338,7 @@ public static class LinAl
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void AssertCanBeMultiplied(MatrixBase a, MatrixBase b)
+    public static void AssertCanBeMultiplied(IReadOnlyMatrix a, IReadOnlyMatrix b)
     {
         if (a.Columns != b.Rows)
             throw new ArgumentOutOfRangeException($"{nameof(a)} and {nameof(b)}", "can't be multiplied");
@@ -356,7 +348,7 @@ public static class LinAl
     public static void ValidateOrAllocateIfNull(IReadonlyVector<double> v, ref Vector? u)
     {
         if (u is null)
-            u = Vector.Create(v.Length);
+            u = Vector.Create(v.Count);
         else AssertSameSize(v, u);
     }
     
@@ -371,19 +363,19 @@ public static class LinAl
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void AssertSameSize<T>(IReadonlyVector<T> v, IReadonlyVector<T> u)
     {
-        if (v.Length != u.Length)
+        if (v.Count != u.Count)
             throw new ArgumentOutOfRangeException($"{nameof(v)} and {nameof(u)}", "must have the same length");
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void AssertSameSize(SymmetricRowSparseMatrix matrix, IReadonlyVector<double> x)
     {
-        if (matrix.Size != x.Length)
+        if (matrix.Size != x.Count)
         {
             throw new ArgumentOutOfRangeException($"{nameof(matrix.Size)} and {nameof(x)}", "must have the same length");
         }
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AssertSameSize(MatrixBase a, ReadOnlySpan<double> v)
+    private static void AssertSameSize(IReadOnlyMatrix a, ReadOnlySpan<double> v)
     {
         if (a.Columns != v.Length || a.Rows != v.Length)
         {
@@ -416,7 +408,7 @@ public static class LinAl
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AsserSameSize(MatrixBase a, ReadOnlyMatrixSpan b)
+    private static void AsserSameSize(IReadOnlyMatrix a, ReadOnlyMatrixSpan b)
     {
         if (a.Rows != b.Size || a.Columns != b.Size)
         {

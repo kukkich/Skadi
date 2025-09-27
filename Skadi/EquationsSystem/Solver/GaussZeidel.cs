@@ -5,20 +5,16 @@ using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.EquationsSystem.Solver;
 
-public class GaussZeidelSolver : Method<GaussZeidelConfig>, IAllocationRequired<int>
+public class GaussZeidelSolver(GaussZeidelConfig config, ILogger<GaussZeidelSolver> logger)
+    : Method<GaussZeidelConfig>(config, logger), IAllocationRequired<int>
 {
-    private int Dimension => _currentSolution.Length;
+    private int Dimension => _currentSolution.Count;
 
     private Vector _discrepancyVector;
     private Vector _currentSolution;
-    private MatrixBase _matrix;
+    private IReadOnlyMatrix _matrix;
     private IReadonlyVector<double> _rightSide;
     private double _rightSideNorm;
-
-    public GaussZeidelSolver(GaussZeidelConfig config, ILogger<GaussZeidelSolver> logger)
-        : base(config, logger)
-    {
-    }
 
     public void Allocate(int dimensionSize)
     {
@@ -26,7 +22,7 @@ public class GaussZeidelSolver : Method<GaussZeidelConfig>, IAllocationRequired<
         _currentSolution = Vector.Create(dimensionSize);
     }
 
-    public Vector Solve(MatrixBase matrix, IReadonlyVector<double> rightSide)
+    public Vector Solve(IReadOnlyMatrix matrix, IReadonlyVector<double> rightSide)
     {
         _matrix = matrix;
         _rightSide = rightSide;

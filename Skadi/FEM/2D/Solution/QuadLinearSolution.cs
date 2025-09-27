@@ -6,35 +6,28 @@ using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.FEM._2D.Solution;
 
-public class QuadLinearSolution : IFiniteElementSolution<Vector2D>
+public class QuadLinearSolution
+(
+    IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider,
+    Grid<Vector2D, IElement> grid,
+    IReadonlyVector<double> weights
+) : IFiniteElementSolution<Vector2D>
 {
-    public IReadonlyVector<double> Weights { get; }
+    public IReadonlyVector<double> Weights { get; } = weights;
     private const double RelativeEpsilon = 1e-10;
 
     private const double Epsilon = 1e-10;
-    private readonly IBasisFunctionsProvider<IElement, Vector2D> _basisFunctionsProvider;
-    private readonly Grid<Vector2D, IElement> _grid;
-
-    public QuadLinearSolution(
-        IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider,
-        Grid<Vector2D, IElement> grid,
-        IReadonlyVector<double> weights)
-    {
-        _basisFunctionsProvider = basisFunctionsProvider;
-        _grid = grid;
-        Weights = weights;
-    }
 
     public double Calculate(Vector2D point)
     {
-        var element = _grid.Elements
+        var element = grid.Elements
             .First(x => ElementHas(x, point));
 
         Span<double> x = stackalloc double[4];
         Span<double> y = stackalloc double[4];
         for (var i = 0; i < 4; i++)
         {
-            var node = _grid.Nodes[element.NodeIds[i]];
+            var node = grid.Nodes[element.NodeIds[i]];
             x[i] = node.X;
             y[i] = node.Y;
         }
@@ -91,7 +84,7 @@ public class QuadLinearSolution : IFiniteElementSolution<Vector2D>
         }
 
         var pointInTemplate = new Vector2D(ksi, eta);
-        var functions = _basisFunctionsProvider.GetFunctions(element);
+        var functions = basisFunctionsProvider.GetFunctions(element);
         Span<double> funcValues = stackalloc double[functions.Length];
         for (var i = 0; i < functions.Length; i++)
         {
@@ -112,7 +105,7 @@ public class QuadLinearSolution : IFiniteElementSolution<Vector2D>
     private bool ElementHas(IElement element, Vector2D vector)
     {
         var nodes = element.NodeIds
-            .Select(nodeId => _grid.Nodes[nodeId])
+            .Select(nodeId => grid.Nodes[nodeId])
             .ToArray();
         var leftBottom = nodes[0];
         var rightBottom = nodes[1];

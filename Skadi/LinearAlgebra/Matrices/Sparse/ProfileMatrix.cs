@@ -2,24 +2,17 @@
 
 namespace Skadi.LinearAlgebra.Matrices.Sparse;
 
-public class ProfileMatrix
+public class ProfileMatrix(int[] rowsIndexes, double[] diagonal, List<double> lowerValues, List<double> upperValues)
 {
-    public double[] Diagonal { get; }
-    public List<double> LowerValues { get; }
-    public List<double> UpperValues { get; }
-    public int[] RowsIndexes { get; }
+    public double[] Diagonal { get; } = diagonal;
+    public List<double> LowerValues { get; } = lowerValues;
+    public List<double> UpperValues { get; } = upperValues;
+    public int[] RowsIndexes { get; } = rowsIndexes;
 
     public int CountRows => Diagonal.Length;
     public int CountColumns => Diagonal.Length;
 
-    public ProfileMatrix(int[] rowsIndexes, double[] diagonal, List<double> lowerValues, List<double> upperValues)
-    {
-        RowsIndexes = rowsIndexes;
-        Diagonal = diagonal;
-        LowerValues = lowerValues;
-        UpperValues = upperValues;
-    }
-
+    // todo вынести в LinAl
     public static Vector operator *(ProfileMatrix matrix, Vector vector)
     {
         var result = new Vector(matrix.CountRows);

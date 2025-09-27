@@ -1,12 +1,19 @@
 ﻿namespace Skadi.LinearAlgebra.Matrices.Sparse;
 
 public class SparseMatrix
+(
+    int[] rowsIndexes,
+    int[] columnsIndexes,
+    double[] diagonal,
+    double[] lowerValues,
+    double[] upperValues
+)
 {
-    public double[] Diagonal { get; set; }
-    public double[] LowerValues { get; set; }
-    public double[] UpperValues { get; set; }
-    public int[] RowsIndexes { get; }
-    public int[] ColumnsIndexes { get; }
+    public double[] Diagonal { get; set; } = diagonal;
+    public double[] LowerValues { get; set; } = lowerValues;
+    public double[] UpperValues { get; set; } = upperValues;
+    public int[] RowsIndexes { get; } = rowsIndexes;
+    public int[] ColumnsIndexes { get; } = columnsIndexes;
 
     public int RowsCount => Diagonal.Length;
     public int ColumnsCount => Diagonal.Length;
@@ -14,30 +21,16 @@ public class SparseMatrix
         Array.IndexOf(ColumnsIndexes, columnIndex, RowsIndexes[rowIndex],
             RowsIndexes[rowIndex + 1] - RowsIndexes[rowIndex]);
 
-    public SparseMatrix(int[] rowsIndexes, int[] columnsIndexes)
-    {
-        Diagonal = new double[rowsIndexes.Length - 1];
-        LowerValues = new double[rowsIndexes[^1]];
-        UpperValues = new double[rowsIndexes[^1]];
-        RowsIndexes = rowsIndexes;
-        ColumnsIndexes = columnsIndexes;
-    }
-
-    public SparseMatrix
-    (
-        int[] rowsIndexes,
-        int[] columnsIndexes,
-        double[] diagonal,
-        double[] lowerValues,
-        double[] upperValues
-    )
-    {
-        RowsIndexes = rowsIndexes;
-        ColumnsIndexes = columnsIndexes;
-        Diagonal = diagonal;
-        LowerValues = lowerValues;
-        UpperValues = upperValues;
-    }
+    public SparseMatrix(int[] rowsIndexes, int[] columnsIndexes) 
+        : this
+        (
+            rowsIndexes, 
+            columnsIndexes, 
+            new double[rowsIndexes.Length - 1], 
+            new double[rowsIndexes[^1]], 
+            new double[rowsIndexes[^1]]
+        )
+    { }
 
     public SparseMatrix Clone()
     {

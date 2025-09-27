@@ -3,19 +3,12 @@ using Skadi.FEM.Core.Geometry;
 
 namespace Skadi.FEM._1D.BasisFunctions;
 
-public class LagrangeCubicFunction1DProvider : IBasisFunctionsProvider<IElement, double>
+public class LagrangeCubicFunction1DProvider(Grid<double, IElement> grid) : IBasisFunctionsProvider<IElement, double>
 {
-    private readonly Grid<double, IElement> _grid;
-
-    public LagrangeCubicFunction1DProvider(Grid<double, IElement> grid)
-    {
-        _grid = grid;
-    }
-    
     public IBasisFunction<double>[] GetFunctions(IElement element)
     {
-        var left = _grid.Nodes[element.NodeIds[0]];
-        var right = _grid.Nodes[element.NodeIds[1]];
+        var left = grid.Nodes[element.NodeIds[0]];
+        var right = grid.Nodes[element.NodeIds[1]];
         var length = right - left;
         
         Func<double, double>[] templateFunctions =

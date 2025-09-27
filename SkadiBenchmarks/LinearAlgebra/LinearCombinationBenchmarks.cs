@@ -33,7 +33,7 @@ public class LinearCombinationBenchmarks
     [Benchmark(Baseline = true)]
     public Vector LinearCombination_Original()
     {
-        for (var i = 0; i < v.Length; i++)
+        for (var i = 0; i < v.Count; i++)
         {
             result[i] = v[i] * 2.0 + u[i] * 3.0;
         }
@@ -44,7 +44,7 @@ public class LinearCombinationBenchmarks
     [Benchmark]
     public Vector LinearCombination_SIMD_AVX()
     {
-        var length = v.Length;
+        var length = v.Count;
         var i = 0;
         var simdWidth = Vector256<double>.Count;
 
@@ -77,7 +77,7 @@ public class LinearCombinationBenchmarks
     [Benchmark]
     public Vector LinearCombination_SIMD_Vector512()
     {
-        var length = v.Length;
+        var length = v.Count;
 
         var i = 0;
         var simdWidth = Vector512<double>.Count; // 8 для double

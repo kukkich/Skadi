@@ -28,7 +28,7 @@ public class CholeskyPreconditionerTestTests
         
         Assert.Multiple(() =>
         {
-            for (var i = 0; i < xExpected.Length; i++)
+            for (var i = 0; i < xExpected.Count; i++)
             {
                 Assert.That(xActual[i], Is.EqualTo(xExpected[i]).Within(1e-15));
             }
@@ -55,7 +55,7 @@ public class CholeskyPreconditionerTestTests
         
         Assert.Multiple(() =>
         {
-            for (var i = 0; i < xExpected.Length; i++)
+            for (var i = 0; i < xExpected.Count; i++)
             {
                 Assert.That(xActual[i], Is.EqualTo(xExpected[i]).Within(1e-15));
             }
@@ -83,7 +83,7 @@ public class CholeskyPreconditionerTestTests
         
         Assert.Multiple(() =>
         {
-            for (var i = 0; i < xExpected.Length; i++)
+            for (var i = 0; i < xExpected.Count; i++)
             {
                 Assert.That(xActual[i], Is.EqualTo(xExpected[i]).Within(1e-15));
             }
@@ -112,7 +112,7 @@ public class CholeskyPreconditionerTestTests
         
         Assert.Multiple(() =>
         {
-            for (var i = 0; i < xExpected.Length; i++)
+            for (var i = 0; i < xExpected.Count; i++)
             {
                 Assert.That(xActual[i], Is.EqualTo(xExpected[i]).Within(1e-15));
             }
