@@ -1,82 +1,36 @@
-﻿using Skadi.FEM.Core;
+﻿using System.Numerics;
+using Skadi.FEM.Core.Areas;
+using Skadi.FEM.Core.Assembling.Params;
 using Skadi.FEM.Core.BasisFunctions;
 using Skadi.FEM.Core.BasisFunctions._2D;
 using Skadi.FEM.Core.Geometry;
+using Skadi.FEM.Materials.HarmonicWithoutChi;
 using Skadi.Geometry._2D;
 using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.FEM._2D.Solution;
 
-public class QuadLinearSolution
+public class ImpedanceSolution
 (
     IBasisFunctionsProvider<IElement, Vector2D> basisFunctionsProvider,
     IBasisFunctionsDerivativeProvider2D basisFunctionsDerivativeProvider,
+    IAreaProvider<IMaterialArea> areaProvider,
+    IMaterialProvider<Material> materialProvider,
     Grid<Vector2D, IElement> grid,
-    IReadonlyVector<double> weights
-) : IFiniteElementSolution<Vector2D>
+    IReadonlyVector<double> weights,
+    double frequency
+)
 {
-    public IReadonlyVector<double> Weights { get; } = weights;
     private const double RelativeEpsilon = 1e-10;
 
-    private const double Epsilon = 1e-10;
-
-    public double Calculate(Vector2D point)
+    public double Calculate(Vector2D point, double time)
     {
         var element = grid.Elements
-            .First(x => ElementHas(x, point));
+            .FirstOrDefault(x => ElementHas(x, point));
+        if (element is null)
+            throw new Exception();
 
-        var pointInTemplate = GetTemplateElementPosition(point, element);
-        
-        var functions = basisFunctionsProvider.GetFunctions(element);
-        Span<double> funcValues = stackalloc double[functions.Length];
-        for (var i = 0; i < functions.Length; i++)
-        {
-            funcValues[i] = functions[i].Evaluate(pointInTemplate);
-        }
-
-        var result = 0d;
-        for (var i = 0; i < functions.Length; i++)
-        {
-            var weightId = element.NodeIds[i];
-            var weight = Weights[weightId];
-            result += funcValues[i] * weight;
-        }
-        
-        return result;
-    }
-    
-    public Vector2D Gradient(Vector2D point)
-    {
-        var element = grid.Elements
-            .First(x => ElementHas(x, point));
-        var basicDerivativeX = basisFunctionsDerivativeProvider.GetDerivativeByX(element);
-        var basicDerivativeY = basisFunctionsDerivativeProvider.GetDerivativeByY(element);
-        var pointInTemplate = GetTemplateElementPosition(point, element);
-        
-        Span<Vector2D> funcValues = stackalloc Vector2D[basicDerivativeX.Length];
-        
-        for (var i = 0; i < basicDerivativeX.Length; i++)
-        {
-            funcValues[i] = new Vector2D
-            (
-                basicDerivativeX[i].Evaluate(pointInTemplate), 
-                basicDerivativeY[i].Evaluate(pointInTemplate)
-            );
-        }
-        
-        var result = Vector2D.Zero;
-        for (var i = 0; i < basicDerivativeX.Length; i++)
-        {
-            var weightId = element.NodeIds[i];
-            var weight = Weights[weightId];
-            result += funcValues[i] * weight;
-        }
-
-        return result;
-    }
-    
-    private Vector2D GetTemplateElementPosition(Vector2D point, IElement element)
-    {
+        // Todo инверсия (x, y) -> (ksi, eta) дублируется как минимум в QuadLinearSolution. Нужно вынести
         Span<double> x = stackalloc double[4];
         Span<double> y = stackalloc double[4];
         for (var i = 0; i < 4; i++)
@@ -99,17 +53,17 @@ public class QuadLinearSolution
         double ksi;
         double eta;
 
-        if (Math.Abs(alpha1) < Epsilon && Math.Abs(alpha2) < Epsilon)
+        if (Math.Abs(alpha1) < RelativeEpsilon && Math.Abs(alpha2) < RelativeEpsilon)
         {
             ksi = (b3 * (point.X - x[0]) - b1 * (point.Y - y[0])) / (b2 * b3 - b1 * b4);
             eta = (b2 * (point.Y - y[0]) - b4 * (point.X - x[0])) / (b2 * b3 - b1 * b4);
         }
-        else if (Math.Abs(alpha1) < Epsilon)
+        else if (Math.Abs(alpha1) < RelativeEpsilon)
         {
             ksi = (alpha2 * (point.X - x[0]) + b1 * w) / (alpha2 * b2 - b5 * w);
             eta = -1d * w / alpha2;
         }
-        else if (Math.Abs(alpha2) < Epsilon)
+        else if (Math.Abs(alpha2) < RelativeEpsilon)
         {
             ksi = w / alpha1;
             eta = (alpha1 * (point.Y - y[0]) - b4 * w) / (alpha1 * b3 + b6 * w);
@@ -117,10 +71,10 @@ public class QuadLinearSolution
         else
         {
             var a = b5 * alpha2;
-            var b = alpha2 * b2 + alpha1 * b1 + b5*w;
+            var b = alpha2 * b2 + alpha1 * b1 + b5 * w;
             var c = alpha1 * (x[0] - point.X) + b2 * w;
             var d = b * b - 4 * a * c;
-            var originEta1 = (-b + Math.Sqrt(d)) / (2 * a); 
+            var originEta1 = (-b + Math.Sqrt(d)) / (2 * a);
             var originEta2 = (-b - Math.Sqrt(d)) / (2 * a);
             var originKsi1 = (alpha2 * originEta1 + w) / alpha1;
             var originKsi2 = (alpha2 * originEta2 + w) / alpha1;
@@ -138,7 +92,44 @@ public class QuadLinearSolution
         }
 
         var pointInTemplate = new Vector2D(ksi, eta);
-        return pointInTemplate;
+        var functions = basisFunctionsProvider.GetFunctions(element);
+        var basicDerivativeY = basisFunctionsDerivativeProvider.GetDerivativeByY(element);
+        
+        Span<double> funcValues = stackalloc double[functions.Length];
+        Span<double> derivativeValues = stackalloc double[functions.Length];
+        
+        for (var i = 0; i < functions.Length; i++)
+        {
+            funcValues[i] = functions[i].Evaluate(pointInTemplate);
+            derivativeValues[i] = basicDerivativeY[i].Evaluate(pointInTemplate);
+        }
+
+        var u = Complex.Zero;
+        var dudy = Complex.Zero;
+        
+        var (us, uc) = (0d, 0d);
+        for (var i = 0; i < funcValues.Length; i++)
+        {
+            var nodeIndex = element.NodeIds[i];
+            u += new Complex
+            (
+                weights[nodeIndex * 2] * funcValues[i],
+                weights[nodeIndex * 2 + 1] * funcValues[i]
+            );
+            dudy += new Complex
+            (
+                weights[nodeIndex * 2] * derivativeValues[i],
+                weights[nodeIndex * 2 + 1] * derivativeValues[i]
+            );
+        }
+
+        var area = areaProvider.GetArea(element.AreaId);
+        var material = materialProvider.GetById(area.MaterialId);
+
+        var e = frequency * u.Magnitude;
+        var h = material.Lambda * dudy.Magnitude;
+
+        return e / h;
     }
 
     private bool ElementHas(IElement element, Vector2D vector)
@@ -154,15 +145,20 @@ public class QuadLinearSolution
         return IsPointInTriangle(vector, leftBottom, rightBottom, leftTop) ||
                IsPointInTriangle(vector, leftTop, rightBottom, rightTop);
 
+        // Todo дублируется. Найти дубликаты, вынести в static логику геометрии
+
         bool IsPointInTriangle(Vector2D p, Vector2D a, Vector2D b, Vector2D c)
         {
+            const double tolerance = 1e-10;
+
             // Векторные произведения для всех трёх рёбер треугольника
             var v1 = (b - a).X * (p.Y - a.Y) - (b - a).Y * (p.X - a.X);
             var v2 = (c - b).X * (p.Y - b.Y) - (c - b).Y * (p.X - b.X);
             var v3 = (a - c).X * (p.Y - c.Y) - (a - c).Y * (p.X - c.X);
 
             // Проверяем, что все знаки одинаковы
-            return (v1 >= 0 && v2 >= 0 && v3 >= 0) || (v1 <= 0 && v2 <= 0 && v3 <= 0);
+            return (v1 >= -tolerance && v2 >= -tolerance && v3 >= -tolerance) ||
+                   (v1 <= tolerance && v2 <= tolerance && v3 <= tolerance);
         }
     }
 }
