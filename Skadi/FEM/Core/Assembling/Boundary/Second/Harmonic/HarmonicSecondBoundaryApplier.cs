@@ -19,7 +19,11 @@ public class HarmonicSecondBoundaryApplier<TMatrix>(
         
         Span<double> real = stackalloc double[2];
         Span<double> imaginary = stackalloc double[2];
-        
+        for (var i = 0; i < real.Length; i++)
+        {
+            var thetta = condition.Thetta[i];
+            (real[i], imaginary[i]) = (thetta.Real, thetta.Imaginary);
+        }
         var defaultMass = new MatrixSpan([
             2, 1,
             1, 2

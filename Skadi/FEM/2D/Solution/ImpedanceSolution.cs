@@ -23,7 +23,7 @@ public class ImpedanceSolution
 {
     private const double RelativeEpsilon = 1e-10;
 
-    public double Calculate(Vector2D point, double time)
+    public double Calculate(Vector2D point)
     {
         var element = grid.Elements
             .FirstOrDefault(x => ElementHas(x, point));
@@ -107,7 +107,6 @@ public class ImpedanceSolution
         var u = Complex.Zero;
         var dudy = Complex.Zero;
         
-        var (us, uc) = (0d, 0d);
         for (var i = 0; i < funcValues.Length; i++)
         {
             var nodeIndex = element.NodeIds[i];
