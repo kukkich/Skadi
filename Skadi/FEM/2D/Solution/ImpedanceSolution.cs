@@ -93,7 +93,29 @@ public class ImpedanceSolution
 
         var pointInTemplate = new Vector2D(ksi, eta);
         var functions = basisFunctionsProvider.GetFunctions(element);
+        var basicDerivativeX = basisFunctionsDerivativeProvider.GetDerivativeByX(element);
         var basicDerivativeY = basisFunctionsDerivativeProvider.GetDerivativeByY(element);
+        Span<double> dN_dKsi = stackalloc double[4];
+        Span<double> dN_dEta = stackalloc double[4];
+        for (var i = 0; i < functions.Length; i++)
+        {
+            dN_dKsi[i] = basicDerivativeX[i].Evaluate(pointInTemplate);
+            dN_dEta[i] = basicDerivativeY[i].Evaluate(pointInTemplate);
+        }
+        var (dx_dKsi, dx_dEta, dy_dKsi, dy_dEta) =(0d, 0d, 0d, 0d);
+        for (var i = 0; i < 4; i++)
+        {
+            dx_dKsi += x[i] * dN_dKsi[i];
+            dx_dEta += x[i] * dN_dEta[i];
+            dy_dKsi += y[i] * dN_dKsi[i];
+            dy_dEta += y[i] * dN_dEta[i];
+        }
+        var jacobianDeterminant = dx_dKsi * dy_dEta - dx_dEta * dy_dKsi;
+        var inversedJacobian = 1d / jacobianDeterminant;
+        // var dksi_dx = dy_dEta * inversedJacobian;
+        var dKsi_dy = -1d * dx_dEta * inversedJacobian;
+        // var deta_dx = -1d * dy_dKsi * inversedJacobian;
+        var dEta_dy = dx_dKsi * inversedJacobian;
         
         Span<double> funcValues = stackalloc double[functions.Length];
         Span<double> derivativeValues = stackalloc double[functions.Length];
@@ -101,7 +123,7 @@ public class ImpedanceSolution
         for (var i = 0; i < functions.Length; i++)
         {
             funcValues[i] = functions[i].Evaluate(pointInTemplate);
-            derivativeValues[i] = basicDerivativeY[i].Evaluate(pointInTemplate);
+            derivativeValues[i] = dN_dKsi[i] * dKsi_dy + dN_dEta[i] * dEta_dy; // (dN/dx, dN/dy) = J^-1 * (dN/dKsi, dN/dEta)
         }
 
         var u = Complex.Zero;
@@ -110,15 +132,17 @@ public class ImpedanceSolution
         for (var i = 0; i < funcValues.Length; i++)
         {
             var nodeIndex = element.NodeIds[i];
+            var wSin = weights[nodeIndex * 2];
+            var wCos = weights[nodeIndex * 2 + 1];
             u += new Complex
             (
-                weights[nodeIndex * 2] * funcValues[i],
-                weights[nodeIndex * 2 + 1] * funcValues[i]
+                wSin * funcValues[i],
+                wCos * funcValues[i]
             );
             dudy += new Complex
             (
-                weights[nodeIndex * 2] * derivativeValues[i],
-                weights[nodeIndex * 2 + 1] * derivativeValues[i]
+                wSin * derivativeValues[i],
+                wCos * derivativeValues[i]
             );
         }
 
