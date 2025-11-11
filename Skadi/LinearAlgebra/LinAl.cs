@@ -80,10 +80,10 @@ public static class LinAl
     }
     public static MatrixSpan Multiply(double coefficient, ReadOnlyMatrixSpan a, MatrixSpan resultMemory)
     {
-        AsserSameSize(a, resultMemory);
+        AsserSquareAndSameSize(a, resultMemory);
 
-        for (var i = 0; i < a.Size; i++)
-        for (var j = 0; j < a.Size; j++)
+        for (var i = 0; i < a.Rows; i++)
+        for (var j = 0; j < a.Columns; j++)
             resultMemory[i, j] = a[i, j] * coefficient;
 
         return resultMemory;
@@ -205,7 +205,7 @@ public static class LinAl
     }
     public static Span<double> Multiply(ReadOnlyMatrixSpan a, ReadOnlySpan<double> v, Span<double> resultMemory)
     {
-        AssertSameSize(a, v);
+        AssertSquareAndSameSize(a, v);
         AssertSameSize(v, (ReadOnlySpan<double>)resultMemory);
         
         for (var i = 0; i < v.Length; i++)
@@ -284,23 +284,13 @@ public static class LinAl
 
         return resultMemory;
     }
-    public static MatrixSpan Sum(IReadOnlyMatrix a, IReadOnlyMatrix b, MatrixSpan resultMemory)
-    {
-        AssertCanBeMultiplied(a, b);
-        AsserSameSize(a, resultMemory);
-        
-        for (var i = 0; i < a.Rows; i++)
-        for (var j = 0; j < a.Rows; j++)
-            resultMemory[i, j] = a[i, j] + b[i, j];
 
-        return resultMemory;
-    }
     public static MatrixSpan Sum(ReadOnlyMatrixSpan a, ReadOnlyMatrixSpan b, MatrixSpan resultMemory)
     {
         AsserSameSize(a, b);
 
-        for (var i = 0; i < a.Size; i++)
-        for (var j = 0; j < a.Size; j++)
+        for (var i = 0; i < a.Rows; i++)
+        for (var j = 0; j < a.Columns; j++)
             resultMemory[i, j] = a[i, j] + b[i, j];
 
         return resultMemory;
@@ -391,9 +381,9 @@ public static class LinAl
         }
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AssertSameSize(ReadOnlyMatrixSpan a, ReadOnlySpan<double> v)
+    private static void AssertSquareAndSameSize(ReadOnlyMatrixSpan a, ReadOnlySpan<double> v)
     {
-        if (a.Size != v.Length)
+        if (!a.IsSquare || a.Rows != v.Length)
         {
             throw new ArgumentException();
         }
@@ -406,19 +396,20 @@ public static class LinAl
             throw new ArgumentException("Both vectors must have the same length.");
         }
     }
+
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AsserSameSize(IReadOnlyMatrix a, ReadOnlyMatrixSpan b)
+    private static void AsserSameSize(ReadOnlyMatrixSpan a, ReadOnlyMatrixSpan b)
     {
-        if (a.Rows != b.Size || a.Columns != b.Size)
+        if (a.Rows != b.Rows || a.Columns != b.Columns)
         {
             throw new ArgumentException();
         }
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AsserSameSize(ReadOnlyMatrixSpan a, ReadOnlyMatrixSpan b)
+    private static void AsserSquareAndSameSize(ReadOnlyMatrixSpan a, ReadOnlyMatrixSpan b)
     {
-        if (a.Size != b.Size)
+        if (!a.IsSquare || !b.IsSquare || a.Rows != b.Rows)
         {
             throw new ArgumentException();
         }
