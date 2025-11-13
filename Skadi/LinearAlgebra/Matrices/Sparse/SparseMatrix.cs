@@ -20,7 +20,7 @@ public class SparseMatrix
     public int this[int rowIndex, int columnIndex] =>
         Array.IndexOf(ColumnsIndexes, columnIndex, RowsIndexes[rowIndex],
             RowsIndexes[rowIndex + 1] - RowsIndexes[rowIndex]);
-
+    
     public SparseMatrix(int[] rowsIndexes, int[] columnsIndexes) 
         : this
         (
@@ -31,6 +31,20 @@ public class SparseMatrix
             new double[rowsIndexes[^1]]
         )
     { }
+
+    public void Nullify()
+    {
+        for (var i = 0; i < LowerValues.Length; i++)
+        {
+            lowerValues[i] = 0;
+            upperValues[i] = 0;
+        }
+
+        for (var i = 0; i < Diagonal.Length; i++)
+        {
+            diagonal[i] = 0;
+        }
+    }
 
     public SparseMatrix Clone()
     {
