@@ -1,4 +1,5 @@
-﻿using Skadi.LinearAlgebra.Matrices.Sparse.Storages;
+﻿using Skadi.LinearAlgebra.Matrices;
+using Skadi.LinearAlgebra.Matrices.Sparse.Storages;
 
 namespace Skadi.LinearAlgebra.Vectors;
 
@@ -22,6 +23,15 @@ public static class Extensions
         for (var i = 0; i < vector.Length; i++)
         {
             vector[i] = 0;
+        }
+    }
+    
+    public static void Nullify(this Matrix matrix)
+    {
+        for (var i = 0; i < matrix.Rows; i++)
+        for (var j = 0; j < matrix.Columns; j++)
+        {
+            matrix[i, j] = 0;
         }
     }
 }
