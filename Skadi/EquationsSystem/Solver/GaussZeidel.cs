@@ -6,7 +6,7 @@ using Skadi.LinearAlgebra.Vectors;
 namespace Skadi.EquationsSystem.Solver;
 
 public class GaussZeidelSolver(GaussZeidelConfig config, ILogger<GaussZeidelSolver> logger)
-    : Method<GaussZeidelConfig>(config, logger), IAllocationRequired<int>
+    : Method<GaussZeidelConfig>(config, logger), IAllocationRequired<int>, ISLAESolver<Matrix>
 {
     private int Dimension => _currentSolution.Count;
 
@@ -22,13 +22,20 @@ public class GaussZeidelSolver(GaussZeidelConfig config, ILogger<GaussZeidelSolv
         _currentSolution = Vector.Create(dimensionSize);
     }
 
+    public Vector Solve(Equation<Matrix> equation)
+    {
+        return Solve(equation.Matrix, equation.RightSide);
+    }
+
     public Vector Solve(IReadOnlyMatrix matrix, IReadonlyVector<double> rightSide)
     {
         _matrix = matrix;
         _rightSide = rightSide;
         _rightSideNorm = rightSide.Norm;
+        if (_discrepancyVector is null || _currentSolution is null)
+            Allocate(rightSide.Count);
         _currentSolution.Nullify();
-
+        
         var currentPrecision = GetRelativeDiscrepancy(_currentSolution);
         var i = 0;
         for (; i < Config.MaxIteration && currentPrecision > Config.Precision; i++)
