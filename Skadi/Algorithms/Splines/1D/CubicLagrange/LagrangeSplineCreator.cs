@@ -15,6 +15,7 @@ public class LagrangeSplineCreator(GaussZeidelSolver slaeSolver) : ISplineCreato
     private bool _allocated;
     private Grid<double, IElement> _grid;
     private Equation<Matrix> _equation;
+    private LagrangeCubicFunction1DProvider _localFunctionsProvider;
 
     public void Allocate(Grid<double, IElement> grid)
     {
@@ -31,25 +32,32 @@ public class LagrangeSplineCreator(GaussZeidelSolver slaeSolver) : ISplineCreato
             Solution: Vector.Create(equationSize)
         );
         slaeSolver.Allocate(equationSize);
+        _localFunctionsProvider = new LagrangeCubicFunction1DProvider(_grid);
+        
         _allocated = true;
     }
 
-    public ISpline<double> CreateSpline(FuncValue<double>[] functionValues, double alpha)
+    ISpline<double> ISplineCreator<double, IElement>.CreateSpline(FuncValue<double>[] functionValues, double alpha) 
+        => CreateSpline(functionValues, alpha);
+    
+    public LagrangeSpline CreateSpline(FuncValue<double>[] functionValues, double alpha)
     {
         EnsureAllocated();
-        var localFunctionsProvider = new LagrangeCubicFunction1DProvider(_grid);
         var equationAssembler = new SplineEquationAssembler1D(
             _grid.Nodes,
-            new SplineLocalAssembler1D(localFunctionsProvider),
+            new SplineLocalAssembler1D(_localFunctionsProvider),
             new LagrangeCubicAssembler1D(_grid.Nodes, alpha),
             new DenseMatrixInserter()
         );
+        _equation.Matrix.Nullify();
+        _equation.RightSide.Nullify();
+        _equation.Solution.Nullify();
         equationAssembler.BuildEquation(_equation, functionValues, _grid.Elements);
         var solution = slaeSolver.Solve(_equation.Matrix, _equation.RightSide);
 
-        return new LagrangeSpline(localFunctionsProvider, _grid, solution);
+        return new LagrangeSpline(_localFunctionsProvider, _grid, solution.Copy());
     }
-
+    
     private void EnsureAllocated()
     {
         if (!_allocated)

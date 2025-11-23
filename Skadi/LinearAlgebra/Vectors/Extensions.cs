@@ -20,10 +20,7 @@ public static class Extensions
     
     public static void Nullify(this Span<double> vector)
     {
-        for (var i = 0; i < vector.Length; i++)
-        {
-            vector[i] = 0;
-        }
+        vector.Clear();
     }
     
     public static void Nullify(this Matrix matrix)
