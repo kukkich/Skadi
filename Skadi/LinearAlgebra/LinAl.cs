@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
@@ -353,7 +354,7 @@ public static class LinAl
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void ValidateOrAllocateIfNull(ReadOnlySpan<double> v, ref Vector? u)
+    public static void ValidateOrAllocateIfNull(ReadOnlySpan<double> v, [NotNull] ref Vector? u)
     {
         if (u is null)
             u = Vector.Create(v.Length);
@@ -361,11 +362,21 @@ public static class LinAl
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AssertSameSize<T>(IReadonlyVector<T> v, IReadonlyVector<T> u)
+    public static void AssertSameSize<T>(IReadonlyVector<T> v, IReadonlyVector<T> u)
     {
         if (v.Count != u.Count)
             throw new ArgumentOutOfRangeException($"{nameof(v)} and {nameof(u)}", "must have the same length");
     }
+        
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void AssertEvenLenght<T>(IReadonlyVector<T> v)
+    {
+        if (v.Count % 2 != 0)
+        {
+            throw new ArgumentException($"{nameof(v)} must have an even length");
+        }
+    }
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void AssertSameSize(SymmetricRowSparseMatrix matrix, IReadonlyVector<double> x)
     {
@@ -399,7 +410,7 @@ public static class LinAl
         }
     }
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AssertSameSize<T1, T2>(ReadOnlySpan<T1> v, ReadOnlySpan<T2> u)
+    public static void AssertSameSize<T1, T2>(ReadOnlySpan<T1> v, ReadOnlySpan<T2> u)
     {
         if (v.Length != u.Length)
         {
@@ -423,6 +434,7 @@ public static class LinAl
             throw new ArgumentException();
         }
     }
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void AssertDifferentObjects(object a, object? resultMemory)
     {

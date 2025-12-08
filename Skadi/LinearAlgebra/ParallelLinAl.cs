@@ -1,5 +1,7 @@
-﻿using Skadi.LinearAlgebra.Matrices.Sparse;
+﻿using System.Numerics;
+using Skadi.LinearAlgebra.Matrices.Sparse;
 using Skadi.LinearAlgebra.Vectors;
+using Vector = Skadi.LinearAlgebra.Vectors.Vector;
 
 namespace Skadi.LinearAlgebra;
 
@@ -9,12 +11,6 @@ public static class ParallelLinAl
     {
         resultMemory ??= Vector.Create(vector.Length);
         resultMemory.Nullify();
-        
-        if (matrix.Size == -1)
-        {
-            // return Vector.None;
-            throw new InvalidOperationException("Zero size");
-        }
 
         var x = vector.ToArray();
         var y = resultMemory.AsSpan();
@@ -61,6 +57,111 @@ public static class ParallelLinAl
             for (var idx = 0; idx < vectorLength; idx++)
                 y[idx] += local[idx];
         }
+
+        return resultMemory;
+    }
+    
+    public static Complex ComplexScalarProduct(Vector a, Vector b, int threadsCount = 1)
+    {
+        LinAl.AssertSameSize(a, b);
+        LinAl.AssertEvenLenght(a);
+        LinAl.AssertEvenLenght(b);
+
+        var size = a.Count / 2;
+        var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = threadsCount };
+        var threadLocalResults = new ThreadLocal<Complex>(() => Complex.Zero, trackAllValues: true);
+
+        Parallel.For(0, size, parallelOptions, i =>
+        {
+            var aComplex = new Complex(a[2 * i], -a[2 * i + 1]);
+            var bComplex = new Complex(b[2 * i], b[2 * i + 1]);
+            threadLocalResults.Value += aComplex * bComplex;
+        });
+
+        return threadLocalResults.Values.Aggregate<Complex, Complex>(0, (current, local) => current + local);
+    }
+    
+    public static Complex ComplexPseudoScalarProduct(Vector a, Vector b, int threadsCount = 1)
+    {
+        LinAl.AssertSameSize(a, b);
+        LinAl.AssertEvenLenght(a);
+        LinAl.AssertEvenLenght(b);
+
+        var size = a.Count / 2;
+        var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = threadsCount };
+        var threadLocalResults = new ThreadLocal<Complex>(() => Complex.Zero, trackAllValues: true);
+
+        Parallel.For(0, size, parallelOptions, i =>
+        {
+            var aComplex = new Complex(a[2 * i], a[2 * i + 1]);
+            var bComplex = new Complex(b[2 * i], b[2 * i + 1]);
+            threadLocalResults.Value += aComplex * bComplex;
+        });
+
+        return threadLocalResults.Values.Aggregate<Complex, Complex>(0, (current, local) => current + local);
+    }
+
+    public static Vector Multiply(Vector a, Complex coefficient, Vector? resultMemory = null, int threadsCount = 1)
+    {
+        LinAl.AssertEvenLenght(a);
+        LinAl.ValidateOrAllocateIfNull(a.AsReadOnlySpan(), ref resultMemory);
+        var parallelOptions = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = threadsCount
+        };
+
+        Parallel.For(0, a.Count / 2, parallelOptions, i =>
+        {
+            var value = new Complex(a[i * 2], a[i * 2 + 1]);
+            var product = coefficient * value;
+
+            resultMemory[i * 2] = product.Real;
+            resultMemory[i * 2 + 1] = product.Imaginary;
+        });
+
+        return resultMemory;
+    }
+
+    public static Vector Sum(Vector a, Vector b, Vector? resultMemory = null, int threadsCount = 1)
+    {
+        LinAl.AssertSameSize(a, b);
+        LinAl.AssertEvenLenght(a);
+        LinAl.AssertEvenLenght(b);
+        LinAl.ValidateOrAllocateIfNull(a.AsReadOnlySpan(), ref resultMemory);
+        
+        var parallelOptions = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = threadsCount
+        };
+        
+        Parallel.For
+        (
+            0, a.Count, 
+            parallelOptions,
+            i => resultMemory[i] = a[i] + b[i]
+        );
+
+        return resultMemory;
+    }
+    
+    public static Vector Subtract(Vector a, Vector b, Vector? resultMemory = null, int threadsCount = 1)
+    {
+        LinAl.AssertSameSize(a, b);
+        LinAl.AssertEvenLenght(a);
+        LinAl.AssertEvenLenght(b);
+        LinAl.ValidateOrAllocateIfNull(a.AsReadOnlySpan(), ref resultMemory);
+        
+        var parallelOptions = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = threadsCount
+        };
+        
+        Parallel.For
+        (
+            0, a.Count, 
+            parallelOptions,
+            i => resultMemory[i] = a[i] - b[i]
+        );
 
         return resultMemory;
     }
