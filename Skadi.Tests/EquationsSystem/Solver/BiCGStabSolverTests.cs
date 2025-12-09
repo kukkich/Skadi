@@ -24,13 +24,13 @@ public class BiCGStabSolverTests
         _notPreconditionedSolver = new BiCGStabSolver<CSRMatrix>
         (
             new NullPreconditionerFactory<CSRMatrix>(),
-            new ConjugateGradientSolverConfig(Tolerance, 1000),
+            new CommonIterationSLAESolverConfig(Tolerance, 1000),
             NullLogger.Instance
         );
         _luPreconditionedSolver = new BiCGStabSolver<CSRMatrix>
         (
             new LUPreconditionerCSRFactory(),
-            new ConjugateGradientSolverConfig(Tolerance, 1000),
+            new CommonIterationSLAESolverConfig(Tolerance, 1000),
             NullLogger.Instance
         );
     }

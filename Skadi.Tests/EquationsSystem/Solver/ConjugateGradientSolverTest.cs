@@ -24,7 +24,7 @@ public class ConjugateGradientSolverTestTests
     private IPreconditionerFactory<SymmetricRowSparseMatrix> UnitPreconditioner = null!;
     private Equation<SymmetricRowSparseMatrix> equation = null!;
     private readonly Vector solutionExpected = new (-10, 9, -8, 7, -6, 5);
-    private static readonly ConjugateGradientSolverConfig config = new (1e-14, 100);
+    private static readonly CommonIterationSLAESolverConfig config = new (1e-14, 100);
 
     private readonly Func<IPreconditionerFactory<SymmetricRowSparseMatrix>, ConjugateGradientSolver> solverFactory =
         factory => new ConjugateGradientSolver(factory, config, NullLogger.Instance);
@@ -62,7 +62,7 @@ public class ConjugateGradientSolverTestTests
 
         var diff = LinAl.Subtract(solutionActual, solutionExpected);
         
-        Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Precision));
+        Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Tolerance));
     }
     
     [Test]
@@ -73,7 +73,7 @@ public class ConjugateGradientSolverTestTests
 
         var diff = LinAl.Subtract(solutionActual, solutionExpected);
         
-        Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Precision));
+        Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Tolerance));
     }
     
     [Test]
@@ -84,7 +84,7 @@ public class ConjugateGradientSolverTestTests
 
         var diff = LinAl.Subtract(solutionActual, solutionExpected);
         
-        Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Precision * 10));
+        Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Tolerance * 10));
     }
     
     [Test]
@@ -95,6 +95,6 @@ public class ConjugateGradientSolverTestTests
 
         var diff = LinAl.Subtract(solutionActual, solutionExpected);
         
-        Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Precision));
+        Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Tolerance));
     }
 }

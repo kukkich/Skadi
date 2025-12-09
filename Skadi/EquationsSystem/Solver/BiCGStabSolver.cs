@@ -8,9 +8,9 @@ namespace Skadi.EquationsSystem.Solver;
 public class BiCGStabSolver<T>
 (
     IExtendedPreconditionerFactory<T> preconditionerFactory,
-    ConjugateGradientSolverConfig config,
+    CommonIterationSLAESolverConfig config,
     ILogger logger
-) : Method<ConjugateGradientSolverConfig>(config, logger), ISLAESolver<T>
+) : Method<CommonIterationSLAESolverConfig>(config, logger), ISLAESolver<T>
     where T : ILinearOperator
 {
     private IPreconditioner _preconditioner = null!;
@@ -47,7 +47,7 @@ public class BiCGStabSolver<T>
             h = LinAl.LinearCombination(x, y, 1, alpha, h);
             
             var discrepancy = LinAl.Subtract(b, A.MultiplyOn(h, z), z).Norm; // could pass any result memory
-            if (discrepancy / bNorm <= Config.Precision)
+            if (discrepancy / bNorm <= Config.Tolerance)
             {
                 h.CopyTo(x);
                 return x;
@@ -63,7 +63,7 @@ public class BiCGStabSolver<T>
             r = LinAl.LinearCombination(s, t, 1, -omega, r);
             
             discrepancy = r.Norm;
-            if (discrepancy / bNorm <= Config.Precision)
+            if (discrepancy / bNorm <= Config.Tolerance)
             {
                 return x;
             }

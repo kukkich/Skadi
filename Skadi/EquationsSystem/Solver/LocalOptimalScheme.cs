@@ -11,9 +11,9 @@ public class LocalOptimalScheme
 (
     LUPreconditioner luPreconditioner,
     SparsePartialLUResolver sparseLuResolver,
-    LocalOptimalSchemeConfig config,
+    CommonIterationSLAESolverConfig config,
     ILogger<LocalOptimalScheme> logger
-) : Method<LocalOptimalSchemeConfig>(config, logger), ISLAESolver<SparseMatrix>
+) : Method<CommonIterationSLAESolverConfig>(config, logger), ISLAESolver<SparseMatrix>
 {
     private readonly IPreconditioner<SparseMatrix> _luPreconditioner = luPreconditioner;
     private SparseMatrix _preconditionMatrix = null!;
@@ -46,10 +46,10 @@ public class LocalOptimalScheme
     {
         var residual = Vector.ScalarProduct(_r, _r);
         var residualNext = residual;
-        var minResidual = Math.Pow(Config.Eps, 2);
+        var minResidual = Math.Pow(Config.Tolerance, 2);
 
         int i;
-        for (i = 1; i <= Config.MaxIterations && residualNext > minResidual; i++)
+        for (i = 1; i <= Config.MaxIteration && residualNext > minResidual; i++)
         {
             var scalarPP = Vector.ScalarProduct(_p, _p);
 
@@ -85,18 +85,12 @@ public class LocalOptimalScheme
         {
             Logger.LogWarning(
                 "LOS run out of iterations. residual: {residual:E}, expected: {min:E}. Max iterations: {iterations}",
-                Math.Sqrt(residualNext), Config.Eps, Config.MaxIterations
+                Math.Sqrt(residualNext), Config.Tolerance, Config.MaxIteration
             );
         }
         Logger.LogDebug(
             "LOS ended: iterations: [{iterations}/{maxIterations}], residual [{residual:E5}/{eps:E5}]", 
-            i, Config.MaxIterations, Math.Sqrt(residualNext), Config.Eps
+            i, Config.MaxIteration, Math.Sqrt(residualNext), Config.Tolerance
         );
     }
-}
-
-public class LocalOptimalSchemeConfig
-{
-    public double Eps { get; set; } = 1e-15;
-    public int MaxIterations { get; set; } = 1000;
 }

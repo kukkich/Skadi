@@ -151,7 +151,7 @@ public class Vector2DRectangleTest
         var solver = new ConjugateGradientSolver
         (
             new IncompleteLDLTPreconditionerFactory(),
-            new ConjugateGradientSolverConfig(1e-15, 2000),
+            new CommonIterationSLAESolverConfig(1e-15, 2000),
             NullLogger.Instance
         );
 

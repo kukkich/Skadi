@@ -9,9 +9,9 @@ namespace Skadi.EquationsSystem.Solver;
 public class ConjugateGradientSolver
 (
     IPreconditionerFactory<SymmetricRowSparseMatrix> preconditionerFactory,
-    ConjugateGradientSolverConfig config,
+    CommonIterationSLAESolverConfig config,
     ILogger logger
-) : Method<ConjugateGradientSolverConfig>(config, logger), ISLAESolver<SymmetricRowSparseMatrix>
+) : Method<CommonIterationSLAESolverConfig>(config, logger), ISLAESolver<SymmetricRowSparseMatrix>
 {
     private IPreconditioner _preconditioner = null!;
     private Equation<SymmetricRowSparseMatrix> _equation = null!;
@@ -33,7 +33,7 @@ public class ConjugateGradientSolver
     {
         var fNorm = _equation.RightSide.Norm;
 
-        for (var i = 1; i < Config.MaxIteration && _r.Norm / fNorm >= Config.Precision; i++)
+        for (var i = 1; i < Config.MaxIteration && _r.Norm / fNorm >= Config.Tolerance; i++)
         {
             var preconditionedRScalarProduct = Vector.ScalarProduct(
                 _preconditioner.MultiplyOn(_r, _aByZProduct), // could pass any memory
@@ -74,7 +74,7 @@ public class ConjugateGradientSolver
 
             if (i % 200 == 0)
             {
-                Console.WriteLine($"[{i}]: {_r.Norm / fNorm:E15} / {Config.Precision:E15}");
+                Console.WriteLine($"[{i}]: {_r.Norm / fNorm:E15} / {Config.Tolerance:E15}");
             }
         }
     }
@@ -95,5 +95,3 @@ public class ConjugateGradientSolver
         _aByZProduct = Vector.Create(equation.RightSide.Count);
     }
 }
-
-public readonly record struct ConjugateGradientSolverConfig(double Precision, int MaxIteration);

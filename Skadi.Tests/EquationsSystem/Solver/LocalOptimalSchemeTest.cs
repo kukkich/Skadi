@@ -55,7 +55,7 @@ public class LocalOptimalSchemeTest
         (
             new LUPreconditioner(),
             new SparsePartialLUResolver(),
-            new LocalOptimalSchemeConfig { Eps = 1e-14, MaxIterations = 1000 },
+            new CommonIterationSLAESolverConfig { Tolerance = 1e-14, MaxIteration = 1000 },
             NullLogger<LocalOptimalScheme>.Instance
         );
     }
