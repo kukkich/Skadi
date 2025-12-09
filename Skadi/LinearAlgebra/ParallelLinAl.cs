@@ -21,38 +21,46 @@ public static class ParallelLinAl
             MaxDegreeOfParallelism = threadsCount
         };
 
-        using var threadLocalResults = new ThreadLocal<double[]>(() => new double[vectorLength], trackAllValues: true);
-        using var threadLocalX = new ThreadLocal<double[]>(() =>
-        {
-            var localCopy = new double[x.Length];
-            Array.Copy(x, localCopy, x.Length);
-            return localCopy;
-        }, trackAllValues: false);
+        using var threadResults = new ThreadLocal<double[]>
+        (
+            () => new double[vectorLength], 
+            true
+        );
+        using var threadX = new ThreadLocal<double[]>
+        (
+            () =>
+            {
+                var localCopy = new double[x.Length];
+                Array.Copy(x, localCopy, x.Length);
+                return localCopy;
+            }, 
+            false
+        );
 
         Parallel.For(0, matrix.Size, parallelOptions, i =>
         {
-            var xLocal = threadLocalX.Value;
-            var yLocal = threadLocalResults.Value;
+            var xLocal = threadX.Value;
+            var yLocal = threadResults.Value;
             
             var diagBlock = matrix[i,i];
             var xBlock = new ComplexMatrix.Block(xLocal.AsSpan(i * 2, 2));
-            var yBlock = yLocal.AsSpan(i * 2, 2);
+            var ySpan = yLocal.AsSpan(i * 2, 2);
 
-            ComplexMatrix.Block.Multiply(diagBlock, xBlock, yBlock);
+            ComplexMatrix.Block.Multiply(diagBlock, xBlock, ySpan);
 
-            for (var j = matrix.RowIndex[i]; j < matrix.RowIndex[i + 1]; ++j)
+            for (var j = matrix.RowIndexes[i]; j < matrix.RowIndexes[i + 1]; ++j)
             {
-                var k = matrix.ColumnIndex[j];
+                var k = matrix.ColumnIndexes[j];
                 var offDiagBlock = matrix[i,j];
                 var xk = new ComplexMatrix.Block(xLocal.AsSpan(k * 2, 2));
                 var yk = yLocal.AsSpan(k * 2, 2);
 
-                ComplexMatrix.Block.Multiply(offDiagBlock, xk, yBlock);
+                ComplexMatrix.Block.Multiply(offDiagBlock, xk, ySpan);
                 ComplexMatrix.Block.Multiply(offDiagBlock, xBlock, yk);
             }
         });
 
-        foreach (var local in threadLocalResults.Values)
+        foreach (var local in threadResults.Values)
         {
             for (var idx = 0; idx < vectorLength; idx++)
                 y[idx] += local[idx];

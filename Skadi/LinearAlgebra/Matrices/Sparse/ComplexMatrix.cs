@@ -4,22 +4,32 @@ namespace Skadi.LinearAlgebra.Matrices.Sparse;
 
 public class ComplexMatrix
 (
-    double[] di,
-    double[] gg,
-    int[] idi,
-    int[] ijg,
-    int[] ig,
-    int[] jg
+    double[] diagonal,
+    double[] values,
+    int[] diagonalIndexes,
+    int[] offDiagonalIndexes,
+    int[] rowIndexes,
+    int[] columnIndexes
 ) : ILinearOperator
 {
-    public int Size => DiagonalIndexes.Length - 1;
+    public static ComplexMatrix CreateDiagonal(double[] diagonal, int[] diagonalIndexes)
+        => new ComplexMatrix
+            (
+                diagonal,
+                [],
+                diagonalIndexes,
+                [],
+                new int[diagonal.Length + 1],
+                []
+            );
     
-    public int[] DiagonalIndexes { get; } = idi;
-    public int[] RowIndex { get; } = ig;
-    public int[] OffDiagonalIndexes { get; } = ijg;
-    public int[] ColumnIndex { get; } = jg;
-    public double[] Diagonal { get; } = di;
-    public double[] Values { get; } = gg;
+    public int Size => Diagonal.Length;
+    public int[] DiagonalIndexes { get; } = diagonalIndexes;
+    public int[] RowIndexes { get; } = rowIndexes;
+    public int[] OffDiagonalIndexes { get; } = offDiagonalIndexes;
+    public int[] ColumnIndexes { get; } = columnIndexes;
+    public double[] Diagonal { get; } = diagonal;
+    public double[] Values { get; } = values;
 
     public Block this[int i, int j] => GetBlock(i, j);
     
@@ -34,33 +44,25 @@ public class ComplexMatrix
         if (i == j)
         {
             currentBlockIndex = DiagonalIndexes[i];
-            length = GetDiagonalBlockSize(i);
+            length = DiagonalIndexes[i + 1] - DiagonalIndexes[i];
 
             return new Block(Diagonal.AsSpan(currentBlockIndex, length));
         }
 
         currentBlockIndex = OffDiagonalIndexes[j];
-        length = GetOffDiagonalBlockSize(j);
+        length = OffDiagonalIndexes[j + 1] - OffDiagonalIndexes[j];
 
         return new Block(Values.AsSpan(currentBlockIndex, length));
     }
     
-    private int GetDiagonalBlockSize(in int offset)
-    {
-        return DiagonalIndexes[offset + 1] - DiagonalIndexes[offset];
-    }
-
-    private int GetOffDiagonalBlockSize(in int offset)
-    {
-        return OffDiagonalIndexes[offset + 1] - OffDiagonalIndexes[offset];
-    }
-
     public readonly ref struct Block(ReadOnlySpan<double> values)
     {
         private readonly ReadOnlySpan<double> _values = values;
-        private double Real => _values[0];
-        private double Imaginary => HasImaginary ? _values[1] : 0;
-        private bool HasImaginary => _values.Length == 2;
+        public double Real => _values[0];
+        public double Imaginary => HasImaginary ? _values[1] : 0;
+        public bool HasImaginary => _values.Length == 2;
+
+        public double Determinant => Math.Sqrt(Real) + Math.Sqrt(Imaginary);
 
         public static void Multiply(Block a, Block b, Span<double> result)
         {
