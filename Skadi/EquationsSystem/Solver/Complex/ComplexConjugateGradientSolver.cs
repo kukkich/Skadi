@@ -43,13 +43,13 @@ public class ComplexConjugateGradientSolver
         smoothing.Initialize(equation.Solution, r);
         
         var solution = equation.Solution;
-        var fNorm = ParallelLinAl.ComplexNorm(equation.RightSide);
+        var fNorm = ParallelLinAl.ComplexNorm(equation.RightSide, threadsCount);
 
         var matrixByP = Vector.Create(size);
         var buffer = Vector.Create(size);
         
         var iteration = 1;
-        for (; iteration < config.MaxIteration && ParallelLinAl.ComplexNorm(r) / fNorm >= config.Tolerance; iteration++)
+        for (; iteration < config.MaxIteration && ParallelLinAl.ComplexNorm(r, threadsCount) / fNorm >= config.Tolerance; iteration++)
         {
             ParallelLinAl.Multiply(equation.Matrix, p, matrixByP, threadsCount);
             var a = ParallelLinAl.ComplexPseudoScalarProduct(r, z, threadsCount) 
@@ -100,7 +100,8 @@ public class ComplexConjugateGradientSolver
             (p, pNext) = (pNext, p);
             
             smoothing.Apply(solution, r);
-            var smoothedRelativeResidual = smoothing.Residual.Norm / fNorm;
+            var smoothedRelativeResidual = ParallelLinAl.ComplexNorm(smoothing.Residual, threadsCount) 
+                                           / fNorm;
             
             progress.Report(new SLAESolverIteration(iteration, smoothedRelativeResidual));
 
