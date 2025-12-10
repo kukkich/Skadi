@@ -33,6 +33,6 @@ public class DiagonalComplexPreconditioner : IPreconditioner
         _preconditionMatrix = ComplexMatrix.CreateDiagonal(inverseDiagonal, matrix.DiagonalIndexes);
     }
 
-    Vector ILinearOperator.MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory)
+    public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory)
         => ParallelLinAl.Multiply(_preconditionMatrix, vector, resultMemory, _threadsCount);
 }

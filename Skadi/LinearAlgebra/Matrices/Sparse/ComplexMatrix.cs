@@ -13,17 +13,17 @@ public class ComplexMatrix
 ) : ILinearOperator
 {
     public static ComplexMatrix CreateDiagonal(double[] diagonal, int[] diagonalIndexes)
-        => new ComplexMatrix
-            (
-                diagonal,
-                [],
-                diagonalIndexes,
-                [],
-                new int[diagonal.Length + 1],
-                []
-            );
+        => new
+        (
+            diagonal,
+            [],
+            diagonalIndexes,
+            [],
+            new int[diagonalIndexes.Length],
+            []
+        );
     
-    public int Size => Diagonal.Length;
+    public int Size => DiagonalIndexes.Length - 1;
     public int[] DiagonalIndexes { get; } = diagonalIndexes;
     public int[] RowIndexes { get; } = rowIndexes;
     public int[] OffDiagonalIndexes { get; } = offDiagonalIndexes;

@@ -68,6 +68,9 @@ public static class ParallelLinAl
 
         return resultMemory;
     }
+
+    public static double ComplexNorm(Vector a, int threadsCount = 1)
+        => Math.Sqrt(ComplexScalarProduct(a, a, threadsCount).Real);
     
     public static Complex ComplexScalarProduct(Vector a, Vector b, int threadsCount = 1)
     {

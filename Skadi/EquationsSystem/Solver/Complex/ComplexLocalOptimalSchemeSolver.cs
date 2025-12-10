@@ -5,7 +5,7 @@ namespace Skadi.EquationsSystem.Solver.Complex;
 
 public class ComplexLocalOptimalSchemeSolver(CommonIterationSLAESolverConfig config) : IObservableSLAESolver<ComplexMatrix>
 {
-    public Vector Solve(Equation<ComplexMatrix> equation, IProgress<SLAESolverIteration> iteration)
+    public Vector Solve(Equation<ComplexMatrix> equation, IProgress<SLAESolverIteration> progress)
     {
         throw new NotImplementedException();
     }

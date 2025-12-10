@@ -9,7 +9,7 @@ public interface ISLAESolver<TMatrix>
 
 public interface IObservableSLAESolver<TMatrix> : ISLAESolver<TMatrix>
 {
-    public Vector Solve(Equation<TMatrix> equation, IProgress<SLAESolverIteration> iteration);
+    public Vector Solve(Equation<TMatrix> equation, IProgress<SLAESolverIteration> progress);
     Vector ISLAESolver<TMatrix>.Solve(Equation<TMatrix> equation) => Solve(equation, NullProgress<SLAESolverIteration>.Instance);
 }
 
