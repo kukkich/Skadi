@@ -216,6 +216,7 @@ public static class LinAl
         return resultMemory;
     }
     
+    // T1 Vector2D, T2 double -> TResult = T1 = Vector2D
     /// <returns>v * u^T</returns>
     public static TResult MultiplyAsTransparent<T1, T2, TResult>(ReadOnlySpan<T1> v, ReadOnlySpan<T2> u)
         where TResult : IAdditiveIdentity<TResult, TResult>, IAdditionOperators<TResult, TResult, TResult>

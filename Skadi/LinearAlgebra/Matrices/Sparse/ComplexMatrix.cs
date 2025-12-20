@@ -62,7 +62,7 @@ public class ComplexMatrix
         public double Imaginary => HasImaginary ? _values[1] : 0;
         public bool HasImaginary => _values.Length == 2;
 
-        public double Determinant => Math.Sqrt(Real) + Math.Sqrt(Imaginary);
+        public double Determinant => Math.Pow(Real, 2) + Math.Pow(Imaginary, 2);
 
         public static void Multiply(Block a, Block b, Span<double> result)
         {
