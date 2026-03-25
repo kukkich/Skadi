@@ -89,4 +89,12 @@ public sealed class Vector(params double[] values) : IReadonlyVector<double>
     {
         return GetEnumerator();
     }
+
+    public void Nullify()
+    {
+        for (var i = 0; i < values.Length; i++)
+        {
+            values[i] = 0;
+        }
+    }
 }
