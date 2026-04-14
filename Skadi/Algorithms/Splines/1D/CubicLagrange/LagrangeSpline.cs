@@ -249,7 +249,12 @@ public class LagrangeSpline : ISpline<double>, IParametricCurve2D
         var left = _grid.Nodes[element.NodeIds[0]];
         var right = _grid.Nodes[element.NodeIds[1]];
 
-        return left <= node && node <= right;
+        var scale = Math.Max(Math.Abs(left), Math.Abs(right));
+        scale = Math.Max(scale, Math.Abs(node));
+
+        var eps = 1e-12 * scale;
+
+        return left - eps <= node && node <= right + eps;
     }
 
     public Vector2D GetByParameter(CurveParameter t)

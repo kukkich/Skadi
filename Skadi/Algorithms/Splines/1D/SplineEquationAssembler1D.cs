@@ -17,7 +17,12 @@ public class SplineEquationAssembler1D(
     {
         var left = Nodes[element.NodeIds[0]];
         var right = Nodes[element.NodeIds[1]];
-        
-        return left <= node && node <= right;
+
+        var scale = Math.Max(Math.Abs(left), Math.Abs(right));
+        scale = Math.Max(scale, Math.Abs(node));
+
+        var eps = 1e-12 * scale;
+
+        return left - eps <= node && node <= right + eps;
     }
 }
