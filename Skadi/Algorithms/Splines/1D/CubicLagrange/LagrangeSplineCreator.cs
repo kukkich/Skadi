@@ -19,11 +19,6 @@ public class LagrangeSplineCreator(GaussZeidelSolver slaeSolver) : ISplineCreato
 
     public void Allocate(Grid<double, IElement> grid)
     {
-        if (_allocated)
-        {
-            return;
-        }
-
         _grid = grid;
         var equationSize = grid.Nodes.TotalPoints + grid.Elements.Length * InnerNodes;
         _equation = new Equation<Matrix>(
