@@ -17,12 +17,13 @@ public class LagrangeSpline : ISpline<double>, IParametricCurve2D
     };
 
     private readonly LagrangeCubicFunction1DProvider _basisFunctionsProvider;
-    private readonly Grid<double, IElement> _grid;
     private readonly Vector _weights;
 
     public Vector2D Start { get; }
     public Vector2D End { get; }
-
+    public Grid<double, IElement> Grid { get; }
+    public IReadonlyVector<double> Weights => _weights;
+    
     public LagrangeSpline
     (
         LagrangeCubicFunction1DProvider basisFunctionsProvider,
@@ -31,7 +32,7 @@ public class LagrangeSpline : ISpline<double>, IParametricCurve2D
     )
     {
         _basisFunctionsProvider = basisFunctionsProvider;
-        _grid = grid;
+        Grid = grid;
         _weights = weights;
 
         var left = grid.Nodes[grid.Elements[0].NodeIds[0]];
@@ -43,7 +44,7 @@ public class LagrangeSpline : ISpline<double>, IParametricCurve2D
 
     public (double min, double max) MinMax()
     {
-        var (_, elements) = _grid;
+        var (_, elements) = Grid;
 
         var globalMin = double.PositiveInfinity;
         var globalMax = double.NegativeInfinity;
@@ -123,7 +124,7 @@ public class LagrangeSpline : ISpline<double>, IParametricCurve2D
 
     public static double DistanceBetween(LagrangeSpline f, LagrangeSpline g)
     {
-        var (_, elements) = f._grid;
+        var (_, elements) = f.Grid;
 
         var globalMin = double.PositiveInfinity;
         const double eps = 1e-14;
@@ -230,7 +231,7 @@ public class LagrangeSpline : ISpline<double>, IParametricCurve2D
 
     public double Calculate(double point)
     {
-        var element = _grid.Elements.First(e => ElementHas(e, point));
+        var element = Grid.Elements.First(e => ElementHas(e, point));
         var basisFunctions = _basisFunctionsProvider.GetFunctions(element);
 
         var sum = 0d;
@@ -246,8 +247,8 @@ public class LagrangeSpline : ISpline<double>, IParametricCurve2D
 
     private bool ElementHas(IElement element, double node)
     {
-        var left = _grid.Nodes[element.NodeIds[0]];
-        var right = _grid.Nodes[element.NodeIds[1]];
+        var left = Grid.Nodes[element.NodeIds[0]];
+        var right = Grid.Nodes[element.NodeIds[1]];
 
         var scale = Math.Max(Math.Abs(left), Math.Abs(right));
         scale = Math.Max(scale, Math.Abs(node));
