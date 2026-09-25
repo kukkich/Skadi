@@ -49,9 +49,9 @@ public class VectorSecondConditionApplier<TMatrix>(
 
         var massCoef = edge.Length / 6d;
 
-        LinAl.Multiply(massCoef, defaultMass, defaultMass);
+        MatrixOps.Scale(massCoef, defaultMass, defaultMass);
 
-        // var conditionImpact = LinAl.Multiply(defaultMass, condition.Thetta, stackalloc double[2]);
+        // var conditionImpact = MatrixOps.Multiply(defaultMass, condition.Thetta, stackalloc double[2]);
         // var local = new StackLocalVector(conditionImpact, new StackIndexPermutation([edge.Begin, edge.End]));
         // _inserter.InsertVector(equation.RightSide, local);
     }

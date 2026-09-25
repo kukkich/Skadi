@@ -40,4 +40,6 @@ public readonly record struct ProportionalSplitter : ICurveSplitter
 
         yield return parametricCurve.GetByParameter(1d);
     }
+
+    public override string ToString() => $"ProportionalSplitter {{ Steps = {Steps}, Ratio = {DischargeRatio:F3} }}";
 }

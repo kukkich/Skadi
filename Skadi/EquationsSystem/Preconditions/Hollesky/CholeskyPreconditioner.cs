@@ -9,7 +9,7 @@ public class CholeskyPreconditioner(SymmetricRowSparseMatrix decomposedMatrix) :
     // Evaluate M^-1 * v = x, where M = L*L^T
     public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory = null)
     {
-        LinAl.ValidateOrAllocateIfNull(vector, ref resultMemory);
+        VectorOps.EnsureDestination(vector, ref resultMemory);
         
         // M^-1 * v = x 
         // v = M * r = L*(L^T * x) = L * y

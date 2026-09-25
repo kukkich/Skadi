@@ -94,6 +94,6 @@ public class VectorLinearLocalAssembler
             }
         }
 
-        LinAl.Multiply(mass, f, vector);
+        MatrixOps.Multiply(mass, f, vector);
     }
 }

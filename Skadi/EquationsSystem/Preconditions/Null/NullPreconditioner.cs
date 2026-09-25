@@ -9,7 +9,7 @@ public class NullPreconditioner : IPreconditioner, IPreconditionerPart
     
     public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory = null)
     {
-        LinAl.ValidateOrAllocateIfNull(vector, ref resultMemory!);
+        VectorOps.EnsureDestination(vector, ref resultMemory!);
         for (var i = 0; i < vector.Length; i++)
         {
             resultMemory[i] = vector[i];

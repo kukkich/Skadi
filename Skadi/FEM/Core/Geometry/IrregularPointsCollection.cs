@@ -2,6 +2,7 @@
 
 public class IrregularPointsCollection<TPoint>(TPoint[] points) : IPointsCollection<TPoint>
 {
-    public int TotalPoints => points.Length;
-    public TPoint this[int index] => points[index];
+    public int TotalPoints => _points.Length;
+    public TPoint this[int index] => _points[index];
+    private TPoint[] _points = points;
 }

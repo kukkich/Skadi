@@ -27,6 +27,6 @@ public readonly record struct CubicBezier : IParametricCurve2D
             3 * Math.Pow(t, 2),
             Math.Pow(t, 3),
         ];
-        return LinAl.MultiplyAsTransparent<Vector2D>(tc, _points);
+        return VectorOps.MultiplyAsTransparent<Vector2D>(tc, _points);
     }
 }

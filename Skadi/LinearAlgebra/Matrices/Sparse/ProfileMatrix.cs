@@ -12,7 +12,6 @@ public class ProfileMatrix(int[] rowsIndexes, double[] diagonal, List<double> lo
     public int CountRows => Diagonal.Length;
     public int CountColumns => Diagonal.Length;
 
-    // todo вынести в LinAl
     public static Vector operator *(ProfileMatrix matrix, Vector vector)
     {
         var result = new Vector(matrix.CountRows);

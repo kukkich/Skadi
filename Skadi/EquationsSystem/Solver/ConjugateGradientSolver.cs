@@ -40,7 +40,7 @@ public class ConjugateGradientSolver
                 _r
             );
 
-            _aByZProduct = LinAl.Multiply(_equation.Matrix, _z, _aByZProduct);
+            _aByZProduct = _equation.Matrix.MultiplyOn(_z, _aByZProduct);
 
             var zScalarProduct = Vector.ScalarProduct(
                 _aByZProduct,
@@ -49,13 +49,13 @@ public class ConjugateGradientSolver
 
             var alpha = preconditionedRScalarProduct / zScalarProduct;
 
-            LinAl.LinearCombination(
+            VectorOps.LinearCombination(
                 _equation.Solution, _z,
                 1d, alpha,
-                resultMemory: _equation.Solution
+                destination: _equation.Solution
             );
 
-            _rNext = LinAl.LinearCombination(
+            _rNext = VectorOps.LinearCombination(
                 _r, _aByZProduct,
                 1d, -alpha,
                 _rNext
@@ -64,7 +64,7 @@ public class ConjugateGradientSolver
             var betta = Vector.ScalarProduct(_preconditioner.MultiplyOn(_rNext), _rNext) /
                         preconditionedRScalarProduct;
 
-            _z = LinAl.LinearCombination(
+            _z = VectorOps.LinearCombination(
                 _preconditioner.MultiplyOn(_rNext), _z,
                 1d, betta,
                 _z
@@ -84,8 +84,8 @@ public class ConjugateGradientSolver
         _preconditioner = preconditionerFactory.CreatePreconditioner(equation.Matrix);
 
         _equation = equation;
-        var AxProduct = LinAl.Multiply(equation.Matrix, equation.Solution);
-        _r = LinAl.Subtract(
+        var AxProduct = equation.Matrix.MultiplyOn(equation.Solution);
+        _r = VectorOps.Subtract(
             equation.RightSide,
             AxProduct
         );

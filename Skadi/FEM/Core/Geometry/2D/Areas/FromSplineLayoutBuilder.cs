@@ -5,7 +5,7 @@ using Skadi.Geometry.Splitting;
 
 namespace Skadi.FEM.Core.Geometry._2D.Areas;
 
-public class FromSplineGridLayoutBuilder
+public class FromSplineLayoutBuilder
 {
     public (Vector2D[,] controlPoints, AreaDefinition[] areas) Build(IEnumerable<IParametricCurve<Vector2D>> horizontalBounds, ICurveSplitter splitter)
     {

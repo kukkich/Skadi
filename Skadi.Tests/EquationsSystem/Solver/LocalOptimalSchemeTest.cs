@@ -33,7 +33,7 @@ public class LocalOptimalSchemeTest
         (
             indefiniteMatrix,
             Vector.Create(5),
-            LinAl.Multiply(indefiniteMatrix, solutionExpected)
+            indefiniteMatrix.MultiplyOn(solutionExpected)
         );
         
         var positiveDefiniteMatrix = new SparseMatrix
@@ -46,9 +46,9 @@ public class LocalOptimalSchemeTest
         );
         EquationWithPositiveDefinedMatrix = new Equation<SparseMatrix>
         (
-            positiveDefiniteMatrix, 
-            Vector.Create(5), 
-            LinAl.Multiply(positiveDefiniteMatrix, solutionExpected)
+            positiveDefiniteMatrix,
+            Vector.Create(5),
+            positiveDefiniteMatrix.MultiplyOn(solutionExpected)
         );
 
         solver = new LocalOptimalScheme
@@ -65,7 +65,7 @@ public class LocalOptimalSchemeTest
     {
         var solutionActual = solver.Solve(EquationWithIndefiniteMatrix);
 
-        var diff = LinAl.Subtract(solutionActual, solutionExpected);
+        var diff = VectorOps.Subtract(solutionActual, solutionExpected);
         
         Assert.That(diff.Norm, Is.LessThanOrEqualTo(1e-14));
     }
@@ -75,7 +75,7 @@ public class LocalOptimalSchemeTest
     {
         var solutionActual = solver.Solve(EquationWithPositiveDefinedMatrix);
 
-        var diff = LinAl.Subtract(solutionActual, solutionExpected);
+        var diff = VectorOps.Subtract(solutionActual, solutionExpected);
         
         Assert.That(diff.Norm, Is.LessThanOrEqualTo(1e-14));
     }

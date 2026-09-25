@@ -27,6 +27,6 @@ public readonly record struct CubicSpline : IParametricCurve2D
             -27d / 2 * t * (t - 1d / 3) * (t - 1),
             9d / 2 * t * (t - 1d / 3) * (t - 2d / 3),
         ];
-        return LinAl.MultiplyAsTransparent<Vector2D>(tc, _points);
+        return VectorOps.MultiplyAsTransparent<Vector2D>(tc, _points);
     }
 }

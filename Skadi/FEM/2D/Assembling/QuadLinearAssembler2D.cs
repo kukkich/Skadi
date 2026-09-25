@@ -118,7 +118,7 @@ public class QuadLinearAssembler2D
             }
         }
 
-        LinAl.Multiply(mass, f, vector);
+        MatrixOps.Multiply(mass, f, vector);
     }
 
     private Func<Vector2D, double> GetJacobian(IElement element)

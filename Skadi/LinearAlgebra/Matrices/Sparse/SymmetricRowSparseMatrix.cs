@@ -1,8 +1,9 @@
 ﻿using Skadi.LinearAlgebra.Matrices.Sparse.Storages;
+using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.LinearAlgebra.Matrices.Sparse;
 
-public class SymmetricRowSparseMatrix
+public class SymmetricRowSparseMatrix : ILinearOperator
 {
     public static SymmetricRowSparseMatrix FromUpperTriangle
     (
@@ -222,5 +223,26 @@ public class SymmetricRowSparseMatrix
         {
             return 0;
         }
+    }
+
+    public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory = null)
+    {
+        VectorOps.EnsureDestination(vector, ref resultMemory);
+        Shape.SameLength(Size, vector.Length);
+        var result = resultMemory!;
+
+        for (var i = 0; i < Size; i++)
+            result[i] = vector[i] * Diagonal[i];
+
+        for (var i = 0; i < Size; i++)
+        {
+            foreach (var entry in this[i])
+            {
+                result[i] += entry.Value * vector[entry.ColumnIndex];
+                result[entry.ColumnIndex] += entry.Value * vector[i];
+            }
+        }
+
+        return result;
     }
 }

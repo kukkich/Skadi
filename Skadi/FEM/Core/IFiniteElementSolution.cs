@@ -2,9 +2,9 @@
 
 namespace Skadi.FEM.Core;
 
-public interface IFiniteElementSolution<in TPoint>
+public interface IFiniteElementSolution<TPoint>
 {
     public IReadonlyVector<double> Weights { get; }
     public double Calculate(TPoint point); 
-    // Todo derivative as gradient
+    public TPoint Gradient(TPoint point);
 }
