@@ -135,8 +135,8 @@ public class HarmonicQuadLinearAssembler(
             }
         }
 
-        bS = LinAl.Multiply(mass, fS, bS);
-        bC = LinAl.Multiply(mass, fC, bC);
+        MatrixOps.Multiply(mass, fS, bS);
+        MatrixOps.Multiply(mass, fC, bC);
         for (var i = 0; i < NodesCount; i++)
         {
             vector[2 * i] = bS[i];

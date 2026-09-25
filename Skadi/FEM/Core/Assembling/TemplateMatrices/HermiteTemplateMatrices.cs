@@ -24,7 +24,7 @@ public static class HermiteTemplateMatrices
             }
         );
         
-        return LinAl.Multiply(1d / (30 * elementBoundSize), matrix, matrix);
+        return MatrixOps.Scale(1d / (30 * elementBoundSize), matrix, matrix);
     }
 
     public static IReadOnlyMatrix HermiteMass1D(double elementBoundSize)
@@ -40,6 +40,6 @@ public static class HermiteTemplateMatrices
                 }
             );
         
-        return LinAl.Multiply(elementBoundSize / 420, matrix, matrix);
+        return MatrixOps.Scale(elementBoundSize / 420, matrix, matrix);
     }
 }

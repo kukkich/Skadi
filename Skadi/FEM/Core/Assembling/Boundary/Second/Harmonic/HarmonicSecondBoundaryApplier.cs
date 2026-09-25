@@ -29,10 +29,12 @@ public class HarmonicSecondBoundaryApplier<TMatrix>(
             1, 2
         ], 2);
         var massCoef = edgeLength / 6d;
-        LinAl.Multiply(massCoef, defaultMass, defaultMass);
+        MatrixOps.Scale(massCoef, defaultMass, defaultMass);
 
-        var realImpact = LinAl.Multiply(defaultMass, real, stackalloc double[2]);
-        var imaginaryImpact = LinAl.Multiply(defaultMass, imaginary, stackalloc double[2]);
+        Span<double> realImpact = stackalloc double[2];
+        Span<double> imaginaryImpact = stackalloc double[2];
+        MatrixOps.Multiply(defaultMass, real, realImpact);
+        MatrixOps.Multiply(defaultMass, imaginary, imaginaryImpact);
         
         var realLocalVector = new StackLocalVector
         (

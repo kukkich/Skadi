@@ -1,4 +1,6 @@
-﻿namespace Skadi.LinearAlgebra.Matrices.Sparse;
+﻿using Skadi.LinearAlgebra.Vectors;
+
+namespace Skadi.LinearAlgebra.Matrices.Sparse;
 
 public class SparseMatrix
 (
@@ -7,7 +9,7 @@ public class SparseMatrix
     double[] diagonal,
     double[] lowerValues,
     double[] upperValues
-)
+) : ILinearOperator
 {
     public double[] Diagonal { get; set; } = diagonal;
     public double[] LowerValues { get; set; } = lowerValues;
@@ -79,5 +81,25 @@ public class SparseMatrix
         Array.Copy(Diagonal, diagonal, Diagonal.Length);
 
         return diagonal;
+    }
+
+    public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory = null)
+    {
+        VectorOps.EnsureDestination(vector, ref resultMemory);
+        var result = resultMemory!;
+        result.Nullify();
+
+        for (var i = 0; i < RowsCount; i++)
+        {
+            result[i] += Diagonal[i] * vector[i];
+
+            for (var j = RowsIndexes[i]; j < RowsIndexes[i + 1]; j++)
+            {
+                result[i] += LowerValues[j] * vector[ColumnsIndexes[j]];
+                result[ColumnsIndexes[j]] += UpperValues[j] * vector[i];
+            }
+        }
+
+        return result;
     }
 }

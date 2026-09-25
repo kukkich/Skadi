@@ -25,7 +25,7 @@ public class BiCGStabSolver<T>
         var x = equation.Solution;
         var A = equation.Matrix;
         var bNorm = b.Norm;
-        var r = LinAl.Subtract(b, A.MultiplyOn(x));
+        var r = VectorOps.Subtract(b, A.MultiplyOn(x));
         var rLid = r.Copy();
         var ro = Vector.ScalarProduct(rLid, r);
         var p = r.Copy();
@@ -44,23 +44,23 @@ public class BiCGStabSolver<T>
             y = _preconditioner.MultiplyOn(p, y);
             nu = A.MultiplyOn(y, nu);
             var alpha = ro / Vector.ScalarProduct(rLid, nu);
-            h = LinAl.LinearCombination(x, y, 1, alpha, h);
-            
-            var discrepancy = LinAl.Subtract(b, A.MultiplyOn(h, z), z).Norm; // could pass any result memory
+            h = VectorOps.LinearCombination(x, y, 1, alpha, h);
+
+            var discrepancy = VectorOps.Subtract(b, A.MultiplyOn(h, z), z).Norm; // could pass any result memory
             if (discrepancy / bNorm <= Config.Precision)
             {
                 h.CopyTo(x);
                 return x;
             }
-            
-            s = LinAl.LinearCombination(r, nu, 1, -alpha, s);
+
+            s = VectorOps.LinearCombination(r, nu, 1, -alpha, s);
             z = _preconditioner.MultiplyOn(s, z);
             t = A.MultiplyOn(z, t);
             tPreconditioned = _preconditionerPart.MultiplyOn(t, tPreconditioned);
             sPreconditioned = _preconditionerPart.MultiplyOn(s, sPreconditioned);
             var omega = Vector.ScalarProduct(tPreconditioned, sPreconditioned) / Vector.ScalarProduct(tPreconditioned, tPreconditioned);
-            x = LinAl.LinearCombination(h, z, 1, omega, x);
-            r = LinAl.LinearCombination(s, t, 1, -omega, r);
+            x = VectorOps.LinearCombination(h, z, 1, omega, x);
+            r = VectorOps.LinearCombination(s, t, 1, -omega, r);
             
             discrepancy = r.Norm;
             if (discrepancy / bNorm <= Config.Precision)
@@ -70,9 +70,9 @@ public class BiCGStabSolver<T>
             
             var roNext = Vector.ScalarProduct(rLid, r);
             var betta = roNext * alpha / (ro * omega);
-            p = LinAl.LinearCombination
+            p = VectorOps.LinearCombination
             (
-                r, LinAl.LinearCombination(p, nu, 1, -omega, p), 
+                r, VectorOps.LinearCombination(p, nu, 1, -omega, p),
                 1, betta,
                 p
             );

@@ -118,13 +118,13 @@ public readonly record struct Vector2D(double X, double Y) :
     public Vector2D TransformBy(Matrix m)
     {
         Span<double> transformed = stackalloc double[2];
-        transformed = LinAl.Multiply(m, ToVector(), transformed);
+        MatrixOps.Multiply(m, ToVector(), transformed);
         return new Vector2D(transformed[0], transformed[1]);
     }
     public Vector2D TransformBy(ReadOnlyMatrixSpan m)
     {
         Span<double> transformed = stackalloc double[2];
-        transformed = LinAl.Multiply(m, ToVector().AsReadOnlySpan(), transformed);
+        MatrixOps.Multiply(m, ToVector().AsReadOnlySpan(), transformed);
         return new Vector2D(transformed[0], transformed[1]);
     }
     

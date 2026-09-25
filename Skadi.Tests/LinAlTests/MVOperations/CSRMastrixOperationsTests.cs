@@ -1,10 +1,9 @@
-using Skadi.LinearAlgebra;
 using Skadi.LinearAlgebra.Matrices.Sparse;
 using Skadi.LinearAlgebra.Vectors;
 
 namespace Skadi.Tests.LinAlTests.MVOperations;
 
-[TestOf(typeof(LinAl))]
+[TestOf(typeof(CSRMatrix))]
 public class CSRMastrixOperationsTests
 {
     [SetUp]
@@ -25,7 +24,7 @@ public class CSRMastrixOperationsTests
         var vector = new Vector(1, 2, 3, 4, 5, 6);
         var expected = new Vector(-3, 32, -5, 32, 9, 50);
         
-        var actual = LinAl.Multiply(matrix, vector);
+        var actual = matrix.MultiplyOn(vector);
         
         Assert.That(actual.ToArray(), Is.EqualTo(expected.ToArray()).AsCollection);
         Assert.Pass();

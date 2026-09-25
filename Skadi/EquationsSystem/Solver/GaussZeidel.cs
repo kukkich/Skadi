@@ -76,9 +76,8 @@ public class GaussZeidelSolver(GaussZeidelConfig config, ILogger<GaussZeidelSolv
 
     private double GetRelativeDiscrepancy(IReadonlyVector<double> solution)
     {
-        _discrepancyVector.Nullify();
-        _discrepancyVector = LinAl.Multiply(_matrix, solution, _discrepancyVector);
-        _discrepancyVector = LinAl.Subtract(_rightSide, _discrepancyVector);
+        _discrepancyVector = MatrixOps.MultiplyOn(_matrix, solution, _discrepancyVector);
+        _discrepancyVector = VectorOps.Subtract(_rightSide, _discrepancyVector);
         return _discrepancyVector.Norm / _rightSideNorm;
     }
 }

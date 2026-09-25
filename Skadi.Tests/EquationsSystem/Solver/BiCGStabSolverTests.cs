@@ -52,7 +52,7 @@ public class BiCGStabSolverTests
 
         var actual = _notPreconditionedSolver.Solve(equation);
         
-        var r = LinAl.Subtract(equation.Matrix.MultiplyOn(actual), equation.RightSide);
+        var r = VectorOps.Subtract(equation.Matrix.MultiplyOn(actual), equation.RightSide);
         var relativeResidual = r.Norm / equation.RightSide.Norm;
         
         Assert.That(relativeResidual, Is.LessThanOrEqualTo(Tolerance));
@@ -90,7 +90,7 @@ public class BiCGStabSolverTests
 
         var actual = _luPreconditionedSolver.Solve(equation);
         
-        var r = LinAl.Subtract(equation.Matrix.MultiplyOn(actual), equation.RightSide);
+        var r = VectorOps.Subtract(equation.Matrix.MultiplyOn(actual), equation.RightSide);
         var relativeResidual = r.Norm / equation.RightSide.Norm;
         
         Assert.That(relativeResidual, Is.LessThanOrEqualTo(Tolerance));

@@ -9,7 +9,7 @@ public class LDLTPreconditioner(SymmetricRowSparseMatrix decomposedMatrix) : IPr
     // Evaluate M^-1 * v = x, where M = L*D*L^T
     public Vector MultiplyOn(ReadOnlySpan<double> v, Vector? resultMemory = null)
     {
-        LinAl.ValidateOrAllocateIfNull(v, ref resultMemory);
+        VectorOps.EnsureDestination(v, ref resultMemory);
         
         // M^-1 * v = x 
         // v = M * r = L*(D * [L^T * x]) = L * (D * z) = L * y

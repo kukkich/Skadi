@@ -24,7 +24,7 @@ public class LagrangeCubicAssembler1D(IPointsCollection<double> nodes, double al
         
         var k = alpha / (40d * length);
         
-        LinAl.Multiply(k, StiffnessMatrix, matrixSpan);
+        MatrixOps.Scale(k, StiffnessMatrix, matrixSpan);
 
         var leftNodeId = element.NodeIds[0];
         for (var i = 0; i < 4; i++)

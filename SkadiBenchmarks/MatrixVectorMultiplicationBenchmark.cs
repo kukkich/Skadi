@@ -59,18 +59,20 @@ public class MatrixVectorMultiplicationBenchmark
     [Benchmark]
     public Vector ExplicitMultiplication()
     {
-        return LinAl.Multiply(_matrix, _vector, _resultVector);
+        return MatrixOps.MultiplyOn(_matrix, _vector, _resultVector);
     }
 
     [Benchmark]
     public Span<double> SpanMultiplication()
     {
-        return LinAl.Multiply(new MatrixSpan(_stackMatrix, Size), _vector, _resultVector);
+        MatrixOps.Multiply(new MatrixSpan(_stackMatrix, Size), _vector, _resultVector);
+        return _resultVector;
     }
 
     [Benchmark(Baseline = true)]
     public Span<double> SpanWitReadonlyMatrixMultiplication()
     {
-        return LinAl.Multiply(new ReadOnlyMatrixSpan(_stackMatrix, Size), _stackVector, _resultStackVector);
+        MatrixOps.Multiply(new ReadOnlyMatrixSpan(_stackMatrix, Size), _stackVector, _resultStackVector);
+        return _resultStackVector;
     }
 }

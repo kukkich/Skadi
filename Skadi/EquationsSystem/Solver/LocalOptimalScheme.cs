@@ -33,13 +33,13 @@ public class LocalOptimalScheme
         _preconditionMatrix = _luPreconditioner.Decompose(equation.Matrix);
         _r = sparseLuResolver.CalcY(
             _preconditionMatrix,
-            LinAl.Subtract(
+            VectorOps.Subtract(
                 equation.RightSide,
-                LinAl.Multiply(equation.Matrix, equation.Solution)
+                equation.Matrix.MultiplyOn(equation.Solution)
             )
         );
         _z = sparseLuResolver.CalcX(_preconditionMatrix, _r);
-        _p = sparseLuResolver.CalcY(_preconditionMatrix, LinAl.Multiply(equation.Matrix, _z));
+        _p = sparseLuResolver.CalcY(_preconditionMatrix, equation.Matrix.MultiplyOn(_z));
     }
 
     private void IterationProcess(Equation<SparseMatrix> equation)
@@ -55,24 +55,24 @@ public class LocalOptimalScheme
 
             var alpha = Vector.ScalarProduct(_p, _r) / scalarPP;
 
-            LinAl.Sum(
-                equation.Solution, LinAl.Multiply(alpha, _z),
-                resultMemory: equation.Solution
+            VectorOps.Sum(
+                equation.Solution, VectorOps.Scale(alpha, _z),
+                destination: equation.Solution
             );
 
-            var alphaMultiplyP = LinAl.Multiply(alpha, _p);
-            var rNext = LinAl.Subtract(_r, alphaMultiplyP);
+            var alphaMultiplyP = VectorOps.Scale(alpha, _p);
+            var rNext = VectorOps.Subtract(_r, alphaMultiplyP);
 
             var LAUr = sparseLuResolver.CalcY(
                 _preconditionMatrix,
-                LinAl.Multiply(equation.Matrix, sparseLuResolver.CalcX(_preconditionMatrix, rNext))
+                equation.Matrix.MultiplyOn(sparseLuResolver.CalcX(_preconditionMatrix, rNext))
             );
 
             var beta = -1d * (Vector.ScalarProduct(_p, LAUr) / scalarPP);
 
-            var zNext = LinAl.Sum(sparseLuResolver.CalcX(_preconditionMatrix, rNext), LinAl.Multiply(beta, _z, _z));
+            var zNext = VectorOps.Sum(sparseLuResolver.CalcX(_preconditionMatrix, rNext), VectorOps.Scale(beta, _z, _z));
 
-            var pNext = LinAl.Sum(LAUr, LinAl.Multiply(beta, _p, _p), LAUr);
+            var pNext = VectorOps.Sum(LAUr, VectorOps.Scale(beta, _p, _p), LAUr);
 
             _r = rNext;
             _z = zNext;

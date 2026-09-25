@@ -10,8 +10,8 @@ public class LUPreconditionerCSR(CSRMatrix decomposed) : IPreconditioner
     public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory = null)
     {
         var n = decomposed.Size;
-        LinAl.ValidateOrAllocateIfNull(vector, ref resultMemory!);
-        
+        VectorOps.EnsureDestination(vector, ref resultMemory!);
+
         var y = new double[n];
         // Решаем L·y = v (прямой ход, учитываем, что L имеет единицы на диагонали)
         // Для i=0..n-1:
@@ -69,8 +69,8 @@ public class LUPreconditionerCSR(CSRMatrix decomposed) : IPreconditioner
         public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory = null)
         {
             var n = decomposed.Size;
-            LinAl.ValidateOrAllocateIfNull(vector, ref resultMemory!);
-            
+            VectorOps.EnsureDestination(vector, ref resultMemory!);
+
             var rowPointers = decomposed.RowPointers;
             var cols = decomposed.ColumnIndexes;
             var vals = decomposed.Values;

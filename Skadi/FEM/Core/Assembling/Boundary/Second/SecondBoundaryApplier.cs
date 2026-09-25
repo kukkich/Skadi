@@ -24,9 +24,10 @@ public class SecondBoundaryApplier<TMatrix>(
 
         var massCoef = edgeLength / 6d;
 
-        LinAl.Multiply(massCoef, defaultMass, defaultMass);
+        MatrixOps.Scale(massCoef, defaultMass, defaultMass);
 
-        var conditionImpact = LinAl.Multiply(defaultMass, condition.Thetta, stackalloc double[2]);
+        Span<double> conditionImpact = stackalloc double[2];
+        MatrixOps.Multiply(defaultMass, condition.Thetta, conditionImpact);
         var local = new StackLocalVector(conditionImpact, new StackIndexPermutation([edge.Begin, edge.End]));
         inserter.InsertVector(equation.RightSide, local);
     }

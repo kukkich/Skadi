@@ -46,6 +46,23 @@ public class CSRMatrix : ILinearOperator
         Values = values;
     }
 
-    public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory = null) 
-        => LinAl.Multiply(this, vector, resultMemory);
+    public Vector MultiplyOn(ReadOnlySpan<double> vector, Vector? resultMemory = null)
+    {
+        VectorOps.EnsureDestination(vector, ref resultMemory);
+        var result = resultMemory!;
+
+        for (var row = 0; row < Size; row++)
+        {
+            var rowStart = _rowPointers[row];
+            var rowEnd = _rowPointers[row + 1];
+
+            var sum = 0d;
+            for (var i = rowStart; i < rowEnd; i++)
+                sum += Values[i] * vector[_columnIndexes[i]];
+
+            result[row] = sum;
+        }
+
+        return result;
+    }
 }

@@ -81,7 +81,7 @@ public class VectorLinearLocalAssemblerTest
         var assembler = CreateAssembler(new Material(0, 1));
         var element = new EdgeElement(0, [0, 1, 2, 3], [0, 1, 2, 3]);
         var (hx, hy) = (4d, 2d);
-        var expectedMatrix = LinAl.Multiply(hx * hy / 6, new Matrix(new[,]
+        var expectedMatrix = MatrixOps.Scale(hx * hy / 6, new Matrix(new[,]
         {
             {2d, 1, 0, 0},
             {1, 2, 0, 0},

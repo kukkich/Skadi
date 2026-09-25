@@ -60,7 +60,7 @@ public class ConjugateGradientSolverTestTests
         var solver = solverFactory(diagonalPreconditionerFactory);
         var solutionActual = solver.Solve(equation);
 
-        var diff = LinAl.Subtract(solutionActual, solutionExpected);
+        var diff = VectorOps.Subtract(solutionActual, solutionExpected);
         
         Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Precision));
     }
@@ -71,7 +71,7 @@ public class ConjugateGradientSolverTestTests
         var solver = solverFactory(holesskyPreconditionerFactory);
         var solutionActual = solver.Solve(equation);
 
-        var diff = LinAl.Subtract(solutionActual, solutionExpected);
+        var diff = VectorOps.Subtract(solutionActual, solutionExpected);
         
         Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Precision));
     }
@@ -82,7 +82,7 @@ public class ConjugateGradientSolverTestTests
         var solver = solverFactory(LDLTPreconditionerFactory);
         var solutionActual = solver.Solve(equation);
 
-        var diff = LinAl.Subtract(solutionActual, solutionExpected);
+        var diff = VectorOps.Subtract(solutionActual, solutionExpected);
         
         Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Precision * 10));
     }
@@ -93,7 +93,7 @@ public class ConjugateGradientSolverTestTests
         var solver = solverFactory(UnitPreconditioner);
         var solutionActual = solver.Solve(equation);
 
-        var diff = LinAl.Subtract(solutionActual, solutionExpected);
+        var diff = VectorOps.Subtract(solutionActual, solutionExpected);
         
         Assert.That(diff.Norm / solutionExpected.Norm, Is.LessThanOrEqualTo(config.Precision));
     }
